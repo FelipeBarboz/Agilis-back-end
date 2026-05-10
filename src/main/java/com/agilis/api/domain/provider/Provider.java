@@ -14,7 +14,7 @@ public class Provider {
         this.cnpj   = validateCnpj(cnpj);
     }
 
-    public static Provider create(UUID userId, String cnpj) {
+    public static Provider create(UUID userId, String cnpj, UUID id) {
         return new Provider(userId, cnpj);
     }
 
