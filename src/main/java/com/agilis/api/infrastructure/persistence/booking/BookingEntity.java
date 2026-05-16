@@ -1,10 +1,7 @@
 package com.agilis.api.infrastructure.persistence.booking;
 
 import com.agilis.api.domain.booking.BookingStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,29 +13,28 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "bookings")
-
 public class BookingEntity {
 
     @Id
     @Column(nullable = false, updatable = false)
     private UUID id;
 
-    @Column(name = "booking_id", nullable = false)
-    private UUID bookingId;
+    @Column(name = "client_id", nullable = false)
+    private UUID clientId;
 
     @Column(name = "service_id", nullable = false)
     private UUID serviceId;
 
-    @Column(name = "scheduled_at", nullable = false, updatable = false)
+    @Column(name = "scheduled_at", nullable = false)
     private LocalDateTime scheduledAt;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "date", nullable = false, updatable = false)
+    @Column(name = "date", insertable = false, updatable = false)
     private LocalDate date;
 
-    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private BookingStatus status;
-
 }

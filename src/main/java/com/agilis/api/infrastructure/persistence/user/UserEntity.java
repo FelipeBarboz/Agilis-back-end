@@ -26,7 +26,7 @@ public class UserEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(length = 20)
+    @Column(columnDefinition = "CHAR(20)")
     private String phone;
 
     @Column(name = "created_at", nullable = false, updatable = false)

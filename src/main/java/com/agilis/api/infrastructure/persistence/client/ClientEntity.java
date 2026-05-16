@@ -15,6 +15,6 @@ public class ClientEntity {
     @Column(name = "fk_user_id", nullable = false, updatable = false)
     private UUID userId;
 
-    @Column(nullable = false, unique = true, length = 14)
+    @Column(nullable = false, unique = true, columnDefinition = "CHAR(14)")
     private String cpf;
 }
