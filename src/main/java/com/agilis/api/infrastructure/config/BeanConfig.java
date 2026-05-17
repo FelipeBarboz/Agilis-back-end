@@ -29,6 +29,8 @@ import com.agilis.api.infrastructure.persistence.service.ServiceJpaRepository;
 import com.agilis.api.infrastructure.persistence.service.ServiceRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.user.UserJpaRepository;
 import com.agilis.api.infrastructure.persistence.user.UserRepositoryAdapter;
+import com.agilis.api.infrastructure.security.JwtFilter;
+import com.agilis.api.infrastructure.security.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -222,5 +224,11 @@ public class BeanConfig {
     @Bean
     public GetReviewUseCase getReviewUseCase(ReviewRepository reviewRepository) {
         return new GetReviewUseCase(reviewRepository);
+    }
+
+    // Jwt
+    @Bean
+    public JwtFilter jwtFilter(JwtService jwtService) {
+        return new JwtFilter(jwtService);
     }
 }
