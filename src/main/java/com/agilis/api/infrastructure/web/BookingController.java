@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -15,6 +16,7 @@ public class BookingController {
     private final CancelBookingUseCase cancelBookingUseCase;
     private final ConfirmBookingUseCase confirmBookingUseCase;
     private final CompleteBookingUseCase completeBookingUseCase;
+    private final GetStoreBookingsUseCase getStoreBookingsUseCase;
     private final GetBookingUseCase getBookingUseCase;
 
     public BookingController(
@@ -22,12 +24,14 @@ public class BookingController {
             CancelBookingUseCase cancelBookingUseCase,
             ConfirmBookingUseCase confirmBookingUseCase,
             CompleteBookingUseCase completeBookingUseCase,
+            GetStoreBookingsUseCase getStoreBookingsUseCase,
             GetBookingUseCase getBookingUseCase
     ) {
         this.createBookingUseCase  = createBookingUseCase;
         this.cancelBookingUseCase  = cancelBookingUseCase;
         this.confirmBookingUseCase = confirmBookingUseCase;
         this.completeBookingUseCase = completeBookingUseCase;
+        this.getStoreBookingsUseCase = getStoreBookingsUseCase;
         this.getBookingUseCase     = getBookingUseCase;
     }
 
@@ -60,6 +64,17 @@ public class BookingController {
             @PathVariable String serviceId
     ) {
         return ResponseEntity.ok(getBookingUseCase.executeByService(serviceId));
+    }
+
+    @GetMapping("/store/{storeId}")
+    public ResponseEntity<List<GetStoreBookingsUseCase.Output>> getStoreBookings(
+            @PathVariable String storeId,
+            @RequestParam(required = false) LocalDate date
+    ) {
+        String requesterId = getCurrentUserId();
+        return ResponseEntity.ok(getStoreBookingsUseCase.execute(
+                new GetStoreBookingsUseCase.Input(requesterId, storeId, date)
+        ));
     }
 
     @PatchMapping("/{id}/cancel")

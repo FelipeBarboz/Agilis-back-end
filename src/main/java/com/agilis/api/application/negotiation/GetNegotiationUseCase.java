@@ -2,6 +2,7 @@ package com.agilis.api.application.negotiation;
 
 import com.agilis.api.domain.negotiation.Negotiation;
 import com.agilis.api.domain.negotiation.NegotiationRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -35,6 +36,7 @@ public class GetNegotiationUseCase {
         );
     }
 
+    @Schema(name = "GetNegotiationOutput")
     public record Output(
             String negotiationId,
             String bookingId,

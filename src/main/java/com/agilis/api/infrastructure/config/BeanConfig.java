@@ -3,14 +3,13 @@ package com.agilis.api.infrastructure.config;
 import com.agilis.api.application.booking.*;
 import com.agilis.api.application.message.*;
 import com.agilis.api.application.negotiation.*;
-import com.agilis.api.application.provider.GetMyStoresUseCase;
-import com.agilis.api.application.provider.RegisterProviderUseCase;
-import com.agilis.api.application.provider.UpdateProviderProfileUseCase;
+import com.agilis.api.application.provider.*;
 import com.agilis.api.application.review.*;
 import com.agilis.api.application.service.CreateServiceUseCase;
 import com.agilis.api.application.service.DeleteServiceUseCase;
 import com.agilis.api.application.service.UpdateServiceUseCase;
 import com.agilis.api.application.user.RegisterClientUseCase;
+import com.agilis.api.application.user.UpdateUserUseCase;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.client.ClientRepository;
 import com.agilis.api.domain.message.MessageRepository;
@@ -104,6 +103,11 @@ public class BeanConfig {
         return new RegisterClientUseCase(userRepository, clientRepository);
     }
 
+    @Bean
+    public UpdateUserUseCase updateUserUseCase(UserRepository userRepository) {
+        return new UpdateUserUseCase(userRepository);
+    }
+
     //  USE CASES — PROVIDER
 
     @Bean
@@ -158,6 +162,15 @@ public class BeanConfig {
     @Bean
     public GetBookingUseCase getBookingUseCase(BookingRepository bookingRepository) {
         return new GetBookingUseCase(bookingRepository);
+    }
+
+    @Bean
+    public GetStoreBookingsUseCase getStoreBookingsUseCase(
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new GetStoreBookingsUseCase(bookingRepository, serviceRepository, storeMembershipRepository);
     }
 
     //  USE CASES — NEGOTIATION
@@ -231,7 +244,7 @@ public class BeanConfig {
         return new GetReviewUseCase(reviewRepository);
     }
 
-    //  USE CASES — PROVIDER PROFILE
+    //  USE CASES — PROVIDER
 
     @Bean
     public GetMyStoresUseCase getMyStoresUseCase(
@@ -247,6 +260,22 @@ public class BeanConfig {
             StoreMembershipRepository storeMembershipRepository
     ) {
         return new UpdateProviderProfileUseCase(providerProfileRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public InviteMemberUseCase inviteMemberUseCase(
+            StoreMembershipRepository storeMembershipRepository,
+            ProviderRepository providerRepository,
+            UserRepository userRepository
+    ) {
+        return new InviteMemberUseCase(storeMembershipRepository, providerRepository, userRepository);
+    }
+
+    @Bean
+    public RemoveMemberUseCase removeMemberUseCase(
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new RemoveMemberUseCase(storeMembershipRepository);
     }
 
     //  USE CASES — SERVICE

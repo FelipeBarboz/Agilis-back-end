@@ -4,6 +4,7 @@ import com.agilis.api.domain.client.Client;
 import com.agilis.api.domain.client.ClientRepository;
 import com.agilis.api.domain.user.User;
 import com.agilis.api.domain.user.UserRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class RegisterClientUseCase {
 
@@ -32,7 +33,9 @@ public class RegisterClientUseCase {
         return new Output(user.getId().toString(), user.getName(), user.getEmail());
     }
 
+    @Schema(name = "RegisterClientInput")
     public record Input(String name, String email, String phone, String cpf) {}
 
+    @Schema(name = "RegisterClientOutput")
     public record Output(String userId, String name, String email) {}
 }

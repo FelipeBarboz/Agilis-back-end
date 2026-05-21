@@ -2,6 +2,7 @@ package com.agilis.api.application.provider;
 
 import com.agilis.api.domain.provider.ProviderProfileRepository;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
@@ -48,6 +49,7 @@ public class UpdateProviderProfileUseCase {
         );
     }
 
+    @Schema(name = "UpdateProviderInput")
     public record Input(
             String requesterId,
             String storeId,
@@ -56,6 +58,7 @@ public class UpdateProviderProfileUseCase {
             String profileImgUrl
     ) {}
 
+    @Schema(name = "UpdateProviderOutput")
     public record Output(
             String storeId,
             String storeName,

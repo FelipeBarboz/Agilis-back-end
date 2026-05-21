@@ -3,6 +3,7 @@ package com.agilis.api.application.service;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
 import com.agilis.api.domain.service.Service;
 import com.agilis.api.domain.service.ServiceRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
@@ -37,5 +38,6 @@ public class DeleteServiceUseCase {
         serviceRepository.deleteById(serviceId);
     }
 
+    @Schema(name = "DeleteServiceInput")
     public record Input(String requesterId, String serviceId) {}
 }

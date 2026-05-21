@@ -4,6 +4,7 @@ import com.agilis.api.domain.booking.Booking;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
 import com.agilis.api.domain.service.ServiceRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
@@ -41,5 +42,6 @@ public class CompleteBookingUseCase {
         bookingRepository.save(booking);
     }
 
+    @Schema(name = "CompleteBookingInput")
     public record Input(String bookingId, String requesterId) {}
 }

@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/stores/**").permitAll()
                         .requestMatchers("/api/v1/services/**").permitAll()
                         .requestMatchers("/api/v1/providers/*/profile").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/v3/api-docs").permitAll()
                         // todo o resto precisa de auth
                         .anyRequest().authenticated()
                 )

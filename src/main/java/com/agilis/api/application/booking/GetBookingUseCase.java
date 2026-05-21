@@ -2,6 +2,7 @@ package com.agilis.api.application.booking;
 
 import com.agilis.api.domain.booking.Booking;
 import com.agilis.api.domain.booking.BookingRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,6 +47,7 @@ public class GetBookingUseCase {
         );
     }
 
+    @Schema(name = "GetBookingOutput")
     public record Output(
             String bookingId,
             String clientId,

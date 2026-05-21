@@ -4,6 +4,7 @@ import com.agilis.api.domain.provider.StoreMembershipRepository;
 import com.agilis.api.domain.service.PriceType;
 import com.agilis.api.domain.service.Service;
 import com.agilis.api.domain.service.ServiceRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -60,6 +61,7 @@ public class CreateServiceUseCase {
         );
     }
 
+    @Schema(name = "CreateServiceInput")
     public record Input(
             String requesterId,
             String storeId,
@@ -70,6 +72,7 @@ public class CreateServiceUseCase {
             int durationMinutes
     ) {}
 
+    @Schema(name = "CreateServiceOutput")
     public record Output(
             String serviceId,
             String storeId,

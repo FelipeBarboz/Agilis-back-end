@@ -40,11 +40,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
+            System.out.println("JWT ERROR: " + e.getClass().getName() + " - " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Token inválido ou expirado");
             return;
         }
-
         chain.doFilter(request, response);
     }
 }

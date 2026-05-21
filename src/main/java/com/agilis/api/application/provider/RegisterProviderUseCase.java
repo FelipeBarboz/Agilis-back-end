@@ -2,6 +2,7 @@ package com.agilis.api.application.provider;
 
 import com.agilis.api.domain.provider.*;
 import com.agilis.api.domain.user.UserRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
@@ -66,6 +67,7 @@ public class RegisterProviderUseCase {
         );
     }
 
+    @Schema(name = "RegisterProviderInput")
     public record Input(
             String userId,
             String cnpj,
@@ -75,6 +77,7 @@ public class RegisterProviderUseCase {
             String profileImgUrl
     ) {}
 
+    @Schema(name = "RegisterProviderOutput")
     public record Output(
             String profileId,
             String storeName,

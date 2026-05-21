@@ -2,6 +2,7 @@ package com.agilis.api.application.review;
 
 import com.agilis.api.domain.review.Review;
 import com.agilis.api.domain.review.ReviewRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +41,7 @@ public class GetReviewUseCase {
         );
     }
 
+    @Schema(name = "GetReviewOutput")
     public record Output(
             String reviewId,
             String bookingId,

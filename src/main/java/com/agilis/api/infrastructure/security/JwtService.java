@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @Service
 public class JwtService {
@@ -15,7 +15,8 @@ public class JwtService {
     private final SecretKey secretKey;
 
     public JwtService(@Value("${supabase.jwt.secret}") String secret) {
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        byte[] keyBytes = Base64.getDecoder().decode(secret);
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String extractUserId(String token) {
@@ -25,7 +26,7 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
 
-        return claims.getSubject(); // o 'sub' do JWT do Supabase é o user UUID
+        return claims.getSubject();
     }
 
     public boolean isValid(String token) {

@@ -5,6 +5,7 @@ import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.booking.BookingStatus;
 import com.agilis.api.domain.review.Review;
 import com.agilis.api.domain.review.ReviewRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -56,6 +57,7 @@ public class CreateReviewUseCase {
         );
     }
 
+    @Schema(name = "CreateReviewInput")
     public record Input(
             String bookingId,
             String reviewerId,
@@ -64,6 +66,7 @@ public class CreateReviewUseCase {
             String comment
     ) {}
 
+    @Schema(name = "CreateReviewOutput")
     public record Output(
             String reviewId,
             String bookingId,

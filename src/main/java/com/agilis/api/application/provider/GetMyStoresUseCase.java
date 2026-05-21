@@ -2,6 +2,7 @@ package com.agilis.api.application.provider;
 
 import com.agilis.api.domain.provider.ProviderProfileRepository;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +40,7 @@ public class GetMyStoresUseCase {
                 .toList();
     }
 
+    @Schema(name = "GetMyStoresOutput")
     public record Output(
             String storeId,
             String storeName,
