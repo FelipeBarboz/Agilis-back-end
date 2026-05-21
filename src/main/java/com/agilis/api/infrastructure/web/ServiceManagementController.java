@@ -1,131 +1,106 @@
 package com.agilis.api.infrastructure.web;
 
-import com.agilis.api.application.service.*;
-import com.agilis.api.domain.service.PriceType;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
+import com.agilis.api.application.service.CreateServiceUseCase;
+import com.agilis.api.application.service.DeleteServiceUseCase;
+import com.agilis.api.application.service.UpdateServiceUseCase;
+import com.agilis.api.domain.service.Service;
+import com.agilis.api.domain.service.ServiceRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/stores/{storeId}/services")
-@Tag(name = "Service Management", description = "CRUD of services within a store")
 public class ServiceManagementController {
 
     private final CreateServiceUseCase createServiceUseCase;
     private final UpdateServiceUseCase updateServiceUseCase;
     private final DeleteServiceUseCase deleteServiceUseCase;
-    private final GetServiceUseCase getServiceUseCase;
-    private final ListServicesUseCase listServicesUseCase;
+    private final ServiceRepository serviceRepository;
 
-    public ServiceManagementController(CreateServiceUseCase createServiceUseCase,
-                                       UpdateServiceUseCase updateServiceUseCase,
-                                       DeleteServiceUseCase deleteServiceUseCase,
-                                       GetServiceUseCase getServiceUseCase,
-                                       ListServicesUseCase listServicesUseCase) {
+    public ServiceManagementController(
+            CreateServiceUseCase createServiceUseCase,
+            UpdateServiceUseCase updateServiceUseCase,
+            DeleteServiceUseCase deleteServiceUseCase,
+            ServiceRepository serviceRepository
+    ) {
         this.createServiceUseCase = createServiceUseCase;
         this.updateServiceUseCase = updateServiceUseCase;
         this.deleteServiceUseCase = deleteServiceUseCase;
-        this.getServiceUseCase = getServiceUseCase;
-        this.listServicesUseCase = listServicesUseCase;
-    }
-
-    // ── DTOs ──────────────────────────────────────────────────────────────────
-
-    public record ServiceRequest(String title, String description,
-                                 BigDecimal price, PriceType priceType,
-                                 int durationMinutes) {}
-
-    public record ServiceResponse(String serviceId, String storeId, String title,
-                                  String description, BigDecimal price, String priceType,
-                                  int durationMinutes, LocalDateTime createdAt) {}
-
-    public record ServiceListResponse(List<ServiceResponse> services) {}
-
-    // ── Endpoints ─────────────────────────────────────────────────────────────
-
-    @PostMapping
-    @Operation(summary = "Create a service", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<ServiceResponse> create(@PathVariable String storeId,
-                                                  @RequestBody ServiceRequest body) {
-        String userId = getPrincipal();
-        var input = new CreateServiceUseCase.Input(
-                userId, storeId, body.title(), body.description(),
-                body.price(), body.priceType(), body.durationMinutes());
-        var out = createServiceUseCase.execute(input);
-        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(out));
-    }
-
-    @PutMapping("/{serviceId}")
-    @Operation(summary = "Update a service", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<ServiceResponse> update(@PathVariable String storeId,
-                                                  @PathVariable String serviceId,
-                                                  @RequestBody ServiceRequest body) {
-        String userId = getPrincipal();
-        var input = new UpdateServiceUseCase.Input(
-                userId, storeId, serviceId, body.title(), body.description(),
-                body.price(), body.priceType(), body.durationMinutes());
-        var out = updateServiceUseCase.execute(input);
-        return ResponseEntity.ok(toResponse(out));
-    }
-
-    @DeleteMapping("/{serviceId}")
-    @Operation(summary = "Delete a service", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<Void> delete(@PathVariable String storeId,
-                                       @PathVariable String serviceId) {
-        String userId = getPrincipal();
-        deleteServiceUseCase.execute(new DeleteServiceUseCase.Input(userId, storeId, serviceId));
-        return ResponseEntity.noContent().build();
+        this.serviceRepository    = serviceRepository;
     }
 
     @GetMapping
-    @Operation(summary = "List all services for a store (public)")
-    public ResponseEntity<ServiceListResponse> list(@PathVariable String storeId) {
-        var out = listServicesUseCase.execute(new ListServicesUseCase.Input(storeId));
-        List<ServiceResponse> responses = out.services().stream()
-                .map(s -> new ServiceResponse(s.serviceId(), s.storeId(), s.title(),
-                        s.description(), s.price(), s.priceType(),
-                        s.durationMinutes(), s.createdAt()))
-                .toList();
-        return ResponseEntity.ok(new ServiceListResponse(responses));
+    public ResponseEntity<List<Service>> listByStore(@PathVariable String storeId) {
+        return ResponseEntity.ok(
+                serviceRepository.findAllByStoreId(UUID.fromString(storeId))
+        );
     }
 
     @GetMapping("/{serviceId}")
-    @Operation(summary = "Get a specific service (public)")
-    public ResponseEntity<ServiceResponse> getOne(@PathVariable String storeId,
-                                                  @PathVariable String serviceId) {
-        var out = getServiceUseCase.execute(new GetServiceUseCase.Input(serviceId));
-        return ResponseEntity.ok(toResponse(out));
+    public ResponseEntity<Service> getById(
+            @PathVariable String storeId,
+            @PathVariable String serviceId
+    ) {
+        return serviceRepository.findById(UUID.fromString(serviceId))
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    private String getPrincipal() {
-        return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    @PostMapping
+    public ResponseEntity<CreateServiceUseCase.Output> create(
+            @PathVariable String storeId,
+            @RequestBody CreateServiceUseCase.Input input
+    ) {
+        String requesterId = getCurrentUserId();
+        CreateServiceUseCase.Input inputWithRequester = new CreateServiceUseCase.Input(
+                requesterId,
+                storeId,
+                input.title(),
+                input.description(),
+                input.price(),
+                input.priceType(),
+                input.durationMinutes()
+        );
+        return ResponseEntity.ok(createServiceUseCase.execute(inputWithRequester));
     }
 
-    private ServiceResponse toResponse(CreateServiceUseCase.Output out) {
-        return new ServiceResponse(out.serviceId(), out.storeId(), out.title(),
-                out.description(), out.price(), out.priceType(),
-                out.durationMinutes(), out.createdAt());
+    @PutMapping("/{serviceId}")
+    public ResponseEntity<UpdateServiceUseCase.Output> update(
+            @PathVariable String storeId,
+            @PathVariable String serviceId,
+            @RequestBody UpdateServiceUseCase.Input input
+    ) {
+        String requesterId = getCurrentUserId();
+        UpdateServiceUseCase.Input inputWithRequester = new UpdateServiceUseCase.Input(
+                requesterId,
+                serviceId,
+                input.title(),
+                input.description(),
+                input.price(),
+                input.priceType(),
+                input.durationMinutes()
+        );
+        return ResponseEntity.ok(updateServiceUseCase.execute(inputWithRequester));
     }
 
-    private ServiceResponse toResponse(UpdateServiceUseCase.Output out) {
-        return new ServiceResponse(out.serviceId(), out.storeId(), out.title(),
-                out.description(), out.price(), out.priceType(),
-                out.durationMinutes(), out.createdAt());
+    @DeleteMapping("/{serviceId}")
+    public ResponseEntity<Void> delete(
+            @PathVariable String storeId,
+            @PathVariable String serviceId
+    ) {
+        String requesterId = getCurrentUserId();
+        deleteServiceUseCase.execute(new DeleteServiceUseCase.Input(requesterId, serviceId));
+        return ResponseEntity.noContent().build();
     }
 
-    private ServiceResponse toResponse(GetServiceUseCase.Output out) {
-        return new ServiceResponse(out.serviceId(), out.storeId(), out.title(),
-                out.description(), out.price(), out.priceType(),
-                out.durationMinutes(), out.createdAt());
+    private String getCurrentUserId() {
+        return (String) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
     }
 }

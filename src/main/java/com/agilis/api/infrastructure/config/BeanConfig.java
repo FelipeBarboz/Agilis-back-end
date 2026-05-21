@@ -3,8 +3,13 @@ package com.agilis.api.infrastructure.config;
 import com.agilis.api.application.booking.*;
 import com.agilis.api.application.message.*;
 import com.agilis.api.application.negotiation.*;
+import com.agilis.api.application.provider.GetMyStoresUseCase;
 import com.agilis.api.application.provider.RegisterProviderUseCase;
+import com.agilis.api.application.provider.UpdateProviderProfileUseCase;
 import com.agilis.api.application.review.*;
+import com.agilis.api.application.service.CreateServiceUseCase;
+import com.agilis.api.application.service.DeleteServiceUseCase;
+import com.agilis.api.application.service.UpdateServiceUseCase;
 import com.agilis.api.application.user.RegisterClientUseCase;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.client.ClientRepository;
@@ -226,76 +231,52 @@ public class BeanConfig {
         return new GetReviewUseCase(reviewRepository);
     }
 
-    // Jwt
-    @Bean
-    public JwtFilter jwtFilter(JwtService jwtService) {
-        return new JwtFilter(jwtService);
-    }
+    //  USE CASES — PROVIDER PROFILE
 
     @Bean
-    public ServiceRepository serviceRepository(ServiceJpaRepository jpaRepository) {
-        return new ServiceRepositoryAdapter(jpaRepository);
-    }
-
-    // ── Provider profile use cases ───────────────────────────────────────────
-
-    @Bean
-    public GetProviderProfileUseCase getProviderProfileUseCase(
-            ProviderProfileRepository profileRepository) {
-        return new GetProviderProfileUseCase(profileRepository);
-    }
-
-    @Bean
-    public GetProviderProfileBySlugUseCase getProviderProfileBySlugUseCase(
-            ProviderProfileRepository profileRepository) {
-        return new GetProviderProfileBySlugUseCase(profileRepository);
+    public GetMyStoresUseCase getMyStoresUseCase(
+            StoreMembershipRepository storeMembershipRepository,
+            ProviderProfileRepository providerProfileRepository
+    ) {
+        return new GetMyStoresUseCase(storeMembershipRepository, providerProfileRepository);
     }
 
     @Bean
     public UpdateProviderProfileUseCase updateProviderProfileUseCase(
-            ProviderProfileRepository profileRepository,
-            StoreMembershipRepository membershipRepository) {
-        return new UpdateProviderProfileUseCase(profileRepository, membershipRepository);
+            ProviderProfileRepository providerProfileRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new UpdateProviderProfileUseCase(providerProfileRepository, storeMembershipRepository);
     }
 
-    @Bean
-    public GetMyStoresUseCase getMyStoresUseCase(
-            StoreMembershipRepository membershipRepository,
-            ProviderProfileRepository profileRepository) {
-        return new GetMyStoresUseCase(membershipRepository, profileRepository);
-    }
-
-    // ── Service management use cases ─────────────────────────────────────────
-
+    //  USE CASES — SERVICE
     @Bean
     public CreateServiceUseCase createServiceUseCase(
             ServiceRepository serviceRepository,
-            StoreMembershipRepository membershipRepository) {
-        return new CreateServiceUseCase(serviceRepository, membershipRepository);
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new CreateServiceUseCase(serviceRepository, storeMembershipRepository);
     }
 
     @Bean
     public UpdateServiceUseCase updateServiceUseCase(
             ServiceRepository serviceRepository,
-            StoreMembershipRepository membershipRepository) {
-        return new UpdateServiceUseCase(serviceRepository, membershipRepository);
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new UpdateServiceUseCase(serviceRepository, storeMembershipRepository);
     }
 
     @Bean
     public DeleteServiceUseCase deleteServiceUseCase(
             ServiceRepository serviceRepository,
-            StoreMembershipRepository membershipRepository) {
-        return new DeleteServiceUseCase(serviceRepository, membershipRepository);
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new DeleteServiceUseCase(serviceRepository, storeMembershipRepository);
     }
 
+    // Jwt
     @Bean
-    public GetServiceUseCase getServiceUseCase(ServiceRepository serviceRepository) {
-        return new GetServiceUseCase(serviceRepository);
+    public JwtFilter jwtFilter(JwtService jwtService) {
+        return new JwtFilter(jwtService);
     }
-
-    @Bean
-    public ListServicesUseCase listServicesUseCase(ServiceRepository serviceRepository) {
-        return new ListServicesUseCase(serviceRepository);
-    }
-
 }
