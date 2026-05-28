@@ -20,27 +20,24 @@ public class RemoveMemberUseCase {
         UUID storeId     = UUID.fromString(input.storeId());
         UUID memberId    = UUID.fromString(input.memberId());
 
-        // verifica permissão de quem está removendo
         StoreMembership requesterMembership = storeMembershipRepository
                 .findByProviderIdAndStoreId(requesterId, storeId)
-                .orElseThrow(() -> new IllegalArgumentException("Você não é membro desta loja"));
+                .orElseThrow(() -> new IllegalArgumentException("You are not a member of this store."));
 
         if (!requesterMembership.getRole().canManageStore()) {
-            throw new IllegalStateException("Sem permissão para remover membros");
+            throw new IllegalStateException("No permission to remove members.");
         }
         StoreMembership targetMembership = storeMembershipRepository
                 .findByProviderIdAndStoreId(memberId, storeId)
-                .orElseThrow(() -> new IllegalArgumentException("Membro não encontrado na loja"));
+                .orElseThrow(() -> new IllegalArgumentException("Member not found in the store."));
 
-        // owner não pode ser removido
         if (targetMembership.getRole() == StoreRole.OWNER) {
-            throw new IllegalStateException("Owner não pode ser removido da loja");
+            throw new IllegalStateException("The owner cannot be removed from the store.");
         }
 
-        // admin só pode ser removido pelo owner
         if (targetMembership.getRole() == StoreRole.ADMIN &&
                 requesterMembership.getRole() != StoreRole.OWNER) {
-            throw new IllegalStateException("Apenas o owner pode remover admins");
+            throw new IllegalStateException("Only the owner can remove admins.");
         }
 
         storeMembershipRepository.deleteById(targetMembership.getId());

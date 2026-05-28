@@ -15,7 +15,7 @@ public class UpdateUserUseCase {
 
     public Output execute(Input input) {
         var user = userRepository.findById(UUID.fromString(input.userId()))
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("User not found."));
 
         user.changeName(input.name());
         user.changePhone(input.phone());

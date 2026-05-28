@@ -26,36 +26,32 @@ public class InviteMemberUseCase {
         UUID requesterId = UUID.fromString(input.requesterId());
         UUID storeId     = UUID.fromString(input.storeId());
 
-        // verifica se quem está convidando tem permissão
         StoreMembership requesterMembership = storeMembershipRepository
                 .findByProviderIdAndStoreId(requesterId, storeId)
-                .orElseThrow(() -> new IllegalArgumentException("Você não é membro desta loja"));
+                .orElseThrow(() -> new IllegalArgumentException("You are not a member of this store."));
 
         if (!requesterMembership.getRole().canManageMembers() &&
                 !requesterMembership.getRole().canManageStore()) {
-            throw new IllegalStateException("Sem permissão para convidar membros");
+            throw new IllegalStateException("No permission to invite members.");
         }
 
-        // busca o provider pelo email
         var user = userRepository.findByEmail(input.providerEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("User not found."));
 
         providerRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Este usuário não possui conta de provider"));
+                .orElseThrow(() -> new IllegalArgumentException("This user does not have a provider account."));
 
-        // verifica se já é membro
         if (storeMembershipRepository.existsByProviderIdAndStoreId(user.getId(), storeId)) {
-            throw new IllegalStateException("Este provider já é membro da loja");
+            throw new IllegalStateException("This provider is already a member of the store.");
         }
 
-        // employee não pode convidar admin
         if (input.role() == StoreRole.OWNER) {
-            throw new IllegalStateException("Não é possível convidar alguém como owner");
+            throw new IllegalStateException("It is not possible to invite someone as an owner.");
         }
 
         if (input.role() == StoreRole.ADMIN &&
                 requesterMembership.getRole() != StoreRole.OWNER) {
-            throw new IllegalStateException("Apenas o owner pode convidar admins");
+            throw new IllegalStateException("Only the owner can invite admins.");
         }
 
         StoreMembership membership = StoreMembership.create(

@@ -25,14 +25,14 @@ public class UpdateProviderProfileUseCase {
 
         var membership = storeMembershipRepository
                 .findByProviderIdAndStoreId(requesterId, storeId)
-                .orElseThrow(() -> new IllegalArgumentException("Você não é membro desta loja"));
+                .orElseThrow(() -> new IllegalArgumentException("You are not a member of this store."));
 
         if (!membership.getRole().canManageStore()) {
-            throw new IllegalStateException("Sem permissão para editar o perfil da loja");
+            throw new IllegalStateException("No permission to edit the store profile.");
         }
 
         var profile = providerProfileRepository.findById(storeId)
-                .orElseThrow(() -> new IllegalArgumentException("Loja não encontrada"));
+                .orElseThrow(() -> new IllegalArgumentException("Store not found."));
 
         profile.changeStoreName(input.storeName());
         profile.changeDescription(input.description());

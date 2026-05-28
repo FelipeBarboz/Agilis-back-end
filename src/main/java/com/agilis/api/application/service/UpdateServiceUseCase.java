@@ -28,14 +28,14 @@ public class UpdateServiceUseCase {
         UUID serviceId   = UUID.fromString(input.serviceId());
 
         Service service = serviceRepository.findById(serviceId)
-                .orElseThrow(() -> new IllegalArgumentException("Serviço não encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Service not found."));
 
         var membership = storeMembershipRepository
                 .findByProviderIdAndStoreId(requesterId, service.getStoreId())
-                .orElseThrow(() -> new IllegalArgumentException("Você não é membro desta loja"));
+                .orElseThrow(() -> new IllegalArgumentException("You are not a member of this store."));
 
         if (!membership.getRole().canManageServices()) {
-            throw new IllegalStateException("Sem permissão para editar serviços");
+            throw new IllegalStateException("No permission to edit services.");
         }
 
         service.changeTitle(input.title());

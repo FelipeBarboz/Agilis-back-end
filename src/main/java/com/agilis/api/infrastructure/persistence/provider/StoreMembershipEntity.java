@@ -24,7 +24,7 @@ public class StoreMembershipEntity {
     private UUID providerId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "store_role")
     private StoreRole role;
 
     @Column(name = "invited_by")

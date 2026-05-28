@@ -38,13 +38,15 @@ public class ProviderRepositoryAdapter implements ProviderRepository {
         ProviderEntity entity = new ProviderEntity();
         entity.setUserId(provider.getUserId());
         entity.setCnpj(provider.getCnpj());
+        entity.setProfileId(provider.getProfileId());
         return entity;
     }
 
     private Provider toDomain(ProviderEntity entity) {
         return Provider.reconstitute(
                 entity.getUserId(),
-                entity.getCnpj()
+                entity.getCnpj(),
+                entity.getProfileId()
         );
     }
 }

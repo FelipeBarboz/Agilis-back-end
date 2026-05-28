@@ -25,14 +25,14 @@ public class DeleteServiceUseCase {
         UUID serviceId   = UUID.fromString(input.serviceId());
 
         Service service = serviceRepository.findById(serviceId)
-                .orElseThrow(() -> new IllegalArgumentException("Serviço não encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Service not found."));
 
         var membership = storeMembershipRepository
                 .findByProviderIdAndStoreId(requesterId, service.getStoreId())
-                .orElseThrow(() -> new IllegalArgumentException("Você não é membro desta loja"));
+                .orElseThrow(() -> new IllegalArgumentException("You are not a member of this store."));
 
         if (!membership.getRole().canManageServices()) {
-            throw new IllegalStateException("Sem permissão para deletar serviços");
+            throw new IllegalStateException("No permission to delete services.");
         }
 
         serviceRepository.deleteById(serviceId);

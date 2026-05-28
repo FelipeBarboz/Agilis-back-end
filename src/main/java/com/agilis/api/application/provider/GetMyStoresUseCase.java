@@ -27,7 +27,7 @@ public class GetMyStoresUseCase {
                 .map(membership -> {
                     var profile = providerProfileRepository
                             .findById(membership.getStoreId())
-                            .orElseThrow(() -> new IllegalArgumentException("Loja não encontrada"));
+                            .orElseThrow(() -> new IllegalArgumentException("Store not found."));
 
                     return new Output(
                             profile.getId().toString(),

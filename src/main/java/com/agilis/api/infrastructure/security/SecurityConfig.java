@@ -28,13 +28,12 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // rotas públicas
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        // rotas completamente públicas (sem token)
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/register/client").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/stores/**").permitAll()
-                        .requestMatchers("/api/v1/services/**").permitAll()
-                        .requestMatchers("/api/v1/providers/*/profile").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/services/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/v3/api-docs").permitAll()
-                        // todo o resto precisa de auth
+                        // todo o resto exige autenticação
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

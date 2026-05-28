@@ -36,7 +36,8 @@ public class UserController {
     public ResponseEntity<RegisterClientUseCase.Output> registerClient(
             @RequestBody RegisterClientUseCase.Input input
     ) {
-        return ResponseEntity.ok(registerClientUseCase.execute(input));
+        String userId = getCurrentUserId();
+        return ResponseEntity.ok(registerClientUseCase.execute(input, userId));
     }
 
     @PostMapping("/auth/register/provider")

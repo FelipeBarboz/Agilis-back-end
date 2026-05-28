@@ -31,12 +31,10 @@ public class GetStoreBookingsUseCase {
         UUID requesterId = UUID.fromString(input.requesterId());
         UUID storeId     = UUID.fromString(input.storeId());
 
-        // verifica se é membro da loja
         storeMembershipRepository
                 .findByProviderIdAndStoreId(requesterId, storeId)
-                .orElseThrow(() -> new IllegalStateException("Sem permissão para ver a agenda desta loja"));
+                .orElseThrow(() -> new IllegalStateException("No permission to view this store’s schedule."));
 
-        // busca todos os serviços da loja e agrega os bookings
         return serviceRepository.findAllByStoreId(storeId)
                 .stream()
                 .flatMap(service -> {

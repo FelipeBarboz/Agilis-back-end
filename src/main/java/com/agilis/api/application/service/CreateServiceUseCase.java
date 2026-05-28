@@ -29,10 +29,10 @@ public class CreateServiceUseCase {
 
         var membership = storeMembershipRepository
                 .findByProviderIdAndStoreId(requesterId, storeId)
-                .orElseThrow(() -> new IllegalArgumentException("Você não é membro desta loja"));
+                .orElseThrow(() -> new IllegalArgumentException("You are not a member of this store."));
 
         if (!membership.getRole().canManageServices()) {
-            throw new IllegalStateException("Sem permissão para criar serviços");
+            throw new IllegalStateException("No permission to create services.");
         }
 
         Service service = Service.create(

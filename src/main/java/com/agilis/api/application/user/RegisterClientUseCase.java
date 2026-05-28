@@ -6,6 +6,9 @@ import com.agilis.api.domain.user.User;
 import com.agilis.api.domain.user.UserRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 public class RegisterClientUseCase {
 
     private final UserRepository userRepository;
@@ -16,7 +19,7 @@ public class RegisterClientUseCase {
         this.clientRepository = clientRepository;
     }
 
-    public Output execute(Input input) {
+    public Output execute(Input input, String userId) {
         if (userRepository.existsByEmail(input.email())) {
             throw new IllegalArgumentException("Email already registered.");
         }
@@ -24,7 +27,13 @@ public class RegisterClientUseCase {
             throw new IllegalArgumentException("CPF already registered.");
         }
 
-        User user = User.create(input.name(), input.email(), input.phone());
+        User user = User.reconstitute(
+                UUID.fromString(userId),
+                input.name(),
+                input.email(),
+                input.phone(),
+                LocalDateTime.now()
+        );
         userRepository.save(user);
 
         Client client = Client.create(user.getId(), input.cpf());

@@ -19,7 +19,7 @@ public class GetReviewUseCase {
     public Output executeByBooking(String bookingId) {
         return reviewRepository.findByBookingId(UUID.fromString(bookingId))
                 .map(this::toOutput)
-                .orElseThrow(() -> new IllegalArgumentException("Avaliação não encontrada"));
+                .orElseThrow(() -> new IllegalArgumentException("Review not found."));
     }
 
     public List<Output> executeByReviewed(String reviewedId) {
