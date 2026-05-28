@@ -4,6 +4,7 @@ import com.agilis.api.domain.booking.Booking;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.client.ClientRepository;
 import com.agilis.api.domain.service.ServiceRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -51,7 +52,9 @@ public class CreateBookingUseCase {
         );
     }
 
+    @Schema(name = "CreateBookingInput")
     public record Input(String clientId, String serviceId, LocalDateTime scheduledAt) {}
 
+    @Schema(name = "CreateBookingOutput")
     public record Output(String bookingId, String clientId, String serviceId, LocalDateTime scheduledAt, String status) {}
 }

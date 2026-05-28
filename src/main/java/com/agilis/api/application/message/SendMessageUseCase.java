@@ -7,6 +7,7 @@ import com.agilis.api.domain.message.Message;
 import com.agilis.api.domain.message.MessageRepository;
 import com.agilis.api.domain.service.ServiceRepository;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -75,6 +76,7 @@ public class SendMessageUseCase {
         }
     }
 
+    @Schema(name = "SendMessageInput")
     public record Input(
             String bookingId,
             String senderId,
@@ -82,6 +84,7 @@ public class SendMessageUseCase {
             String content
     ) {}
 
+    @Schema(name = "SendMessageOutput")
     public record Output(
             String messageId,
             String bookingId,

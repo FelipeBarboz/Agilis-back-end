@@ -2,6 +2,7 @@ package com.agilis.api.application.booking;
 
 import com.agilis.api.domain.booking.Booking;
 import com.agilis.api.domain.booking.BookingRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
@@ -28,5 +29,6 @@ public class CancelBookingUseCase {
         bookingRepository.save(booking);
     }
 
+    @Schema(name = "CancelBookingInput")
     public record Input(String bookingId, String requesterId) {}
 }

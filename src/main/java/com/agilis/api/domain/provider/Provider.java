@@ -8,18 +8,20 @@ public class Provider {
 
     private final UUID userId;
     private String cnpj;
+    private final UUID profileId;
 
-    private Provider(UUID userId, String cnpj) {
+    private Provider(UUID userId, String cnpj, UUID profileId) {
         this.userId = userId;
         this.cnpj   = validateCnpj(cnpj);
+        this.profileId = profileId;
     }
 
-    public static Provider create(UUID userId, String cnpj, UUID id) {
-        return new Provider(userId, cnpj);
+    public static Provider create(UUID userId, String cnpj, UUID profileId) {
+        return new Provider(userId, cnpj, profileId);
     }
 
-    public static Provider reconstitute(UUID userId, String cnpj) {
-        return new Provider(userId, cnpj);
+    public static Provider reconstitute(UUID userId, String cnpj, UUID profileId) {
+        return new Provider(userId, cnpj, profileId);
     }
 
     private String validateCnpj(String cnpj) {
