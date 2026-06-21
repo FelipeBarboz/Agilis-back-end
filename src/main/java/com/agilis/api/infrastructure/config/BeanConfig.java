@@ -5,9 +5,7 @@ import com.agilis.api.application.message.*;
 import com.agilis.api.application.negotiation.*;
 import com.agilis.api.application.provider.*;
 import com.agilis.api.application.review.*;
-import com.agilis.api.application.service.CreateServiceUseCase;
-import com.agilis.api.application.service.DeleteServiceUseCase;
-import com.agilis.api.application.service.UpdateServiceUseCase;
+import com.agilis.api.application.service.*;
 import com.agilis.api.application.user.RegisterClientUseCase;
 import com.agilis.api.application.user.UpdateUserUseCase;
 import com.agilis.api.domain.booking.BookingRepository;
@@ -16,7 +14,9 @@ import com.agilis.api.domain.message.MessageRepository;
 import com.agilis.api.domain.negotiation.NegotiationRepository;
 import com.agilis.api.domain.provider.*;
 import com.agilis.api.domain.review.ReviewRepository;
+import com.agilis.api.domain.service.ServiceImageRepository;
 import com.agilis.api.domain.service.ServiceRepository;
+import com.agilis.api.domain.service.ServiceThumbnailRepository;
 import com.agilis.api.domain.user.UserRepository;
 import com.agilis.api.infrastructure.persistence.booking.BookingJpaRepository;
 import com.agilis.api.infrastructure.persistence.booking.BookingRepositoryAdapter;
@@ -29,8 +29,7 @@ import com.agilis.api.infrastructure.persistence.negotiation.NegotiationReposito
 import com.agilis.api.infrastructure.persistence.provider.*;
 import com.agilis.api.infrastructure.persistence.review.ReviewJpaRepository;
 import com.agilis.api.infrastructure.persistence.review.ReviewRepositoryAdapter;
-import com.agilis.api.infrastructure.persistence.service.ServiceJpaRepository;
-import com.agilis.api.infrastructure.persistence.service.ServiceRepositoryAdapter;
+import com.agilis.api.infrastructure.persistence.service.*;
 import com.agilis.api.infrastructure.persistence.user.UserJpaRepository;
 import com.agilis.api.infrastructure.persistence.user.UserRepositoryAdapter;
 import com.agilis.api.infrastructure.security.JwtFilter;
@@ -301,6 +300,43 @@ public class BeanConfig {
             StoreMembershipRepository storeMembershipRepository
     ) {
         return new DeleteServiceUseCase(serviceRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public ServiceImageRepository serviceImageRepository(ServiceImageJpaRepository jpa) {
+        return new ServiceImageRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public ServiceThumbnailRepository serviceThumbnailRepository(ServiceThumbnailJpaRepository jpa) {
+        return new ServiceThumbnailRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public AddServiceImageUseCase addServiceImageUseCase(
+            ServiceImageRepository serviceImageRepository,
+            ServiceRepository serviceRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new AddServiceImageUseCase(serviceImageRepository, serviceRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public RemoveServiceImageUseCase removeServiceImageUseCase(
+            ServiceImageRepository serviceImageRepository,
+            ServiceRepository serviceRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new RemoveServiceImageUseCase(serviceImageRepository, serviceRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public UpdateThumbnailUseCase updateThumbnailUseCase(
+            ServiceThumbnailRepository serviceThumbnailRepository,
+            ServiceRepository serviceRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new UpdateThumbnailUseCase(serviceThumbnailRepository, serviceRepository, storeMembershipRepository);
     }
 
     // Jwt
