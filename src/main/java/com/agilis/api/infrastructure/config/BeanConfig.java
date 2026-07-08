@@ -6,7 +6,9 @@ import com.agilis.api.application.negotiation.*;
 import com.agilis.api.application.provider.*;
 import com.agilis.api.application.review.*;
 import com.agilis.api.application.service.*;
+import com.agilis.api.application.user.AddAddressUseCase;
 import com.agilis.api.application.user.RegisterClientUseCase;
+import com.agilis.api.application.user.UpdateAddressUseCase;
 import com.agilis.api.application.user.UpdateUserUseCase;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.client.ClientRepository;
@@ -17,6 +19,7 @@ import com.agilis.api.domain.review.ReviewRepository;
 import com.agilis.api.domain.service.ServiceImageRepository;
 import com.agilis.api.domain.service.ServiceRepository;
 import com.agilis.api.domain.service.ServiceThumbnailRepository;
+import com.agilis.api.domain.user.AddressRepository;
 import com.agilis.api.domain.user.UserRepository;
 import com.agilis.api.infrastructure.persistence.booking.BookingJpaRepository;
 import com.agilis.api.infrastructure.persistence.booking.BookingRepositoryAdapter;
@@ -30,6 +33,8 @@ import com.agilis.api.infrastructure.persistence.provider.*;
 import com.agilis.api.infrastructure.persistence.review.ReviewJpaRepository;
 import com.agilis.api.infrastructure.persistence.review.ReviewRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.service.*;
+import com.agilis.api.infrastructure.persistence.user.AddressJpaRepository;
+import com.agilis.api.infrastructure.persistence.user.AddressRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.user.UserJpaRepository;
 import com.agilis.api.infrastructure.persistence.user.UserRepositoryAdapter;
 import com.agilis.api.infrastructure.security.JwtFilter;
@@ -105,6 +110,21 @@ public class BeanConfig {
     @Bean
     public UpdateUserUseCase updateUserUseCase(UserRepository userRepository) {
         return new UpdateUserUseCase(userRepository);
+    }
+
+    @Bean
+    public AddressRepository addressRepository(AddressJpaRepository jpa) {
+        return new AddressRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public AddAddressUseCase addAddressUseCase(AddressRepository addressRepository) {
+        return new AddAddressUseCase(addressRepository);
+    }
+
+    @Bean
+    public UpdateAddressUseCase updateAddressUseCase(AddressRepository addressRepository) {
+        return new UpdateAddressUseCase(addressRepository);
     }
 
     //  USE CASES — PROVIDER

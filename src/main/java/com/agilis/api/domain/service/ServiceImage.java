@@ -26,7 +26,7 @@ public class ServiceImage {
 
     private String validateUrl(String url) {
         if (url == null || url.isBlank()) {
-            throw new IllegalArgumentException("URL da imagem não pode ser vazia");
+            throw new IllegalArgumentException("The image URL cannot be empty");
         }
         return url;
     }
