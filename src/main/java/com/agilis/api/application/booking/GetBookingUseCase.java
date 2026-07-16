@@ -48,11 +48,5 @@ public class GetBookingUseCase {
     }
 
     @Schema(name = "GetBookingOutput")
-    public record Output(
-            String bookingId,
-            String clientId,
-            String serviceId,
-            LocalDateTime scheduledAt,
-            String status
-    ) {}
+    public record Output(String bookingId, String clientId, String serviceId, LocalDateTime scheduledAt, String status) {}
 }

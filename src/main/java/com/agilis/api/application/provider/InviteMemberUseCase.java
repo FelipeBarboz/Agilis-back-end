@@ -72,19 +72,8 @@ public class InviteMemberUseCase {
     }
 
     @Schema(name = "InviteMemberInput")
-    public record Input(
-            String requesterId,
-            String storeId,
-            String providerEmail,
-            StoreRole role
-    ) {}
+    public record Input(String requesterId, String storeId, String providerEmail, StoreRole role) {}
 
     @Schema(name = "InviteMemberOutput")
-    public record Output(
-            String membershipId,
-            String providerId,
-            String name,
-            String email,
-            String role
-    ) {}
+    public record Output(String membershipId, String providerId, String name, String email, String role) {}
 }

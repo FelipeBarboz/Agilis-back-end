@@ -58,22 +58,8 @@ public class CreateReviewUseCase {
     }
 
     @Schema(name = "CreateReviewInput")
-    public record Input(
-            String bookingId,
-            String reviewerId,
-            String reviewedId,
-            int rating,
-            String comment
-    ) {}
+    public record Input(String bookingId, String reviewerId, String reviewedId, int rating, String comment) {}
 
     @Schema(name = "CreateReviewOutput")
-    public record Output(
-            String reviewId,
-            String bookingId,
-            String reviewerId,
-            String reviewedId,
-            int rating,
-            String comment,
-            LocalDateTime createdAt
-    ) {}
+    public record Output(String reviewId, String bookingId, String reviewerId, String reviewedId, int rating, String comment, LocalDateTime createdAt) {}
 }

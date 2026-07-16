@@ -59,21 +59,8 @@ public class CreateNegotiationUseCase {
     }
 
     @Schema(name = "CreateNegotiationInput")
-    public record Input(
-            String bookingId,
-            String senderId,
-            String receiverId,
-            BigDecimal amount
-    ) {}
+    public record Input(String bookingId, String senderId, String receiverId, BigDecimal amount) {}
 
     @Schema(name = "CreateNegotiationOutput")
-    public record Output(
-            String negotiationId,
-            String bookingId,
-            String senderId,
-            String receiverId,
-            BigDecimal amount,
-            String status,
-            LocalDateTime sentAt
-    ) {}
+    public record Output(String negotiationId, String bookingId, String senderId, String receiverId, BigDecimal amount, String status, LocalDateTime sentAt) {}
 }

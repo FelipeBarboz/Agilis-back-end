@@ -62,25 +62,8 @@ public class CreateServiceUseCase {
     }
 
     @Schema(name = "CreateServiceInput")
-    public record Input(
-            String requesterId,
-            String storeId,
-            String title,
-            String description,
-            BigDecimal price,
-            PriceType priceType,
-            int durationMinutes
-    ) {}
+    public record Input(String requesterId, String storeId, String title, String description, BigDecimal price, PriceType priceType, int durationMinutes) {}
 
     @Schema(name = "CreateServiceOutput")
-    public record Output(
-            String serviceId,
-            String storeId,
-            String title,
-            String description,
-            BigDecimal price,
-            String priceType,
-            int durationMinutes,
-            LocalDateTime createdAt
-    ) {}
+    public record Output(String serviceId, String storeId, String title, String description, BigDecimal price, String priceType, int durationMinutes, LocalDateTime createdAt) {}
 }

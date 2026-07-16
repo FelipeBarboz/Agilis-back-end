@@ -4,6 +4,7 @@ import com.agilis.api.domain.provider.StoreMembershipRepository;
 import com.agilis.api.domain.service.ServiceRepository;
 import com.agilis.api.domain.service.ServiceThumbnail;
 import com.agilis.api.domain.service.ServiceThumbnailRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
@@ -34,7 +35,6 @@ public class UpdateThumbnailUseCase {
                 .findByProviderIdAndStoreId(requesterId, service.getStoreId())
                 .orElseThrow(() -> new IllegalStateException("Sem permissão para atualizar thumbnail"));
 
-        // se já existe thumbnail atualiza, senão cria
         var thumbnail = thumbnailRepository.findByServiceId(serviceId)
                 .map(existing -> {
                     existing.changeUrl(input.url());
@@ -51,6 +51,9 @@ public class UpdateThumbnailUseCase {
         );
     }
 
+    @Schema(name = "UpdateServiceThumbnailInput")
     public record Input(String requesterId, String serviceId, String url) {}
+
+    @Schema(name = "UpdateServiceThumbnailOutput")
     public record Output(String thumbnailId, String serviceId, String url) {}
 }

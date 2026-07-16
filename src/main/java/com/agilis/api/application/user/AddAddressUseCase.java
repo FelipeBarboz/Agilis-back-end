@@ -2,6 +2,7 @@ package com.agilis.api.application.user;
 
 import com.agilis.api.domain.user.Address;
 import com.agilis.api.domain.user.AddressRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
@@ -40,24 +41,9 @@ public class AddAddressUseCase {
         );
     }
 
-    public record Input(
-            String userId,
-            String street,
-            String number,
-            String complement,
-            String city,
-            String state,
-            String cep
-    ) {}
+    @Schema(name = "AddAddressInput")
+    public record Input(String userId, String street, String number, String complement, String city, String state, String cep) {}
 
-    public record Output(
-            String addressId,
-            String userId,
-            String street,
-            String number,
-            String complement,
-            String city,
-            String state,
-            String cep
-    ) {}
+    @Schema(name = "AddAddressImageOutput")
+    public record Output(String addressId, String userId, String street, String number, String complement, String city, String state, String cep) {}
 }

@@ -59,12 +59,5 @@ public class GetStoreBookingsUseCase {
     public record Input(String requesterId, String storeId, LocalDate date) {}
 
     @Schema(name = "GetStoreBookingOutput")
-    public record Output(
-            String bookingId,
-            String clientId,
-            String serviceId,
-            String serviceTitle,
-            LocalDateTime scheduledAt,
-            String status
-    ) {}
+    public record Output(String bookingId, String clientId, String serviceId, String serviceTitle, LocalDateTime scheduledAt, String status) {}
 }

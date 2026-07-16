@@ -77,20 +77,8 @@ public class SendMessageUseCase {
     }
 
     @Schema(name = "SendMessageInput")
-    public record Input(
-            String bookingId,
-            String senderId,
-            String receiverId,
-            String content
-    ) {}
+    public record Input(String bookingId, String senderId, String receiverId, String content) {}
 
     @Schema(name = "SendMessageOutput")
-    public record Output(
-            String messageId,
-            String bookingId,
-            String senderId,
-            String receiverId,
-            String content,
-            LocalDateTime sentAt
-    ) {}
+    public record Output(String messageId, String bookingId, String senderId, String receiverId, String content, LocalDateTime sentAt) {}
 }

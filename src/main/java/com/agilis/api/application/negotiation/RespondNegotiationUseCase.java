@@ -63,23 +63,10 @@ public class RespondNegotiationUseCase {
     }
 
     @Schema(name = "RespondNegotiationInput")
-    public record Input(
-            String negotiationId,
-            String requesterId,
-            Action action,
-            BigDecimal counterAmount
-    ) {}
+    public record Input(String negotiationId, String requesterId, Action action, BigDecimal counterAmount) {}
 
     @Schema(name = "RespondNegotiationOutput")
-    public record Output(
-            String negotiationId,
-            String bookingId,
-            String senderId,
-            String receiverId,
-            BigDecimal amount,
-            String status,
-            LocalDateTime sentAt
-    ) {}
+    public record Output(String negotiationId, String bookingId, String senderId, String receiverId, BigDecimal amount, String status, LocalDateTime sentAt) {}
 
     public enum Action {
         ACCEPT,

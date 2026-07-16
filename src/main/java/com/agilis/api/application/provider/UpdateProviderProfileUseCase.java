@@ -50,20 +50,8 @@ public class UpdateProviderProfileUseCase {
     }
 
     @Schema(name = "UpdateProviderInput")
-    public record Input(
-            String requesterId,
-            String storeId,
-            String storeName,
-            String description,
-            String profileImgUrl
-    ) {}
+    public record Input(String requesterId, String storeId, String storeName, String description, String profileImgUrl) {}
 
     @Schema(name = "UpdateProviderOutput")
-    public record Output(
-            String storeId,
-            String storeName,
-            String slug,
-            String description,
-            String profileImgUrl
-    ) {}
+    public record Output(String storeId, String storeName, String slug, String description, String profileImgUrl) {}
 }

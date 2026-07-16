@@ -37,13 +37,5 @@ public class GetNegotiationUseCase {
     }
 
     @Schema(name = "GetNegotiationOutput")
-    public record Output(
-            String negotiationId,
-            String bookingId,
-            String senderId,
-            String receiverId,
-            BigDecimal amount,
-            String status,
-            LocalDateTime sentAt
-    ) {}
+    public record Output(String negotiationId, String bookingId, String senderId, String receiverId, BigDecimal amount, String status, LocalDateTime sentAt) {}
 }

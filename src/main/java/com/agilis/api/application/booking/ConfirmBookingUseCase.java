@@ -34,7 +34,6 @@ public class ConfirmBookingUseCase {
         var service = serviceRepository.findById(booking.getServiceId())
                 .orElseThrow(() -> new IllegalArgumentException("Service not found."));
 
-        // verifica se o requester é membro da loja dona do serviço
         storeMembershipRepository
                 .findByProviderIdAndStoreId(requesterId, service.getStoreId())
                 .orElseThrow(() -> new IllegalStateException("You do not have permission to confirm this booking."));

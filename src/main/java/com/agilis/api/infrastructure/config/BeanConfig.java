@@ -1,6 +1,9 @@
 package com.agilis.api.infrastructure.config;
 
 import com.agilis.api.application.booking.*;
+import com.agilis.api.application.favorite.AddFavoriteUseCase;
+import com.agilis.api.application.favorite.GetFavoritesUseCase;
+import com.agilis.api.application.favorite.RemoveFavoriteUseCase;
 import com.agilis.api.application.message.*;
 import com.agilis.api.application.negotiation.*;
 import com.agilis.api.application.provider.*;
@@ -12,6 +15,7 @@ import com.agilis.api.application.user.UpdateAddressUseCase;
 import com.agilis.api.application.user.UpdateUserUseCase;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.client.ClientRepository;
+import com.agilis.api.domain.favorite.FavoriteRepository;
 import com.agilis.api.domain.message.MessageRepository;
 import com.agilis.api.domain.negotiation.NegotiationRepository;
 import com.agilis.api.domain.provider.*;
@@ -25,6 +29,8 @@ import com.agilis.api.infrastructure.persistence.booking.BookingJpaRepository;
 import com.agilis.api.infrastructure.persistence.booking.BookingRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.client.ClientJpaRepository;
 import com.agilis.api.infrastructure.persistence.client.ClientRepositoryAdapter;
+import com.agilis.api.infrastructure.persistence.favorite.FavoriteJpaRepository;
+import com.agilis.api.infrastructure.persistence.favorite.FavoriteRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.message.MessageJpaRepository;
 import com.agilis.api.infrastructure.persistence.message.MessageRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.negotiation.NegotiationJpaRepository;
@@ -70,6 +76,11 @@ public class BeanConfig {
     @Bean
     public StoreMembershipRepository storeMembershipRepository(StoreMembershipJpaRepository jpa) {
         return new StoreMembershipRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public FavoriteRepository favoriteRepository(FavoriteJpaRepository jpa) {
+        return new FavoriteRepositoryAdapter(jpa);
     }
 
     @Bean
@@ -357,6 +368,29 @@ public class BeanConfig {
             StoreMembershipRepository storeMembershipRepository
     ) {
         return new UpdateThumbnailUseCase(serviceThumbnailRepository, serviceRepository, storeMembershipRepository);
+    }
+
+    //  USE CASES — FAVORITE
+
+    @Bean
+    public AddFavoriteUseCase addFavoriteUseCase(
+            FavoriteRepository favoriteRepository,
+            ServiceRepository serviceRepository
+    ) {
+        return new AddFavoriteUseCase(favoriteRepository, serviceRepository);
+    }
+
+    @Bean
+    public RemoveFavoriteUseCase removeFavoriteUseCase(FavoriteRepository favoriteRepository) {
+        return new RemoveFavoriteUseCase(favoriteRepository);
+    }
+
+    @Bean
+    public GetFavoritesUseCase getFavoritesUseCase(
+            FavoriteRepository favoriteRepository,
+            ServiceRepository serviceRepository
+    ) {
+        return new GetFavoritesUseCase(favoriteRepository, serviceRepository);
     }
 
     // Jwt

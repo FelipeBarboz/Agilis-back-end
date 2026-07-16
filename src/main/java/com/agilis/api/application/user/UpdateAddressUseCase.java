@@ -2,6 +2,7 @@ package com.agilis.api.application.user;
 
 import com.agilis.api.domain.user.Address;
 import com.agilis.api.domain.user.AddressRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
@@ -48,25 +49,9 @@ public class UpdateAddressUseCase {
         );
     }
 
-    public record Input(
-            String requesterId,
-            String addressId,
-            String street,
-            String number,
-            String complement,
-            String city,
-            String state,
-            String cep
-    ) {}
+    @Schema(name = "UpdateAddressInput")
+    public record Input(String requesterId, String addressId, String street, String number, String complement, String city, String state, String cep) {}
 
-    public record Output(
-            String addressId,
-            String userId,
-            String street,
-            String number,
-            String complement,
-            String city,
-            String state,
-            String cep
-    ) {}
+    @Schema(name = "AddAddressOutput")
+    public record Output(String addressId, String userId, String street, String number, String complement, String city, String state, String cep) {}
 }

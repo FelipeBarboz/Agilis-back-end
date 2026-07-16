@@ -68,19 +68,8 @@ public class RegisterProviderUseCase {
     }
 
     @Schema(name = "RegisterProviderInput")
-    public record Input(
-            String userId,
-            String cnpj,
-            String storeName,
-            String slug,
-            String description,
-            String profileImgUrl
-    ) {}
+    public record Input(String userId, String cnpj, String storeName, String slug, String description, String profileImgUrl) {}
 
     @Schema(name = "RegisterProviderOutput")
-    public record Output(
-            String profileId,
-            String storeName,
-            String slug
-    ) {}
+    public record Output(String profileId, String storeName, String slug) {}
 }
