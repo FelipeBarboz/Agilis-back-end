@@ -59,6 +59,7 @@ public class ServiceManagementController {
         CreateServiceUseCase.Input inputWithRequester = new CreateServiceUseCase.Input(
                 requesterId,
                 storeId,
+                input.unitId(),
                 input.title(),
                 input.description(),
                 input.price(),
@@ -78,6 +79,7 @@ public class ServiceManagementController {
         UpdateServiceUseCase.Input inputWithRequester = new UpdateServiceUseCase.Input(
                 requesterId,
                 serviceId,
+                input.unitId(),
                 input.title(),
                 input.description(),
                 input.price(),

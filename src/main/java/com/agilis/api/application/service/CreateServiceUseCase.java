@@ -26,6 +26,7 @@ public class CreateServiceUseCase {
     public Output execute(Input input) {
         UUID requesterId = UUID.fromString(input.requesterId());
         UUID storeId     = UUID.fromString(input.storeId());
+        UUID unitId = input.unitId() != null ? UUID.fromString(input.unitId()) : null;
 
         var membership = storeMembershipRepository
                 .findByProviderIdAndStoreId(requesterId, storeId)
@@ -37,6 +38,7 @@ public class CreateServiceUseCase {
 
         Service service = Service.create(
                 storeId,
+                unitId,
                 input.title(),
                 input.description(),
                 input.price(),
@@ -62,7 +64,7 @@ public class CreateServiceUseCase {
     }
 
     @Schema(name = "CreateServiceInput")
-    public record Input(String requesterId, String storeId, String title, String description, BigDecimal price, PriceType priceType, int durationMinutes) {}
+    public record Input(String requesterId, String storeId, String unitId, String title, String description, BigDecimal price, PriceType priceType, int durationMinutes) {}
 
     @Schema(name = "CreateServiceOutput")
     public record Output(String serviceId, String storeId, String title, String description, BigDecimal price, String priceType, int durationMinutes, LocalDateTime createdAt) {}

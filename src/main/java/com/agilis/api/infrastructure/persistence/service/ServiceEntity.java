@@ -28,6 +28,9 @@ public class ServiceEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "unit_id")
+    private UUID unitId;
+
     @Column(nullable = false)
     private String title;
 

@@ -10,6 +10,7 @@ public class Service {
 
     private final UUID id;
     private final UUID storeId;
+    private UUID unitId;
     private String title;
     private String description;
     private BigDecimal price;
@@ -17,32 +18,31 @@ public class Service {
     private int durationMinutes;
     private final LocalDateTime createdAt;
 
-    private Service(UUID id, UUID storeId, String title, String description, BigDecimal price, PriceType priceType, int durationMinutes, LocalDateTime createdAt) {
-        this.id              = id;
-        this.storeId         = storeId;
-        this.title           = validateTitle(title);
-        this.description     = description;
-        this.price           = validatePrice(price);
-        this.priceType       = validatePriceType(priceType);
-        this.durationMinutes = validateDuration(durationMinutes);
-        this.createdAt       = createdAt;
+    public Service(UUID id, UUID storeId, UUID unitId, String title, String description, BigDecimal price, PriceType priceType, int durationMinutes, LocalDateTime createdAt) {
+        this.id = id;
+        this.storeId = storeId;
+        this.unitId = unitId;
+        this.title = title;
+        this.description = description;
+        this.price = price;
+        this.priceType = priceType;
+        this.durationMinutes = durationMinutes;
+        this.createdAt = createdAt;
     }
 
-    public static Service create(UUID storeId, String title, String description, BigDecimal price, PriceType priceType, int durationMinutes) {
+    public static Service create(UUID storeId, UUID unitId, String title, String description, BigDecimal price, PriceType priceType, int durationMinutes) {
         return new Service(
-                UUID.randomUUID(),
-                storeId,
-                title,
-                description,
-                price,
-                priceType,
-                durationMinutes,
-                LocalDateTime.now()
+                UUID.randomUUID(), storeId, unitId, title, description, price, priceType, durationMinutes, LocalDateTime.now()
         );
     }
 
-    public static Service reconstitute(UUID id, UUID storeId, String title, String description, BigDecimal price, PriceType priceType, int durationMinutes, LocalDateTime createdAt) {
-        return new Service(id, storeId, title, description, price, priceType, durationMinutes, createdAt);
+    public static Service reconstitute(UUID id, UUID storeId, UUID unitId, String title, String description,
+                                       BigDecimal price, PriceType priceType, int durationMinutes, LocalDateTime createdAt) {
+        return new Service(id, storeId, unitId, title, description, price, priceType, durationMinutes, createdAt);
+    }
+
+    public void changeUnit(UUID unitId) {
+        this.unitId = unitId;
     }
 
     public void changeTitle(String title) {

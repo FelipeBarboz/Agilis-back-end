@@ -108,6 +108,11 @@ public class BeanConfig {
         return new ReviewRepositoryAdapter(jpa);
     }
 
+    @Bean
+    public StoreUnitRepository storeUnitRepository(StoreUnitJpaRepository jpa) {
+        return new StoreUnitRepositoryAdapter(jpa);
+    }
+
     //  USE CASES — USER
 
     @Bean
@@ -391,6 +396,32 @@ public class BeanConfig {
             ServiceRepository serviceRepository
     ) {
         return new GetFavoritesUseCase(favoriteRepository, serviceRepository);
+    }
+
+    // USE CASES - STORE UNIT
+
+    @Bean
+    public CreateStoreUnitUseCase createStoreUnitUseCase(
+            StoreUnitRepository storeUnitRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new CreateStoreUnitUseCase(storeUnitRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public UpdateStoreUnitUseCase updateStoreUnitUseCase(
+            StoreUnitRepository storeUnitRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new UpdateStoreUnitUseCase(storeUnitRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public DeleteStoreUnitUseCase deleteStoreUnitUseCase(
+            StoreUnitRepository storeUnitRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new DeleteStoreUnitUseCase(storeUnitRepository, storeMembershipRepository);
     }
 
     // Jwt

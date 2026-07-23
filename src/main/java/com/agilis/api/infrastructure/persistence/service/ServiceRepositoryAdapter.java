@@ -43,6 +43,7 @@ public class ServiceRepositoryAdapter implements ServiceRepository {
         entity.setId(service.getId());
         entity.setStoreId(service.getStoreId());
         entity.setTitle(service.getTitle());
+        entity.setUnitId(service.getUnitId());
         entity.setDescription(service.getDescription());
         entity.setPrice(service.getPrice());
         entity.setPriceType(service.getPriceType());
@@ -55,6 +56,7 @@ public class ServiceRepositoryAdapter implements ServiceRepository {
         return Service.reconstitute(
                 entity.getId(),
                 entity.getStoreId(),
+                entity.getUnitId(),
                 entity.getTitle(),
                 entity.getDescription(),
                 entity.getPrice(),

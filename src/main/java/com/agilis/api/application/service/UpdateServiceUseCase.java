@@ -28,16 +28,19 @@ public class UpdateServiceUseCase {
         UUID serviceId   = UUID.fromString(input.serviceId());
 
         Service service = serviceRepository.findById(serviceId)
-                .orElseThrow(() -> new IllegalArgumentException("Service not found."));
+                .orElseThrow(() -> new IllegalArgumentException("Serviço não encontrado"));
 
         var membership = storeMembershipRepository
                 .findByProviderIdAndStoreId(requesterId, service.getStoreId())
-                .orElseThrow(() -> new IllegalArgumentException("You are not a member of this store."));
+                .orElseThrow(() -> new IllegalArgumentException("Você não é membro desta loja"));
 
         if (!membership.getRole().canManageServices()) {
-            throw new IllegalStateException("No permission to edit services.");
+            throw new IllegalStateException("Sem permissão para editar serviços");
         }
 
+        UUID unitId = input.unitId() != null ? UUID.fromString(input.unitId()) : null;
+
+        service.changeUnit(unitId);
         service.changeTitle(input.title());
         service.changeDescription(input.description());
         service.changePrice(input.price(), input.priceType());
@@ -51,6 +54,7 @@ public class UpdateServiceUseCase {
         return new Output(
                 service.getId().toString(),
                 service.getStoreId().toString(),
+                service.getUnitId() != null ? service.getUnitId().toString() : null,
                 service.getTitle(),
                 service.getDescription(),
                 service.getPrice(),
@@ -61,8 +65,27 @@ public class UpdateServiceUseCase {
     }
 
     @Schema(name = "UpdateServiceInput")
-    public record Input(String requesterId, String serviceId, String title, String description, BigDecimal price, PriceType priceType, int durationMinutes) {}
+    public record Input(
+            String requesterId,
+            String serviceId,
+            String unitId,
+            String title,
+            String description,
+            BigDecimal price,
+            PriceType priceType,
+            int durationMinutes
+    ) {}
 
     @Schema(name = "UpdateServiceOutput")
-    public record Output(String serviceId, String storeId, String title, String description, BigDecimal price, String priceType, int durationMinutes, LocalDateTime createdAt) {}
+    public record Output(
+            String serviceId,
+            String storeId,
+            String unitId,
+            String title,
+            String description,
+            BigDecimal price,
+            String priceType,
+            int durationMinutes,
+            LocalDateTime createdAt
+    ) {}
 }
