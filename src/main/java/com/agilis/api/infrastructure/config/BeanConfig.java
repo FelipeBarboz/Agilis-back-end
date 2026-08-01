@@ -6,6 +6,9 @@ import com.agilis.api.application.favorite.GetFavoritesUseCase;
 import com.agilis.api.application.favorite.RemoveFavoriteUseCase;
 import com.agilis.api.application.message.*;
 import com.agilis.api.application.negotiation.*;
+import com.agilis.api.application.notification.ListWebhooksUseCase;
+import com.agilis.api.application.notification.RegisterWebhookUseCase;
+import com.agilis.api.application.notification.RemoveWebhookUseCase;
 import com.agilis.api.application.provider.*;
 import com.agilis.api.application.review.*;
 import com.agilis.api.application.service.*;
@@ -18,6 +21,8 @@ import com.agilis.api.domain.client.ClientRepository;
 import com.agilis.api.domain.favorite.FavoriteRepository;
 import com.agilis.api.domain.message.MessageRepository;
 import com.agilis.api.domain.negotiation.NegotiationRepository;
+import com.agilis.api.domain.notification.WebhookDispatcher;
+import com.agilis.api.domain.notification.WebhookSubscriptionRepository;
 import com.agilis.api.domain.provider.*;
 import com.agilis.api.domain.review.ReviewRepository;
 import com.agilis.api.domain.service.ServiceImageRepository;
@@ -25,6 +30,7 @@ import com.agilis.api.domain.service.ServiceRepository;
 import com.agilis.api.domain.service.ServiceThumbnailRepository;
 import com.agilis.api.domain.user.AddressRepository;
 import com.agilis.api.domain.user.UserRepository;
+import com.agilis.api.infrastructure.notification.WebhookDispatcherAdapter;
 import com.agilis.api.infrastructure.persistence.booking.BookingJpaRepository;
 import com.agilis.api.infrastructure.persistence.booking.BookingRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.client.ClientJpaRepository;
@@ -35,6 +41,8 @@ import com.agilis.api.infrastructure.persistence.message.MessageJpaRepository;
 import com.agilis.api.infrastructure.persistence.message.MessageRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.negotiation.NegotiationJpaRepository;
 import com.agilis.api.infrastructure.persistence.negotiation.NegotiationRepositoryAdapter;
+import com.agilis.api.infrastructure.persistence.notification.WebhookSubscriptionJpaRepository;
+import com.agilis.api.infrastructure.persistence.notification.WebhookSubscriptionRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.provider.*;
 import com.agilis.api.infrastructure.persistence.review.ReviewJpaRepository;
 import com.agilis.api.infrastructure.persistence.review.ReviewRepositoryAdapter;
@@ -45,11 +53,23 @@ import com.agilis.api.infrastructure.persistence.user.UserJpaRepository;
 import com.agilis.api.infrastructure.persistence.user.UserRepositoryAdapter;
 import com.agilis.api.infrastructure.security.JwtFilter;
 import com.agilis.api.infrastructure.security.JwtService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class BeanConfig {
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
     //  ADAPTERS DE PERSISTÊNCIA
 
@@ -112,6 +132,9 @@ public class BeanConfig {
     public StoreUnitRepository storeUnitRepository(StoreUnitJpaRepository jpa) {
         return new StoreUnitRepositoryAdapter(jpa);
     }
+
+    @Bean
+    public WebhookSubscriptionRepository webhookSubscriptionRepository(WebhookSubscriptionJpaRepository jpa) { return new WebhookSubscriptionRepositoryAdapter(jpa);}
 
     //  USE CASES — USER
 
@@ -180,9 +203,10 @@ public class BeanConfig {
     public ConfirmBookingUseCase confirmBookingUseCase(
             BookingRepository bookingRepository,
             ServiceRepository serviceRepository,
-            StoreMembershipRepository storeMembershipRepository
+            StoreMembershipRepository storeMembershipRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new ConfirmBookingUseCase(bookingRepository, serviceRepository, storeMembershipRepository);
+        return new ConfirmBookingUseCase(bookingRepository, serviceRepository, storeMembershipRepository, webhookDispatcher);
     }
 
     @Bean
@@ -422,6 +446,39 @@ public class BeanConfig {
             StoreMembershipRepository storeMembershipRepository
     ) {
         return new DeleteStoreUnitUseCase(storeUnitRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public WebhookDispatcher webhookDispatcher(
+            WebhookSubscriptionRepository webhookSubscriptionRepository,
+            RestTemplate restTemplate,
+            ObjectMapper objectMapper
+    ) {
+        return new WebhookDispatcherAdapter(webhookSubscriptionRepository, restTemplate, objectMapper);
+    }
+
+    @Bean
+    public RegisterWebhookUseCase registerWebhookUseCase(
+            WebhookSubscriptionRepository webhookSubscriptionRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new RegisterWebhookUseCase(webhookSubscriptionRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public ListWebhooksUseCase listWebhooksUseCase(
+            WebhookSubscriptionRepository webhookSubscriptionRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new ListWebhooksUseCase(webhookSubscriptionRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public RemoveWebhookUseCase removeWebhookUseCase(
+            WebhookSubscriptionRepository webhookSubscriptionRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new RemoveWebhookUseCase(webhookSubscriptionRepository, storeMembershipRepository);
     }
 
     // Jwt
