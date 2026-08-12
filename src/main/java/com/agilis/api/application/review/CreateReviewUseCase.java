@@ -3,24 +3,35 @@ package com.agilis.api.application.review;
 import com.agilis.api.domain.booking.Booking;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.booking.BookingStatus;
+import com.agilis.api.domain.notification.WebhookDispatcher;
+import com.agilis.api.domain.notification.WebhookEventType;
 import com.agilis.api.domain.review.Review;
 import com.agilis.api.domain.review.ReviewRepository;
+import com.agilis.api.domain.service.Service;
+import com.agilis.api.domain.service.ServiceRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 public class CreateReviewUseCase {
 
     private final ReviewRepository reviewRepository;
     private final BookingRepository bookingRepository;
+    private final ServiceRepository serviceRepository;
+    private final WebhookDispatcher webhookDispatcher;
 
     public CreateReviewUseCase(
             ReviewRepository reviewRepository,
-            BookingRepository bookingRepository
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        this.reviewRepository = reviewRepository;
+        this.reviewRepository  = reviewRepository;
         this.bookingRepository = bookingRepository;
+        this.serviceRepository = serviceRepository;
+        this.webhookDispatcher = webhookDispatcher;
     }
 
     public Output execute(Input input) {
@@ -45,6 +56,20 @@ public class CreateReviewUseCase {
 
         Review review = Review.create(bookingId, reviewerId, reviewedId, input.rating(), input.comment());
         reviewRepository.save(review);
+
+        Service service = serviceRepository.findById(booking.getServiceId())
+                .orElseThrow(() -> new IllegalArgumentException("Service not found."));
+
+        webhookDispatcher.dispatch(
+                service.getStoreId(),
+                WebhookEventType.REVIEW_CREATED,
+                Map.of(
+                        "reviewId", review.getId().toString(),
+                        "bookingId", review.getBookingId().toString(),
+                        "rating", review.getRating(),
+                        "reviewedId", review.getReviewedId().toString()
+                )
+        );
 
         return new Output(
                 review.getId().toString(),

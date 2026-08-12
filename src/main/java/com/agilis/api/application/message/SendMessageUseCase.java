@@ -5,11 +5,15 @@ import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.booking.BookingStatus;
 import com.agilis.api.domain.message.Message;
 import com.agilis.api.domain.message.MessageRepository;
+import com.agilis.api.domain.notification.WebhookDispatcher;
+import com.agilis.api.domain.notification.WebhookEventType;
+import com.agilis.api.domain.service.Service;
 import com.agilis.api.domain.service.ServiceRepository;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 public class SendMessageUseCase {
@@ -18,17 +22,20 @@ public class SendMessageUseCase {
     private final BookingRepository bookingRepository;
     private final ServiceRepository serviceRepository;
     private final StoreMembershipRepository storeMembershipRepository;
+    private final WebhookDispatcher webhookDispatcher;
 
     public SendMessageUseCase(
             MessageRepository messageRepository,
             BookingRepository bookingRepository,
             ServiceRepository serviceRepository,
-            StoreMembershipRepository storeMembershipRepository
+            StoreMembershipRepository storeMembershipRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
         this.messageRepository         = messageRepository;
         this.bookingRepository         = bookingRepository;
         this.serviceRepository         = serviceRepository;
         this.storeMembershipRepository = storeMembershipRepository;
+        this.webhookDispatcher         = webhookDispatcher;
     }
 
     public Output execute(Input input) {
@@ -49,6 +56,20 @@ public class SendMessageUseCase {
 
         Message message = Message.create(bookingId, senderId, receiverId, input.content());
         messageRepository.save(message);
+
+        Service service = serviceRepository.findById(booking.getServiceId())
+                .orElseThrow(() -> new IllegalArgumentException("Service not found."));
+
+        webhookDispatcher.dispatch(
+                service.getStoreId(),
+                WebhookEventType.MESSAGE_RECEIVED,
+                Map.of(
+                        "messageId", message.getId().toString(),
+                        "bookingId", message.getBookingId().toString(),
+                        "senderId", message.getSenderId().toString(),
+                        "content", message.getContent()
+                )
+        );
 
         return new Output(
                 message.getId().toString(),

@@ -18,6 +18,7 @@ import com.agilis.api.application.user.UpdateAddressUseCase;
 import com.agilis.api.application.user.UpdateUserUseCase;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.client.ClientRepository;
+import com.agilis.api.domain.client.PriorityRebookingRepository;
 import com.agilis.api.domain.favorite.FavoriteRepository;
 import com.agilis.api.domain.message.MessageRepository;
 import com.agilis.api.domain.negotiation.NegotiationRepository;
@@ -25,6 +26,7 @@ import com.agilis.api.domain.notification.WebhookDispatcher;
 import com.agilis.api.domain.notification.WebhookSubscriptionRepository;
 import com.agilis.api.domain.provider.*;
 import com.agilis.api.domain.review.ReviewRepository;
+import com.agilis.api.domain.service.Service;
 import com.agilis.api.domain.service.ServiceImageRepository;
 import com.agilis.api.domain.service.ServiceRepository;
 import com.agilis.api.domain.service.ServiceThumbnailRepository;
@@ -35,6 +37,8 @@ import com.agilis.api.infrastructure.persistence.booking.BookingJpaRepository;
 import com.agilis.api.infrastructure.persistence.booking.BookingRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.client.ClientJpaRepository;
 import com.agilis.api.infrastructure.persistence.client.ClientRepositoryAdapter;
+import com.agilis.api.infrastructure.persistence.client.PriorityRebookingJpaRepository;
+import com.agilis.api.infrastructure.persistence.client.PriorityRebookingRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.favorite.FavoriteJpaRepository;
 import com.agilis.api.infrastructure.persistence.favorite.FavoriteRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.message.MessageJpaRepository;
@@ -136,6 +140,10 @@ public class BeanConfig {
     @Bean
     public WebhookSubscriptionRepository webhookSubscriptionRepository(WebhookSubscriptionJpaRepository jpa) { return new WebhookSubscriptionRepositoryAdapter(jpa);}
 
+    @Bean
+    public PriorityRebookingRepository priorityRebookingRepository(PriorityRebookingJpaRepository jpa) {
+        return new PriorityRebookingRepositoryAdapter(jpa);
+    }
     //  USE CASES — USER
 
     @Bean
@@ -189,14 +197,16 @@ public class BeanConfig {
     public CreateBookingUseCase createBookingUseCase(
             BookingRepository bookingRepository,
             ClientRepository clientRepository,
-            ServiceRepository serviceRepository
+            ServiceRepository serviceRepository,
+            PriorityRebookingRepository priorityRebookingRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new CreateBookingUseCase(bookingRepository, clientRepository, serviceRepository);
+        return new CreateBookingUseCase(bookingRepository, clientRepository, serviceRepository, priorityRebookingRepository, webhookDispatcher);
     }
 
     @Bean
-    public CancelBookingUseCase cancelBookingUseCase(BookingRepository bookingRepository) {
-        return new CancelBookingUseCase(bookingRepository);
+    public CancelBookingUseCase cancelBookingUseCase(BookingRepository bookingRepository, WebhookDispatcher webhookDispatcher, ServiceRepository service) {
+        return new CancelBookingUseCase(bookingRepository, webhookDispatcher, service);
     }
 
     @Bean
@@ -213,9 +223,10 @@ public class BeanConfig {
     public CompleteBookingUseCase completeBookingUseCase(
             BookingRepository bookingRepository,
             ServiceRepository serviceRepository,
-            StoreMembershipRepository storeMembershipRepository
+            StoreMembershipRepository storeMembershipRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new CompleteBookingUseCase(bookingRepository, serviceRepository, storeMembershipRepository);
+        return new CompleteBookingUseCase(bookingRepository, serviceRepository, storeMembershipRepository, webhookDispatcher);
     }
 
     @Bean
@@ -237,16 +248,21 @@ public class BeanConfig {
     @Bean
     public CreateNegotiationUseCase createNegotiationUseCase(
             NegotiationRepository negotiationRepository,
-            BookingRepository bookingRepository
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new CreateNegotiationUseCase(negotiationRepository, bookingRepository);
+        return new CreateNegotiationUseCase(negotiationRepository, bookingRepository, serviceRepository, webhookDispatcher);
     }
 
     @Bean
     public RespondNegotiationUseCase respondNegotiationUseCase(
-            NegotiationRepository negotiationRepository
+            NegotiationRepository negotiationRepository,
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new RespondNegotiationUseCase(negotiationRepository);
+        return new RespondNegotiationUseCase(negotiationRepository, bookingRepository, serviceRepository, webhookDispatcher);
     }
 
     @Bean
@@ -263,14 +279,10 @@ public class BeanConfig {
             MessageRepository messageRepository,
             BookingRepository bookingRepository,
             ServiceRepository serviceRepository,
-            StoreMembershipRepository storeMembershipRepository
+            StoreMembershipRepository storeMembershipRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new SendMessageUseCase(
-                messageRepository,
-                bookingRepository,
-                serviceRepository,
-                storeMembershipRepository
-        );
+        return new SendMessageUseCase(messageRepository, bookingRepository, serviceRepository, storeMembershipRepository, webhookDispatcher);
     }
 
     @Bean
@@ -293,9 +305,11 @@ public class BeanConfig {
     @Bean
     public CreateReviewUseCase createReviewUseCase(
             ReviewRepository reviewRepository,
-            BookingRepository bookingRepository
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new CreateReviewUseCase(reviewRepository, bookingRepository);
+        return new CreateReviewUseCase(reviewRepository, bookingRepository, serviceRepository, webhookDispatcher);
     }
 
     @Bean
@@ -325,16 +339,18 @@ public class BeanConfig {
     public InviteMemberUseCase inviteMemberUseCase(
             StoreMembershipRepository storeMembershipRepository,
             ProviderRepository providerRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new InviteMemberUseCase(storeMembershipRepository, providerRepository, userRepository);
+        return new InviteMemberUseCase(storeMembershipRepository, providerRepository, userRepository, webhookDispatcher);
     }
 
     @Bean
     public RemoveMemberUseCase removeMemberUseCase(
-            StoreMembershipRepository storeMembershipRepository
+            StoreMembershipRepository storeMembershipRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new RemoveMemberUseCase(storeMembershipRepository);
+        return new RemoveMemberUseCase(storeMembershipRepository, webhookDispatcher);
     }
 
     //  USE CASES — SERVICE

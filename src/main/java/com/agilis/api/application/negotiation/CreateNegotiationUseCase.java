@@ -5,23 +5,34 @@ import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.booking.BookingStatus;
 import com.agilis.api.domain.negotiation.Negotiation;
 import com.agilis.api.domain.negotiation.NegotiationRepository;
+import com.agilis.api.domain.notification.WebhookDispatcher;
+import com.agilis.api.domain.notification.WebhookEventType;
+import com.agilis.api.domain.service.Service;
+import com.agilis.api.domain.service.ServiceRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 public class CreateNegotiationUseCase {
 
     private final NegotiationRepository negotiationRepository;
     private final BookingRepository bookingRepository;
+    private final ServiceRepository serviceRepository;
+    private final WebhookDispatcher webhookDispatcher;
 
     public CreateNegotiationUseCase(
             NegotiationRepository negotiationRepository,
-            BookingRepository bookingRepository
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
         this.negotiationRepository = negotiationRepository;
         this.bookingRepository     = bookingRepository;
+        this.serviceRepository     = serviceRepository;
+        this.webhookDispatcher     = webhookDispatcher;
     }
 
     public Output execute(Input input) {
@@ -46,6 +57,21 @@ public class CreateNegotiationUseCase {
 
         Negotiation negotiation = Negotiation.create(bookingId, senderId, receiverId, input.amount());
         negotiationRepository.save(negotiation);
+
+        Service service = serviceRepository.findById(booking.getServiceId())
+                .orElseThrow(() -> new IllegalArgumentException("Service not found."));
+
+        webhookDispatcher.dispatch(
+                service.getStoreId(),
+                WebhookEventType.NEGOTIATION_CREATED,
+                Map.of(
+                        "negotiationId", negotiation.getId().toString(),
+                        "bookingId", negotiation.getBookingId().toString(),
+                        "senderId", negotiation.getSenderId().toString(),
+                        "receiverId", negotiation.getReceiverId().toString(),
+                        "amount", negotiation.getAmount().toString()
+                )
+        );
 
         return new Output(
                 negotiation.getId().toString(),

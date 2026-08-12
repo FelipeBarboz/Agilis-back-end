@@ -31,17 +31,13 @@ public class BookingRepositoryAdapter implements BookingRepository {
     @Override
     public List<Booking> findAllByClientId(UUID clientId) {
         return jpaRepository.findAllByClientId(clientId)
-                .stream()
-                .map(this::toDomain)
-                .toList();
+                .stream().map(this::toDomain).toList();
     }
 
     @Override
     public List<Booking> findAllByServiceId(UUID serviceId) {
         return jpaRepository.findAllByServiceId(serviceId)
-                .stream()
-                .map(this::toDomain)
-                .toList();
+                .stream().map(this::toDomain).toList();
     }
 
     @Override
@@ -55,11 +51,19 @@ public class BookingRepositoryAdapter implements BookingRepository {
 
     @Override
     public boolean existsConflict(UUID serviceId, LocalDateTime scheduledAt) {
-        return jpaRepository.existsConflict(
-                serviceId,
-                scheduledAt,
-                List.of(BookingStatus.CANCELLED)
-        );
+        return jpaRepository.existsConflict(serviceId, scheduledAt, List.of(BookingStatus.CANCELLED));
+    }
+
+    @Override
+    public List<Booking> findAllByStoreAndDate(UUID storeId, LocalDate date) {
+        return jpaRepository.findAllByStoreAndDate(storeId, date)
+                .stream().map(this::toDomain).toList();
+    }
+
+    @Override
+    public List<Booking> findAllByEmployeeAndDate(UUID employeeId, LocalDate date) {
+        return jpaRepository.findAllByEmployeeAndDate(employeeId, date)
+                .stream().map(this::toDomain).toList();
     }
 
     private BookingEntity toEntity(Booking booking) {
@@ -67,6 +71,7 @@ public class BookingRepositoryAdapter implements BookingRepository {
         entity.setId(booking.getId());
         entity.setClientId(booking.getClientId());
         entity.setServiceId(booking.getServiceId());
+        entity.setEmployeeId(booking.getEmployeeId());
         entity.setScheduledAt(booking.getScheduledAt());
         entity.setStatus(booking.getStatus());
         entity.setCreatedAt(booking.getCreatedAt());
@@ -78,6 +83,7 @@ public class BookingRepositoryAdapter implements BookingRepository {
                 entity.getId(),
                 entity.getClientId(),
                 entity.getServiceId(),
+                entity.getEmployeeId(),
                 entity.getScheduledAt(),
                 entity.getStatus(),
                 entity.getCreatedAt()

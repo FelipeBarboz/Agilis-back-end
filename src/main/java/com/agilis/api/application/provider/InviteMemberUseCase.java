@@ -1,9 +1,12 @@
 package com.agilis.api.application.provider;
 
+import com.agilis.api.domain.notification.WebhookDispatcher;
+import com.agilis.api.domain.notification.WebhookEventType;
 import com.agilis.api.domain.provider.*;
 import com.agilis.api.domain.user.UserRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class InviteMemberUseCase {
@@ -11,15 +14,18 @@ public class InviteMemberUseCase {
     private final StoreMembershipRepository storeMembershipRepository;
     private final ProviderRepository providerRepository;
     private final UserRepository userRepository;
+    private final WebhookDispatcher webhookDispatcher;
 
     public InviteMemberUseCase(
             StoreMembershipRepository storeMembershipRepository,
             ProviderRepository providerRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
         this.storeMembershipRepository = storeMembershipRepository;
         this.providerRepository        = providerRepository;
         this.userRepository            = userRepository;
+        this.webhookDispatcher = webhookDispatcher;
     }
 
     public Output execute(Input input) {
@@ -61,6 +67,16 @@ public class InviteMemberUseCase {
                 requesterId
         );
         storeMembershipRepository.save(membership);
+
+        webhookDispatcher.dispatch(
+                storeId,
+                WebhookEventType.STORE_MEMBER_INVITED,
+                Map.of(
+                        "membershipId", membership.getId().toString(),
+                        "providerId", user.getId().toString(),
+                        "role", membership.getRole().name()
+                )
+        );
 
         return new Output(
                 membership.getId().toString(),

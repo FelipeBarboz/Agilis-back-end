@@ -43,6 +43,7 @@ public class BookingController {
         CreateBookingUseCase.Input inputWithClient = new CreateBookingUseCase.Input(
                 clientId,
                 input.serviceId(),
+                input.employeeId(),
                 input.scheduledAt()
         );
         return ResponseEntity.ok(createBookingUseCase.execute(inputWithClient));
