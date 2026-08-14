@@ -16,6 +16,7 @@ import com.agilis.api.application.user.AddAddressUseCase;
 import com.agilis.api.application.user.RegisterClientUseCase;
 import com.agilis.api.application.user.UpdateAddressUseCase;
 import com.agilis.api.application.user.UpdateUserUseCase;
+import com.agilis.api.domain.booking.BookingDelayRepository;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.client.ClientRepository;
 import com.agilis.api.domain.client.PriorityRebookingRepository;
@@ -33,6 +34,8 @@ import com.agilis.api.domain.service.ServiceThumbnailRepository;
 import com.agilis.api.domain.user.AddressRepository;
 import com.agilis.api.domain.user.UserRepository;
 import com.agilis.api.infrastructure.notification.WebhookDispatcherAdapter;
+import com.agilis.api.infrastructure.persistence.booking.BookingDelayJpaRepository;
+import com.agilis.api.infrastructure.persistence.booking.BookingDelayRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.booking.BookingJpaRepository;
 import com.agilis.api.infrastructure.persistence.booking.BookingRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.client.ClientJpaRepository;
@@ -144,6 +147,26 @@ public class BeanConfig {
     public PriorityRebookingRepository priorityRebookingRepository(PriorityRebookingJpaRepository jpa) {
         return new PriorityRebookingRepositoryAdapter(jpa);
     }
+
+    @Bean
+    public BookingDelayRepository bookingDelayRepository(BookingDelayJpaRepository jpa) {
+        return new BookingDelayRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public BusinessHoursRepository businessHoursRepository(BusinessHoursJpaRepository jpa) {
+        return new BusinessHoursRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public EmployeeScheduleRepository employeeScheduleRepository(EmployeeScheduleJpaRepository jpa) {
+        return new EmployeeScheduleRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public ScheduleSlotRepository scheduleSlotRepository(ScheduleSlotJpaRepository jpa) {
+        return new ScheduleSlotRepositoryAdapter(jpa);
+    }
     //  USE CASES — USER
 
     @Bean
@@ -189,6 +212,40 @@ public class BeanConfig {
                 providerProfileRepository,
                 storeMembershipRepository
         );
+    }
+
+    @Bean
+    public SetBusinessHoursUseCase setBusinessHoursUseCase(
+            BusinessHoursRepository businessHoursRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new SetBusinessHoursUseCase(businessHoursRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public CreateEmployeeScheduleUseCase createEmployeeScheduleUseCase(
+            EmployeeScheduleRepository employeeScheduleRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new CreateEmployeeScheduleUseCase(employeeScheduleRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public AddScheduleSlotUseCase addScheduleSlotUseCase(
+            ScheduleSlotRepository scheduleSlotRepository,
+            EmployeeScheduleRepository employeeScheduleRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new AddScheduleSlotUseCase(scheduleSlotRepository, employeeScheduleRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public RemoveScheduleSlotUseCase removeScheduleSlotUseCase(
+            ScheduleSlotRepository scheduleSlotRepository,
+            EmployeeScheduleRepository employeeScheduleRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new RemoveScheduleSlotUseCase(scheduleSlotRepository, employeeScheduleRepository, storeMembershipRepository);
     }
 
     //  USE CASES — BOOKING
@@ -241,6 +298,32 @@ public class BeanConfig {
             StoreMembershipRepository storeMembershipRepository
     ) {
         return new GetStoreBookingsUseCase(bookingRepository, serviceRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public DeclareDelayUseCase declareDelayUseCase(
+            BookingRepository bookingRepository,
+            BookingDelayRepository bookingDelayRepository,
+            StoreMembershipRepository storeMembershipRepository,
+            WebhookDispatcher webhookDispatcher
+    ) {
+        return new DeclareDelayUseCase(bookingRepository, bookingDelayRepository, storeMembershipRepository, webhookDispatcher);
+    }
+
+    @Bean
+    public GetPendingDelaysUseCase getPendingDelaysUseCase(BookingDelayRepository bookingDelayRepository) {
+        return new GetPendingDelaysUseCase(bookingDelayRepository);
+    }
+
+    @Bean
+    public RespondToDelayUseCase respondToDelayUseCase(
+            BookingDelayRepository bookingDelayRepository,
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            PriorityRebookingRepository priorityRebookingRepository,
+            WebhookDispatcher webhookDispatcher
+    ) {
+        return new RespondToDelayUseCase(bookingDelayRepository, bookingRepository, serviceRepository, priorityRebookingRepository, webhookDispatcher);
     }
 
     //  USE CASES — NEGOTIATION

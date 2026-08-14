@@ -19,6 +19,7 @@ public class UpdateUserUseCase {
 
         user.changeName(input.name());
         user.changePhone(input.phone());
+        user.changeEmail(input.email());
 
         userRepository.save(user);
 
@@ -31,7 +32,7 @@ public class UpdateUserUseCase {
     }
 
     @Schema(name = "UpdateUserInput")
-    public record Input(String userId, String name, String phone) {}
+    public record Input(String userId, String name, String phone, String email) {}
 
     @Schema(name = "UpdateUserOutput")
     public record Output(String userId, String name, String email, String phone) {}

@@ -72,7 +72,8 @@ public class UserController {
         UpdateUserUseCase.Input inputWithUser = new UpdateUserUseCase.Input(
                 userId,
                 input.name(),
-                input.phone()
+                input.phone(),
+                input.email()
         );
         return ResponseEntity.ok(updateUserUseCase.execute(inputWithUser));
     }

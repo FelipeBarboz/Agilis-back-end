@@ -28,7 +28,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // rotas completamente públicas (sem token)
+                        // rotas completamente públicas
+                        .requestMatchers(HttpMethod.GET, "/api/v1/stores/*/business-hours").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/stores/*/units").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/register/client").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/stores/**").permitAll()
