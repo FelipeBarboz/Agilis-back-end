@@ -46,18 +46,15 @@ public class ProviderProfileRepositoryAdapter implements ProviderProfileReposito
         entity.setSlug(profile.getSlug());
         entity.setDescription(profile.getDescription());
         entity.setProfileImgUrl(profile.getProfileImgUrl());
+        entity.setAllowEmployeeSelection(profile.isAllowEmployeeSelection());
         entity.setCreatedAt(profile.getCreatedAt());
         return entity;
     }
 
     private ProviderProfile toDomain(ProviderProfileEntity entity) {
         return ProviderProfile.reconstitute(
-                entity.getId(),
-                entity.getStoreName(),
-                entity.getSlug(),
-                entity.getDescription(),
-                entity.getProfileImgUrl(),
-                entity.getCreatedAt()
+                entity.getId(), entity.getStoreName(), entity.getSlug(), entity.getDescription(),
+                entity.getProfileImgUrl(), entity.isAllowEmployeeSelection(), entity.getCreatedAt()
         );
     }
 }

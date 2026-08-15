@@ -29,6 +29,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         // rotas completamente públicas
+                        .requestMatchers(HttpMethod.GET, "/api/v1/services/*/availability").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/stores/*/business-hours").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/stores/*/units").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/register/client").permitAll()

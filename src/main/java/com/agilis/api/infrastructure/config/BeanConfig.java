@@ -436,6 +436,30 @@ public class BeanConfig {
         return new RemoveMemberUseCase(storeMembershipRepository, webhookDispatcher);
     }
 
+    @Bean
+    public GetAvailableSlotsUseCase getAvailableSlotsUseCase(
+            ServiceRepository serviceRepository,
+            ProviderProfileRepository providerProfileRepository,
+            BusinessHoursRepository businessHoursRepository,
+            StoreMembershipRepository storeMembershipRepository,
+            EmployeeScheduleRepository employeeScheduleRepository,
+            ScheduleSlotRepository scheduleSlotRepository,
+            BookingRepository bookingRepository
+    ) {
+        return new GetAvailableSlotsUseCase(
+                serviceRepository, providerProfileRepository, businessHoursRepository,
+                storeMembershipRepository, employeeScheduleRepository, scheduleSlotRepository, bookingRepository
+        );
+    }
+
+    @Bean
+    public ToggleEmployeeSelectionUseCase toggleEmployeeSelectionUseCase(
+            ProviderProfileRepository providerProfileRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new ToggleEmployeeSelectionUseCase(providerProfileRepository, storeMembershipRepository);
+    }
+
     //  USE CASES — SERVICE
     @Bean
     public CreateServiceUseCase createServiceUseCase(

@@ -36,6 +36,7 @@ public class UpdateProviderProfileUseCase {
 
         profile.changeStoreName(input.storeName());
         profile.changeDescription(input.description());
+        profile.changeSlug(input.slug());
         profile.changeProfileImg(input.profileImgUrl());
 
         providerProfileRepository.save(profile);
@@ -50,7 +51,7 @@ public class UpdateProviderProfileUseCase {
     }
 
     @Schema(name = "UpdateProviderInput")
-    public record Input(String requesterId, String storeId, String storeName, String description, String profileImgUrl) {}
+    public record Input(String requesterId, String storeId, String storeName, String description, String slug, String profileImgUrl) {}
 
     @Schema(name = "UpdateProviderOutput")
     public record Output(String storeId, String storeName, String slug, String description, String profileImgUrl) {}

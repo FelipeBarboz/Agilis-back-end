@@ -12,30 +12,30 @@ public class ProviderProfile {
     private String slug;
     private String description;
     private String profileImgUrl;
+    private boolean allowEmployeeSelection;
     private final LocalDateTime createdAt;
 
-    private ProviderProfile(UUID id, String storeName, String slug, String description, String profileImgUrl, LocalDateTime createdAt) {
+    private ProviderProfile(UUID id, String storeName, String slug, String description, String profileImgUrl, Boolean allowEmployeeSelection, LocalDateTime createdAt) {
         this.id            = id;
         this.storeName     = validateStoreName(storeName);
         this.slug          = validateSlug(slug);
         this.description   = description;
         this.profileImgUrl = profileImgUrl;
+        this.allowEmployeeSelection = allowEmployeeSelection;
         this.createdAt     = createdAt;
     }
 
     public static ProviderProfile create(String storeName, String slug, String description, String profileImgUrl) {
-        return new ProviderProfile(
-                UUID.randomUUID(),
-                storeName,
-                slug,
-                description,
-                profileImgUrl,
-                LocalDateTime.now()
-        );
+        return new ProviderProfile(UUID.randomUUID(), storeName, slug, description, profileImgUrl, true, LocalDateTime.now());
     }
 
-    public static ProviderProfile reconstitute(UUID id, String storeName, String slug, String description, String profileImgUrl, LocalDateTime createdAt) {
-        return new ProviderProfile(id, storeName, slug, description, profileImgUrl, createdAt);
+    public static ProviderProfile reconstitute(UUID id, String storeName, String slug, String description,
+                                               String profileImgUrl, boolean allowEmployeeSelection, LocalDateTime createdAt) {
+        return new ProviderProfile(id, storeName, slug, description, profileImgUrl, allowEmployeeSelection, createdAt);
+    }
+
+    public void toggleEmployeeSelection(boolean allow) {
+        this.allowEmployeeSelection = allow;
     }
 
     public void changeStoreName(String storeName) {
