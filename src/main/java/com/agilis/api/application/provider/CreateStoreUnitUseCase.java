@@ -3,6 +3,7 @@ package com.agilis.api.application.provider;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
 import com.agilis.api.domain.provider.StoreUnit;
 import com.agilis.api.domain.provider.StoreUnitRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
@@ -60,11 +61,13 @@ public class CreateStoreUnitUseCase {
         );
     }
 
+    @Schema(name = "CreateStoreUnitInput")
     public record Input(
             String requesterId, String storeId, String name, String street, String number,
             String complement, String city, String state, String cep
     ) {}
 
+    @Schema(name = "CreateStoreUnitOutput")
     public record Output(
             String unitId, String storeId, String name, String street, String number,
             String complement, String city, String state, String cep

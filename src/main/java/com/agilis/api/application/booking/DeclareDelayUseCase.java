@@ -4,6 +4,7 @@ import com.agilis.api.domain.booking.*;
 import com.agilis.api.domain.notification.WebhookDispatcher;
 import com.agilis.api.domain.notification.WebhookEventType;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -65,6 +66,8 @@ public class DeclareDelayUseCase {
         return new Output(affected.size());
     }
 
+    @Schema(name = "DeclareDelayInput")
     public record Input(String requesterId, String storeId, String employeeId, LocalDate date, int delayMinutes, String reason) {}
+    @Schema(name = "DeclareDelayOutput")
     public record Output(int affectedBookingsCount) {}
 }

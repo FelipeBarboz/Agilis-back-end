@@ -7,6 +7,7 @@ import com.agilis.api.domain.notification.WebhookDispatcher;
 import com.agilis.api.domain.notification.WebhookEventType;
 import com.agilis.api.domain.service.Service;
 import com.agilis.api.domain.service.ServiceRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Map;
 import java.util.UUID;
@@ -92,7 +93,9 @@ public class RespondToDelayUseCase {
         bookingDelayRepository.save(delay);
     }
 
+    @Schema(name = "RespondToDelayInput")
     public record Input(String requesterId, String delayId, Action action) {}
 
+    @Schema(name = "RespondToDelayOutput")
     public enum Action { ACCEPT_NEW_TIME, REQUEST_REFUND, REQUEST_RESCHEDULE }
 }

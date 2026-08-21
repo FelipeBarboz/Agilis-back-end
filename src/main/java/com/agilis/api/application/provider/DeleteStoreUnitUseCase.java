@@ -3,6 +3,7 @@ package com.agilis.api.application.provider;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
 import com.agilis.api.domain.provider.StoreUnit;
 import com.agilis.api.domain.provider.StoreUnitRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
@@ -37,5 +38,6 @@ public class DeleteStoreUnitUseCase {
         storeUnitRepository.deleteById(unitId);
     }
 
+    @Schema(name = "DeleteStoreUnitOutput")
     public record Input(String requesterId, String unitId) {}
 }

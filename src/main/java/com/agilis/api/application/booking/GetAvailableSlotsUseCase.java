@@ -6,6 +6,7 @@ import com.agilis.api.domain.booking.BookingStatus;
 import com.agilis.api.domain.provider.*;
 import com.agilis.api.domain.service.Service;
 import com.agilis.api.domain.service.ServiceRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.jspecify.annotations.NonNull;
 
 import java.time.DayOfWeek;
@@ -167,6 +168,8 @@ public class GetAvailableSlotsUseCase {
 
     private record TimeWindow(LocalTime start, LocalTime end) {}
 
+    @Schema(name = "GetAvailableSlotsInput")
     public record Input(String serviceId, LocalDate date, String employeeId) {}
+    @Schema(name = "GetAvailableSlotsOutput")
     public record Output(List<LocalTime> availableSlots, boolean canChooseEmployee) {}
 }

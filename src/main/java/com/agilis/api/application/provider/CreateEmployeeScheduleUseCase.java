@@ -4,6 +4,7 @@ import com.agilis.api.domain.provider.EmployeeSchedule;
 import com.agilis.api.domain.provider.EmployeeScheduleRepository;
 import com.agilis.api.domain.provider.ScheduleType;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
@@ -49,6 +50,8 @@ public class CreateEmployeeScheduleUseCase {
                 s.getScheduleType().name(), s.getMonthlyHoursQuota(), s.getMonthlyDaysQuota());
     }
 
+    @Schema(name = "CreateEmployeeScheduleInput")
     public record Input(String requesterId, String storeId, String employeeId, String scheduleType, Integer monthlyHoursQuota, Integer monthlyDaysQuota) {}
+    @Schema(name = "CreateEmployeeScheduleOutput")
     public record Output(String id, String employeeId, String storeId, String scheduleType, Integer monthlyHoursQuota, Integer monthlyDaysQuota) {}
 }

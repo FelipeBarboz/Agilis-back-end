@@ -1,6 +1,7 @@
 package com.agilis.api.application.provider;
 
 import com.agilis.api.domain.provider.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -61,6 +62,8 @@ public class AddScheduleSlotUseCase {
         return new Output(slot.getId().toString(), scheduleId.toString(), slot.getDayOfWeek(), slot.getSpecificDate(), slot.getStartTime(), slot.getEndTime());
     }
 
+    @Schema(name = "AddScheduleSlotInput")
     public record Input(String requesterId, String employeeScheduleId, Integer dayOfWeek, LocalDate specificDate, LocalTime startTime, LocalTime endTime) {}
+    @Schema(name = "AddScheduleSlotOutput")
     public record Output(String id, String employeeScheduleId, Integer dayOfWeek, LocalDate specificDate, LocalTime startTime, LocalTime endTime) {}
 }

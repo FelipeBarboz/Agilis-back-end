@@ -3,6 +3,7 @@ package com.agilis.api.application.provider;
 import com.agilis.api.domain.provider.BusinessHours;
 import com.agilis.api.domain.provider.BusinessHoursRepository;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalTime;
 import java.util.UUID;
@@ -41,6 +42,9 @@ public class SetBusinessHoursUseCase {
         return new Output(hours.getId().toString(), hours.getStoreId().toString(), hours.getDayOfWeek(), hours.getOpensAt(), hours.getClosesAt());
     }
 
+    @Schema(name = "SetBusinessHoursInput")
     public record Input(String requesterId, String storeId, int dayOfWeek, LocalTime opensAt, LocalTime closesAt) {}
+
+    @Schema(name = "SetBusinessHourOutput")
     public record Output(String id, String storeId, int dayOfWeek, LocalTime opensAt, LocalTime closesAt) {}
 }

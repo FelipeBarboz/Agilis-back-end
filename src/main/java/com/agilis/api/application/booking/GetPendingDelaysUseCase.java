@@ -1,6 +1,7 @@
 package com.agilis.api.application.booking;
 
 import com.agilis.api.domain.booking.BookingDelayRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,5 +29,6 @@ public class GetPendingDelaysUseCase {
                 .toList();
     }
 
+    @Schema(name = "GetPendingDelaysOutput")
     public record Output(String delayId, String bookingId, LocalDateTime originalScheduledAt, LocalDateTime newScheduledAt, int delayMinutes, String reason) {}
 }

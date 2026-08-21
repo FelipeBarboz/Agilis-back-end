@@ -3,6 +3,7 @@ package com.agilis.api.application.notification;
 import com.agilis.api.domain.notification.WebhookSubscription;
 import com.agilis.api.domain.notification.WebhookSubscriptionRepository;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 import java.util.UUID;
@@ -41,5 +42,6 @@ public class ListWebhooksUseCase {
                 .toList();
     }
 
+    @Schema(name = "ListWebhooksOutput")
     public record Output(String webhookId, String storeId, String url, java.util.Set<String> events, boolean active) {}
 }

@@ -4,6 +4,7 @@ import com.agilis.api.domain.notification.WebhookEventType;
 import com.agilis.api.domain.notification.WebhookSubscription;
 import com.agilis.api.domain.notification.WebhookSubscriptionRepository;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Set;
 import java.util.UUID;
@@ -55,7 +56,9 @@ public class RegisterWebhookUseCase {
         );
     }
 
+    @Schema(name = "RegisterWebhookInput")
     public record Input(String requesterId, String storeId, String url, Set<String> events) {}
 
+    @Schema(name = "RegisterWebhookOutput")
     public record Output(String webhookId, String storeId, String url, String secret, Set<String> events, boolean active) {}
 }
