@@ -1,6 +1,7 @@
 package com.agilis.api.infrastructure.persistence.service;
 
 import com.agilis.api.domain.service.PriceType;
+import com.agilis.api.domain.service.ServiceCategory;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,5 +44,9 @@ public class ServiceEntity {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ServiceCategory category;
 }
 

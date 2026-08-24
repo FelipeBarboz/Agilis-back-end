@@ -3,6 +3,7 @@ package com.agilis.api.application.service;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
 import com.agilis.api.domain.service.PriceType;
 import com.agilis.api.domain.service.Service;
+import com.agilis.api.domain.service.ServiceCategory;
 import com.agilis.api.domain.service.ServiceRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -43,7 +44,8 @@ public class CreateServiceUseCase {
                 input.description(),
                 input.price(),
                 input.priceType(),
-                input.durationMinutes()
+                input.durationMinutes(),
+                input.category()
         );
 
         serviceRepository.save(service);
@@ -59,13 +61,17 @@ public class CreateServiceUseCase {
                 service.getPrice(),
                 service.getPriceType().name(),
                 service.getDurationMinutes(),
+                service.getCategory(),
                 service.getCreatedAt()
         );
     }
 
     @Schema(name = "CreateServiceInput")
-    public record Input(String requesterId, String storeId, String unitId, String title, String description, BigDecimal price, PriceType priceType, int durationMinutes) {}
+    public record Input(
+            String requesterId, String storeId, String unitId, String title, String description,
+            BigDecimal price, PriceType priceType, int durationMinutes, ServiceCategory category
+    ) {}
 
     @Schema(name = "CreateServiceOutput")
-    public record Output(String serviceId, String storeId, String title, String description, BigDecimal price, String priceType, int durationMinutes, LocalDateTime createdAt) {}
+    public record Output(String serviceId, String storeId, String title, String description, BigDecimal price, String priceType, int durationMinutes, ServiceCategory category, LocalDateTime createdAt) {}
 }

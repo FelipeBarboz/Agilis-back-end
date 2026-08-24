@@ -27,10 +27,7 @@ import com.agilis.api.domain.notification.WebhookDispatcher;
 import com.agilis.api.domain.notification.WebhookSubscriptionRepository;
 import com.agilis.api.domain.provider.*;
 import com.agilis.api.domain.review.ReviewRepository;
-import com.agilis.api.domain.service.Service;
-import com.agilis.api.domain.service.ServiceImageRepository;
-import com.agilis.api.domain.service.ServiceRepository;
-import com.agilis.api.domain.service.ServiceThumbnailRepository;
+import com.agilis.api.domain.service.*;
 import com.agilis.api.domain.user.AddressRepository;
 import com.agilis.api.domain.user.UserRepository;
 import com.agilis.api.infrastructure.notification.WebhookDispatcherAdapter;
@@ -298,6 +295,25 @@ public class BeanConfig {
             StoreMembershipRepository storeMembershipRepository
     ) {
         return new GetStoreBookingsUseCase(bookingRepository, serviceRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public SearchServicesUseCase searchServicesUseCase(ServiceJpaRepository serviceJpaRepository) {
+        return new SearchServicesUseCase(serviceJpaRepository);
+    }
+
+    @Bean
+    public ServiceCoverageAreaRepository serviceCoverageAreaRepository(ServiceCoverageAreaJpaRepository jpa) {
+        return new ServiceCoverageAreaRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public SetCoverageAreasUseCase setCoverageAreasUseCase(
+            ServiceCoverageAreaRepository serviceCoverageAreaRepository,
+            ServiceRepository serviceRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new SetCoverageAreasUseCase(serviceCoverageAreaRepository, serviceRepository, storeMembershipRepository);
     }
 
     @Bean

@@ -64,7 +64,8 @@ public class ServiceManagementController {
                 input.description(),
                 input.price(),
                 input.priceType(),
-                input.durationMinutes()
+                input.durationMinutes(),
+                input.category()
         );
         return ResponseEntity.ok(createServiceUseCase.execute(inputWithRequester));
     }

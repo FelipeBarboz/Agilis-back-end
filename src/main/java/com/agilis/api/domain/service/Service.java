@@ -16,29 +16,34 @@ public class Service {
     private BigDecimal price;
     private PriceType priceType;
     private int durationMinutes;
+    private ServiceCategory category;
     private final LocalDateTime createdAt;
 
-    public Service(UUID id, UUID storeId, UUID unitId, String title, String description, BigDecimal price, PriceType priceType, int durationMinutes, LocalDateTime createdAt) {
-        this.id = id;
-        this.storeId = storeId;
-        this.unitId = unitId;
-        this.title = title;
-        this.description = description;
-        this.price = price;
-        this.priceType = priceType;
-        this.durationMinutes = durationMinutes;
-        this.createdAt = createdAt;
+    private Service(UUID id, UUID storeId, UUID unitId, String title, String description, BigDecimal price,
+                    PriceType priceType, int durationMinutes, ServiceCategory category, LocalDateTime createdAt) {
+        this.id              = id;
+        this.storeId         = storeId;
+        this.unitId          = unitId;
+        this.title           = validateTitle(title);
+        this.description     = description;
+        this.price           = validatePrice(price);
+        this.priceType       = validatePriceType(priceType);
+        this.durationMinutes = validateDuration(durationMinutes);
+        this.category        = validateCategory(category);
+        this.createdAt       = createdAt;
     }
 
-    public static Service create(UUID storeId, UUID unitId, String title, String description, BigDecimal price, PriceType priceType, int durationMinutes) {
+    public static Service create(UUID storeId, UUID unitId, String title, String description, BigDecimal price,
+                                 PriceType priceType, int durationMinutes, ServiceCategory category) {
         return new Service(
-                UUID.randomUUID(), storeId, unitId, title, description, price, priceType, durationMinutes, LocalDateTime.now()
+                UUID.randomUUID(), storeId, unitId, title, description, price, priceType, durationMinutes, category, LocalDateTime.now()
         );
     }
 
     public static Service reconstitute(UUID id, UUID storeId, UUID unitId, String title, String description,
-                                       BigDecimal price, PriceType priceType, int durationMinutes, LocalDateTime createdAt) {
-        return new Service(id, storeId, unitId, title, description, price, priceType, durationMinutes, createdAt);
+                                       BigDecimal price, PriceType priceType, int durationMinutes,
+                                       ServiceCategory category, LocalDateTime createdAt) {
+        return new Service(id, storeId, unitId, title, description, price, priceType, durationMinutes, category, createdAt);
     }
 
     public void changeUnit(UUID unitId) {
@@ -88,5 +93,12 @@ public class Service {
             throw new IllegalArgumentException("The duration must be greater than zero.");
         }
         return durationMinutes;
+    }
+
+    private ServiceCategory validateCategory(ServiceCategory category) {
+        if (category == null) {
+            throw new IllegalArgumentException("The service category cannot be null.");
+        }
+        return category;
     }
 }
