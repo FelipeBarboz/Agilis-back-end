@@ -298,6 +298,20 @@ public class BeanConfig {
     }
 
     @Bean
+    public ServicePriceTierRepository servicePriceTierRepository(ServicePriceTierJpaRepository jpa) {
+        return new ServicePriceTierRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public SetPriceTiersUseCase setPriceTiersUseCase(
+            ServicePriceTierRepository servicePriceTierRepository,
+            ServiceRepository serviceRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new SetPriceTiersUseCase(servicePriceTierRepository, serviceRepository, storeMembershipRepository);
+    }
+
+    @Bean
     public SearchServicesUseCase searchServicesUseCase(ServiceJpaRepository serviceJpaRepository) {
         return new SearchServicesUseCase(serviceJpaRepository);
     }
