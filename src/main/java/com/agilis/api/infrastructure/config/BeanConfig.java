@@ -220,6 +220,24 @@ public class BeanConfig {
     }
 
     @Bean
+    public SearchStoresUseCase searchStoresUseCase(ProviderProfileJpaRepository providerProfileJpaRepository) {
+        return new SearchStoresUseCase(providerProfileJpaRepository);
+    }
+
+    @Bean
+    public FindNextAvailableSlotUseCase findNextAvailableSlotUseCase(GetAvailableSlotsUseCase getAvailableSlotsUseCase) {
+        return new FindNextAvailableSlotUseCase(getAvailableSlotsUseCase);
+    }
+
+    @Bean
+    public SearchServicesUseCase searchServicesUseCase(
+            ServiceJpaRepository serviceJpaRepository,
+            FindNextAvailableSlotUseCase findNextAvailableSlotUseCase
+    ) {
+        return new SearchServicesUseCase(serviceJpaRepository, findNextAvailableSlotUseCase);
+    }
+
+    @Bean
     public CreateEmployeeScheduleUseCase createEmployeeScheduleUseCase(
             EmployeeScheduleRepository employeeScheduleRepository,
             StoreMembershipRepository storeMembershipRepository
@@ -309,11 +327,6 @@ public class BeanConfig {
             StoreMembershipRepository storeMembershipRepository
     ) {
         return new SetPriceTiersUseCase(servicePriceTierRepository, serviceRepository, storeMembershipRepository);
-    }
-
-    @Bean
-    public SearchServicesUseCase searchServicesUseCase(ServiceJpaRepository serviceJpaRepository) {
-        return new SearchServicesUseCase(serviceJpaRepository);
     }
 
     @Bean

@@ -4,7 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,14 +25,18 @@ public interface ServiceJpaRepository extends JpaRepository<ServiceEntity, UUID>
             s.price_type        AS priceType,
             s.duration_minutes  AS durationMinutes,
             s.category          AS category,
+            EXISTS (SELECT 1 FROM service_price_tiers spt WHERE spt.service_id = s.id) AS hasPriceTiers,
             COALESCE((SELECT AVG(r.rating) FROM reviews r JOIN bookings b ON b.id = r.booking_id WHERE b.service_id = s.id), 0) AS avgRating,
             (SELECT COUNT(r.id) FROM reviews r JOIN bookings b ON b.id = r.booking_id WHERE b.service_id = s.id) AS reviewCount,
             su.city             AS city,
             su.state            AS state,
-            st.url              AS thumbnailUrl
+            st.url              AS thumbnailUrl,
+            pp.store_name       AS storeName,
+            pp.profile_img_url  AS storeProfileImgUrl
         FROM services s
         LEFT JOIN store_units su ON su.id = s.unit_id
         LEFT JOIN service_thumbnail st ON st.service_id = s.id
+        LEFT JOIN provider_profiles pp ON pp.id = s.store_id
         WHERE (
             :city IS NULL
             OR su.city ILIKE CONCAT('%', CAST(:city AS text), '%')

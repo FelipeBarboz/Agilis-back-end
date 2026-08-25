@@ -19,4 +19,7 @@ public interface ServiceSearchProjection {
     String getCity();
     String getState();
     String getThumbnailUrl();
+    Boolean getHasPriceTiers();
+    String getStoreName();
+    String getStoreProfileImgUrl();
 }
