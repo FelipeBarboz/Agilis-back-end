@@ -21,7 +21,23 @@ public class SearchServicesUseCase {
 
     public Output execute(Input input) {
         var page = serviceJpaRepository.search(
-                blankToNull(input.city()), blankToNull(input.state()), input.minPrice(), input.maxPrice(),
+                blankToNull(input.city()@Schema(name = "SearchServicesInput")
+    public record Input(
+            String city, String state, BigDecimal minPrice, BigDecimal maxPrice,
+            String category, Double minRating, int page, int size
+    ) {}
+
+    @Schema(name = "SearchServicesOutput")
+    public record Item(
+            String serviceId, String storeId, String unitId, String title, String description,
+            BigDecimal price, String priceType, Integer durationMinutes, String category,
+            boolean hasPriceTiers,
+            double avgRating, long reviewCount, String city, String state, String thumbnailUrl,
+            String storeName, String storeProfileImgUrl,
+            String nextAvailableSlot
+    ) {}
+
+    public record Output(List<Item> items, long totalElements, int totalPages) {}), blankToNull(input.state()), input.minPrice(), input.maxPrice(),
                 input.category() != null && !input.category().equalsIgnoreCase("TODOS") ? input.category().toUpperCase() : null,
                 input.minRating(), PageRequest.of(input.page(), input.size())
         );
@@ -57,7 +73,7 @@ public class SearchServicesUseCase {
             String category, Double minRating, int page, int size
     ) {}
 
-    @Schema(name = "SearchServicesOutput")
+    @Schema(name = "SearchServicesItem")
     public record Item(
             String serviceId, String storeId, String unitId, String title, String description,
             BigDecimal price, String priceType, Integer durationMinutes, String category,
@@ -67,5 +83,6 @@ public class SearchServicesUseCase {
             String nextAvailableSlot
     ) {}
 
+    @Schema(name = "SearchServicesOutput")
     public record Output(List<Item> items, long totalElements, int totalPages) {}
 }
