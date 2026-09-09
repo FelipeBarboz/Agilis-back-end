@@ -12,6 +12,7 @@ import com.agilis.api.application.notification.RemoveWebhookUseCase;
 import com.agilis.api.application.provider.*;
 import com.agilis.api.application.review.*;
 import com.agilis.api.application.service.*;
+import com.agilis.api.application.support.CreateSupportMessageUseCase;
 import com.agilis.api.application.user.AddAddressUseCase;
 import com.agilis.api.application.user.RegisterClientUseCase;
 import com.agilis.api.application.user.UpdateAddressUseCase;
@@ -28,8 +29,11 @@ import com.agilis.api.domain.notification.WebhookSubscriptionRepository;
 import com.agilis.api.domain.provider.*;
 import com.agilis.api.domain.review.ReviewRepository;
 import com.agilis.api.domain.service.*;
+import com.agilis.api.domain.support.EmailSender;
+import com.agilis.api.domain.support.SupportMessageRepository;
 import com.agilis.api.domain.user.AddressRepository;
 import com.agilis.api.domain.user.UserRepository;
+import com.agilis.api.infrastructure.email.SmtpEmailSender;
 import com.agilis.api.infrastructure.notification.WebhookDispatcherAdapter;
 import com.agilis.api.infrastructure.persistence.booking.BookingDelayJpaRepository;
 import com.agilis.api.infrastructure.persistence.booking.BookingDelayRepositoryAdapter;
@@ -51,6 +55,8 @@ import com.agilis.api.infrastructure.persistence.provider.*;
 import com.agilis.api.infrastructure.persistence.review.ReviewJpaRepository;
 import com.agilis.api.infrastructure.persistence.review.ReviewRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.service.*;
+import com.agilis.api.infrastructure.persistence.support.SupportMessageJpaRepository;
+import com.agilis.api.infrastructure.persistence.support.SupportMessageRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.user.AddressJpaRepository;
 import com.agilis.api.infrastructure.persistence.user.AddressRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.user.UserJpaRepository;
@@ -58,8 +64,10 @@ import com.agilis.api.infrastructure.persistence.user.UserRepositoryAdapter;
 import com.agilis.api.infrastructure.security.JwtFilter;
 import com.agilis.api.infrastructure.security.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
@@ -163,6 +171,11 @@ public class BeanConfig {
     @Bean
     public ScheduleSlotRepository scheduleSlotRepository(ScheduleSlotJpaRepository jpa) {
         return new ScheduleSlotRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public SupportMessageRepository supportMessageRepository(SupportMessageJpaRepository jpa) {
+        return new SupportMessageRepositoryAdapter(jpa);
     }
     //  USE CASES — USER
 
@@ -645,6 +658,21 @@ public class BeanConfig {
             StoreMembershipRepository storeMembershipRepository
     ) {
         return new RemoveWebhookUseCase(webhookSubscriptionRepository, storeMembershipRepository);
+    }
+
+    // USE CASES - SUPPORT
+    @Bean
+    public EmailSender emailSender(JavaMailSender mailSender) {
+        return new SmtpEmailSender(mailSender);
+    }
+
+    @Bean
+    public CreateSupportMessageUseCase createSupportMessageUseCase(
+            SupportMessageRepository supportMessageRepository,
+            EmailSender emailSender,
+            @Value("${support.email}") String supportEmail
+    ) {
+        return new CreateSupportMessageUseCase(supportMessageRepository, emailSender, supportEmail);
     }
 
     // Jwt
