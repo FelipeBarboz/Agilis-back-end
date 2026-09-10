@@ -177,6 +177,17 @@ public class BeanConfig {
     public SupportMessageRepository supportMessageRepository(SupportMessageJpaRepository jpa) {
         return new SupportMessageRepositoryAdapter(jpa);
     }
+
+    @Bean
+    public StoreServiceAreaRepository storeServiceAreaRepository(StoreServiceAreaJpaRepository jpa) {
+        return new StoreServiceAreaRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public ServiceAreaCityRepository serviceAreaCityRepository(ServiceAreaCityJpaRepository jpa) {
+        return new ServiceAreaCityRepositoryAdapter(jpa);
+    }
+
     //  USE CASES — USER
 
     @Bean
@@ -274,6 +285,23 @@ public class BeanConfig {
             StoreMembershipRepository storeMembershipRepository
     ) {
         return new RemoveScheduleSlotUseCase(scheduleSlotRepository, employeeScheduleRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public SetServiceAreaUseCase setServiceAreaUseCase(
+            StoreServiceAreaRepository storeServiceAreaRepository,
+            ServiceAreaCityRepository serviceAreaCityRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new SetServiceAreaUseCase(storeServiceAreaRepository, serviceAreaCityRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public GetServiceAreaUseCase getServiceAreaUseCase(
+            StoreServiceAreaRepository storeServiceAreaRepository,
+            ServiceAreaCityRepository serviceAreaCityRepository
+    ) {
+        return new GetServiceAreaUseCase(storeServiceAreaRepository, serviceAreaCityRepository);
     }
 
     //  USE CASES — BOOKING
