@@ -438,6 +438,15 @@ public class BeanConfig {
                 providerProfileRepository, storeUnitRepository, storeServiceAreaRepository, storeMembershipRepository, userRepository);
     }
 
+    @Bean
+    public ReportBookingIssueUseCase reportBookingIssueUseCase(
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            WebhookDispatcher webhookDispatcher
+    ) {
+        return new ReportBookingIssueUseCase(bookingRepository, serviceRepository, webhookDispatcher);
+    }
+
     //  USE CASES — NEGOTIATION
 
     @Bean

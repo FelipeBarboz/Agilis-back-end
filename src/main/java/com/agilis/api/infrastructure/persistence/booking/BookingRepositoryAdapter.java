@@ -4,6 +4,7 @@ import com.agilis.api.domain.booking.Booking;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.booking.BookingStatus;
 import com.agilis.api.domain.booking.PaymentMethod;
+import com.agilis.api.domain.booking.RefundStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -83,6 +84,8 @@ public class BookingRepositoryAdapter implements BookingRepository {
         entity.setStatus(booking.getStatus());
         entity.setNotes(booking.getNotes());
         entity.setPaymentMethod(booking.getPaymentMethod() != null ? booking.getPaymentMethod().name() : null);
+        entity.setRefundStatus(booking.getRefundStatus() != null ? booking.getRefundStatus().name() : null);
+        entity.setIssueDescription(booking.getIssueDescription());
         entity.setCreatedAt(booking.getCreatedAt());
         return entity;
     }
@@ -92,6 +95,8 @@ public class BookingRepositoryAdapter implements BookingRepository {
                 entity.getId(), entity.getClientId(), entity.getServiceId(), entity.getEmployeeId(),
                 entity.getScheduledAt(), entity.getStatus(), entity.getNotes(),
                 entity.getPaymentMethod() != null ? PaymentMethod.valueOf(entity.getPaymentMethod()) : null,
+                entity.getRefundStatus() != null ? RefundStatus.valueOf(entity.getRefundStatus()) : null,
+                entity.getIssueDescription(),
                 entity.getCreatedAt()
         );
     }

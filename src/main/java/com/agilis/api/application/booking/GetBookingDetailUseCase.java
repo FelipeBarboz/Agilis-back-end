@@ -11,12 +11,11 @@ import com.agilis.api.domain.user.User;
 import com.agilis.api.domain.user.UserRepository;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class GetBookingDetailUseCase {
 
-    // taxa fixa de plataforma — placeholder
+    // taxa fixa de plataforma — placeholder até o fluxo de pagamento real existir
     private static final BigDecimal PLATFORM_FEE = new BigDecimal("5.00");
 
     private final BookingRepository bookingRepository;
@@ -81,8 +80,7 @@ public class GetBookingDetailUseCase {
 
         User client = userRepository.findById(booking.getClientId()).orElse(null);
 
-        boolean canCancel = (booking.getStatus() == BookingStatus.PENDING || booking.getStatus() == BookingStatus.CONFIRMED)
-                && booking.getScheduledAt().isAfter(LocalDateTime.now());
+        Actions actions = resolveActions(booking);
 
         return new Output(
                 booking.getId().toString(),
@@ -99,10 +97,9 @@ public class GetBookingDetailUseCase {
                 total,
                 booking.getPaymentMethod() != null ? booking.getPaymentMethod().name() : null,
                 booking.getNotes(),
-                canCancel,
-                canCancel, // pode reagendar sob a mesma condição de poder cancelar
                 store.getStoreName(),
-                client != null ? client.getName() : null
+                client != null ? client.getName() : null,
+                actions
         );
     }
 
@@ -124,10 +121,30 @@ public class GetBookingDetailUseCase {
         return "AGENDADO";
     }
 
+    private Actions resolveActions(Booking booking) {
+        String displayStatus = resolveDisplayStatus(booking);
+
+        boolean canCancel = "AGENDADO".equals(displayStatus);
+        boolean canReschedule = "AGENDADO".equals(displayStatus);
+        boolean canReportIssue = "CONCLUIDO".equals(displayStatus) && booking.getRefundStatus() == null;
+
+        String refundStatus = booking.getRefundStatus() != null ? booking.getRefundStatus().name() : null;
+
+        return new Actions(canCancel, canReschedule, canReportIssue, refundStatus, booking.getIssueDescription());
+    }
+
+    public record Actions(
+            boolean canCancel,
+            boolean canReschedule,
+            boolean canReportIssue,
+            String refundStatus,
+            String issueDescription
+    ) {}
+
     public record Output(
             String bookingId, String status, String serviceTitle, String category, String thumbnailUrl,
             BigDecimal price, java.time.LocalDate date, java.time.LocalTime time, int durationMinutes,
             String address, BigDecimal serviceFee, BigDecimal total, String paymentMethod, String notes,
-            boolean canCancel, boolean canReschedule, String storeName, String clientName
+            String storeName, String clientName, Actions actions
     ) {}
 }
