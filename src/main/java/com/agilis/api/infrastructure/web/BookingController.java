@@ -44,8 +44,10 @@ public class BookingController {
                 clientId,
                 input.serviceId(),
                 input.employeeId(),
-                input.scheduledAt()
-        );
+                input.scheduledAt(),
+                input.notes(),
+                input.paymentMethod()
+                );
         return ResponseEntity.ok(createBookingUseCase.execute(inputWithClient));
     }
 

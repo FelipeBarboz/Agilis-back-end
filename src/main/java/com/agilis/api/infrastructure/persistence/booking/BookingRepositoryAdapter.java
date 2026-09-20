@@ -3,6 +3,7 @@ package com.agilis.api.infrastructure.persistence.booking;
 import com.agilis.api.domain.booking.Booking;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.booking.BookingStatus;
+import com.agilis.api.domain.booking.PaymentMethod;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,6 +61,12 @@ public class BookingRepositoryAdapter implements BookingRepository {
                 .stream().map(this::toDomain).toList();
     }
 
+    // BookingRepositoryAdapter.java — adiciona
+    @Override
+    public List<Booking> findAllByEmployeeId(UUID employeeId) {
+        return jpaRepository.findAllByEmployeeId(employeeId).stream().map(this::toDomain).toList();
+    }
+
     @Override
     public List<Booking> findAllByEmployeeAndDate(UUID employeeId, LocalDate date) {
         return jpaRepository.findAllByEmployeeAndDate(employeeId, date)
@@ -74,18 +81,17 @@ public class BookingRepositoryAdapter implements BookingRepository {
         entity.setEmployeeId(booking.getEmployeeId());
         entity.setScheduledAt(booking.getScheduledAt());
         entity.setStatus(booking.getStatus());
+        entity.setNotes(booking.getNotes());
+        entity.setPaymentMethod(booking.getPaymentMethod() != null ? booking.getPaymentMethod().name() : null);
         entity.setCreatedAt(booking.getCreatedAt());
         return entity;
     }
 
     private Booking toDomain(BookingEntity entity) {
         return Booking.reconstitute(
-                entity.getId(),
-                entity.getClientId(),
-                entity.getServiceId(),
-                entity.getEmployeeId(),
-                entity.getScheduledAt(),
-                entity.getStatus(),
+                entity.getId(), entity.getClientId(), entity.getServiceId(), entity.getEmployeeId(),
+                entity.getScheduledAt(), entity.getStatus(), entity.getNotes(),
+                entity.getPaymentMethod() != null ? PaymentMethod.valueOf(entity.getPaymentMethod()) : null,
                 entity.getCreatedAt()
         );
     }

@@ -37,6 +37,12 @@ public class BookingEntity {
     @Column(nullable = false)
     private BookingStatus status;
 
+    @Column(columnDefinition = "TEXT")
+    private String notes;
+
+    @Column(name = "payment_method", length = 50)
+    private String paymentMethod;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 }

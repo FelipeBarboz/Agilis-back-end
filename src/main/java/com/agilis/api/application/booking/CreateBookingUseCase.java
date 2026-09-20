@@ -2,6 +2,7 @@ package com.agilis.api.application.booking;
 
 import com.agilis.api.domain.booking.Booking;
 import com.agilis.api.domain.booking.BookingRepository;
+import com.agilis.api.domain.booking.PaymentMethod;
 import com.agilis.api.domain.client.ClientRepository;
 import com.agilis.api.domain.client.PriorityRebookingRepository;
 import com.agilis.api.domain.notification.WebhookDispatcher;
@@ -61,7 +62,7 @@ public class CreateBookingUseCase {
             throw new IllegalStateException("There is already a booking at this time.");
         }
 
-        Booking booking = Booking.create(clientId, serviceId, employeeId, input.scheduledAt());
+        Booking booking = Booking.create(clientId, serviceId, employeeId, input.scheduledAt(), input.notes(), input.paymentMethod());
         bookingRepository.save(booking);
 
         webhookDispatcher.dispatch(
@@ -80,13 +81,16 @@ public class CreateBookingUseCase {
                 booking.getClientId().toString(),
                 booking.getServiceId().toString(),
                 booking.getScheduledAt(),
+                booking.getNotes(),
+                booking.getPaymentMethod(),
                 booking.getStatus().name()
         );
     }
 
     @Schema(name = "CreateBookingInput")
-    public record Input(String clientId, String serviceId, String employeeId, LocalDateTime scheduledAt) {}
+    public record Input(String clientId, String serviceId, String employeeId, LocalDateTime scheduledAt,
+                        String notes, PaymentMethod paymentMethod) {}
 
     @Schema(name = "CreateBookingOutput")
-    public record Output(String bookingId, String clientId, String serviceId, LocalDateTime scheduledAt, String status) {}
+    public record Output(String bookingId, String clientId, String serviceId, LocalDateTime scheduledAt, String notes, PaymentMethod paymentMethod, String status) {}
 }

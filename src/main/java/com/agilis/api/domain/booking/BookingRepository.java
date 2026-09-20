@@ -12,6 +12,7 @@ public interface BookingRepository {
     Optional<Booking> findById(UUID id);
     List<Booking> findAllByClientId(UUID clientId);
     List<Booking> findAllByServiceId(UUID serviceId);
+    List<Booking> findAllByEmployeeId(UUID employeeId);
     List<Booking> findAllByServiceIdAndDate(UUID serviceId, LocalDate date);
     boolean existsConflict(UUID serviceId, LocalDateTime scheduledAt);
     List<Booking> findAllByStoreAndDate(UUID storeId, LocalDate date);

@@ -410,6 +410,34 @@ public class BeanConfig {
         return new RespondToDelayUseCase(bookingDelayRepository, bookingRepository, serviceRepository, priorityRebookingRepository, webhookDispatcher);
     }
 
+    @Bean
+    public GetBookingHistoryUseCase getBookingHistoryUseCase(
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            ServiceThumbnailRepository serviceThumbnailRepository,
+            ProviderProfileRepository providerProfileRepository,
+            UserRepository userRepository,
+            FavoriteRepository favoriteRepository
+    ) {
+        return new GetBookingHistoryUseCase(bookingRepository, serviceRepository, serviceThumbnailRepository,
+                providerProfileRepository, userRepository, favoriteRepository);
+    }
+
+    @Bean
+    public GetBookingDetailUseCase getBookingDetailUseCase(
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            ServiceThumbnailRepository serviceThumbnailRepository,
+            ProviderProfileRepository providerProfileRepository,
+            StoreUnitRepository storeUnitRepository,
+            StoreServiceAreaRepository storeServiceAreaRepository,
+            StoreMembershipRepository storeMembershipRepository,
+            UserRepository userRepository
+    ) {
+        return new GetBookingDetailUseCase(bookingRepository, serviceRepository, serviceThumbnailRepository,
+                providerProfileRepository, storeUnitRepository, storeServiceAreaRepository, storeMembershipRepository, userRepository);
+    }
+
     //  USE CASES — NEGOTIATION
 
     @Bean

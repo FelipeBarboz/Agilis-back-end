@@ -1,14 +1,10 @@
 package com.agilis.api.domain.booking;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Setter
 @Getter
 public class Booking {
 
@@ -19,25 +15,33 @@ public class Booking {
     private LocalDateTime scheduledAt;
     private final LocalDate date;
     private BookingStatus status;
+    private final String notes;
+    private final PaymentMethod paymentMethod;
     private final LocalDateTime createdAt;
 
-    private Booking(UUID id, UUID clientId, UUID serviceId, UUID employeeId, LocalDateTime scheduledAt, BookingStatus status, LocalDateTime createdAt) {
-        this.id          = id;
-        this.clientId    = clientId;
-        this.serviceId   = serviceId;
-        this.employeeId  = employeeId;
-        this.scheduledAt = validateScheduledAt(scheduledAt);
-        this.date        = scheduledAt.toLocalDate();
-        this.status      = status;
-        this.createdAt   = createdAt;
+    private Booking(UUID id, UUID clientId, UUID serviceId, UUID employeeId, LocalDateTime scheduledAt,
+                    BookingStatus status, String notes, PaymentMethod paymentMethod, LocalDateTime createdAt) {
+        this.id             = id;
+        this.clientId       = clientId;
+        this.serviceId      = serviceId;
+        this.employeeId     = employeeId;
+        this.scheduledAt    = validateScheduledAt(scheduledAt);
+        this.date           = scheduledAt.toLocalDate();
+        this.status         = status;
+        this.notes          = notes;
+        this.paymentMethod  = paymentMethod;
+        this.createdAt      = createdAt;
     }
 
-    public static Booking create(UUID clientId, UUID serviceId, UUID employeeId, LocalDateTime scheduledAt) {
-        return new Booking(UUID.randomUUID(), clientId, serviceId, employeeId, scheduledAt, BookingStatus.PENDING, LocalDateTime.now());
+    public static Booking create(UUID clientId, UUID serviceId, UUID employeeId, LocalDateTime scheduledAt,
+                                 String notes, PaymentMethod paymentMethod) {
+        return new Booking(UUID.randomUUID(), clientId, serviceId, employeeId, scheduledAt,
+                BookingStatus.PENDING, notes, paymentMethod, LocalDateTime.now());
     }
 
-    public static Booking reconstitute(UUID id, UUID clientId, UUID serviceId, UUID employeeId, LocalDateTime scheduledAt, BookingStatus status, LocalDateTime createdAt) {
-        return new Booking(id, clientId, serviceId, employeeId, scheduledAt, status, createdAt);
+    public static Booking reconstitute(UUID id, UUID clientId, UUID serviceId, UUID employeeId, LocalDateTime scheduledAt,
+                                       BookingStatus status, String notes, PaymentMethod paymentMethod, LocalDateTime createdAt) {
+        return new Booking(id, clientId, serviceId, employeeId, scheduledAt, status, notes, paymentMethod, createdAt);
     }
 
     public void assignEmployee(UUID employeeId) { this.employeeId = employeeId; }
@@ -49,19 +53,14 @@ public class Booking {
         this.scheduledAt = validateScheduledAt(newScheduledAt);
     }
 
-    public void confirm() {
-        validateTransition(BookingStatus.CONFIRMED);
-        this.status = BookingStatus.CONFIRMED;
-    }
+    public void confirm() { validateTransition(BookingStatus.CONFIRMED); this.status = BookingStatus.CONFIRMED; }
+    public void cancel()  { validateTransition(BookingStatus.CANCELLED); this.status = BookingStatus.CANCELLED; }
+    public void complete(){ validateTransition(BookingStatus.COMPLETED); this.status = BookingStatus.COMPLETED; }
 
-    public void cancel() {
-        validateTransition(BookingStatus.CANCELLED);
-        this.status = BookingStatus.CANCELLED;
-    }
-
-    public void complete() {
-        validateTransition(BookingStatus.COMPLETED);
-        this.status = BookingStatus.COMPLETED;
+    // "em andamento" é um status computado
+    // um booking confirmado cujo horário já passou mas ainda não foi concluído
+    public boolean isInProgress() {
+        return status == BookingStatus.CONFIRMED && scheduledAt.isBefore(LocalDateTime.now());
     }
 
     private void validateTransition(BookingStatus target) {
@@ -71,11 +70,8 @@ public class Booking {
             case COMPLETED  -> this.status == BookingStatus.CONFIRMED;
             default         -> false;
         };
-
         if (!allowed) {
-            throw new IllegalStateException(
-                    "Invalid transition: " + this.status + " → " + target
-            );
+            throw new IllegalStateException("Invalid transition: " + this.status + " → " + target);
         }
     }
 
