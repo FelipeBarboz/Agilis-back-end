@@ -188,6 +188,14 @@ public class BeanConfig {
         return new ServiceAreaCityRepositoryAdapter(jpa);
     }
 
+    @Bean
+    public GetHomeHighlightsUseCase getHomeHighlightsUseCase(
+            ServiceJpaRepository serviceJpaRepository,
+            FindNextAvailableSlotUseCase findNextAvailableSlotUseCase
+    ) {
+        return new GetHomeHighlightsUseCase(serviceJpaRepository, findNextAvailableSlotUseCase);
+    }
+
     //  USE CASES — USER
 
     @Bean
@@ -445,6 +453,11 @@ public class BeanConfig {
             WebhookDispatcher webhookDispatcher
     ) {
         return new ReportBookingIssueUseCase(bookingRepository, serviceRepository, webhookDispatcher);
+    }
+
+    @Bean
+    public IncrementServiceViewUseCase incrementServiceViewUseCase(ServiceJpaRepository serviceJpaRepository) {
+        return new IncrementServiceViewUseCase(serviceJpaRepository);
     }
 
     //  USE CASES — NEGOTIATION

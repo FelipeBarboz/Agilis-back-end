@@ -2,9 +2,12 @@ package com.agilis.api.infrastructure.persistence.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -89,4 +92,80 @@ public interface ServiceJpaRepository extends JpaRepository<ServiceEntity, UUID>
             @Param("minRating") Double minRating,
             Pageable pageable
     );
+
+    @Query(
+            value = """
+        SELECT
+            s.id AS id, s.store_id AS storeId, s.unit_id AS unitId, s.title AS title,
+            s.description AS description, s.price AS price, s.price_type AS priceType,
+            s.duration_minutes AS durationMinutes, s.category AS category,
+            EXISTS (SELECT 1 FROM service_price_tiers spt WHERE spt.service_id = s.id) AS hasPriceTiers,
+            COALESCE((SELECT AVG(r.rating) FROM reviews r JOIN bookings b ON b.id = r.booking_id WHERE b.service_id = s.id), 0) AS avgRating,
+            (SELECT COUNT(r.id) FROM reviews r JOIN bookings b ON b.id = r.booking_id WHERE b.service_id = s.id) AS reviewCount,
+            su.city AS city, su.state AS state, st.url AS thumbnailUrl,
+            pp.store_name AS storeName, pp.profile_img_url AS storeProfileImgUrl
+        FROM services s
+        LEFT JOIN store_units su ON su.id = s.unit_id
+        LEFT JOIN service_thumbnail st ON st.service_id = s.id
+        LEFT JOIN provider_profiles pp ON pp.id = s.store_id
+        ORDER BY s.view_count DESC
+        """,
+            countQuery = "SELECT COUNT(*) FROM services",
+            nativeQuery = true
+    )
+    Page<ServiceSearchProjection> findMostVisited(Pageable pageable);
+
+    @Query(
+            value = """
+        SELECT
+            s.id AS id, s.store_id AS storeId, s.unit_id AS unitId, s.title AS title,
+            s.description AS description, s.price AS price, s.price_type AS priceType,
+            s.duration_minutes AS durationMinutes, s.category AS category,
+            EXISTS (SELECT 1 FROM service_price_tiers spt WHERE spt.service_id = s.id) AS hasPriceTiers,
+            COALESCE((SELECT AVG(r.rating) FROM reviews r JOIN bookings b ON b.id = r.booking_id WHERE b.service_id = s.id), 0) AS avgRating,
+            (SELECT COUNT(r.id) FROM reviews r JOIN bookings b ON b.id = r.booking_id WHERE b.service_id = s.id) AS reviewCount,
+            su.city AS city, su.state AS state, st.url AS thumbnailUrl,
+            pp.store_name AS storeName, pp.profile_img_url AS storeProfileImgUrl
+        FROM services s
+        LEFT JOIN store_units su ON su.id = s.unit_id
+        LEFT JOIN service_thumbnail st ON st.service_id = s.id
+        LEFT JOIN provider_profiles pp ON pp.id = s.store_id
+        WHERE (SELECT COUNT(r.id) FROM reviews r JOIN bookings b ON b.id = r.booking_id WHERE b.service_id = s.id) > 0
+        ORDER BY avgRating DESC, reviewCount DESC
+        """,
+            countQuery = """
+        SELECT COUNT(*) FROM services s
+        WHERE (SELECT COUNT(r.id) FROM reviews r JOIN bookings b ON b.id = r.booking_id WHERE b.service_id = s.id) > 0
+        """,
+            nativeQuery = true
+    )
+    Page<ServiceSearchProjection> findTopRated(Pageable pageable);
+
+    @Query(
+            value = """
+        SELECT
+            s.id AS id, s.store_id AS storeId, s.unit_id AS unitId, s.title AS title,
+            s.description AS description, s.price AS price, s.price_type AS priceType,
+            s.duration_minutes AS durationMinutes, s.category AS category,
+            EXISTS (SELECT 1 FROM service_price_tiers spt WHERE spt.service_id = s.id) AS hasPriceTiers,
+            COALESCE((SELECT AVG(r.rating) FROM reviews r JOIN bookings b ON b.id = r.booking_id WHERE b.service_id = s.id), 0) AS avgRating,
+            (SELECT COUNT(r.id) FROM reviews r JOIN bookings b ON b.id = r.booking_id WHERE b.service_id = s.id) AS reviewCount,
+            su.city AS city, su.state AS state, st.url AS thumbnailUrl,
+            pp.store_name AS storeName, pp.profile_img_url AS storeProfileImgUrl,
+            (SELECT COUNT(b2.id) FROM bookings b2 WHERE b2.service_id = s.id AND b2.status != 'CANCELLED') AS hireCount
+        FROM services s
+        LEFT JOIN store_units su ON su.id = s.unit_id
+        LEFT JOIN service_thumbnail st ON st.service_id = s.id
+        LEFT JOIN provider_profiles pp ON pp.id = s.store_id
+        ORDER BY hireCount DESC
+        """,
+            countQuery = "SELECT COUNT(*) FROM services",
+            nativeQuery = true
+    )
+    Page<ServiceSearchProjection> findMostHired(Pageable pageable);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE services SET view_count = view_count + 1 WHERE id = :id", nativeQuery = true)
+    void incrementViewCount(@Param("id") UUID id);
 }

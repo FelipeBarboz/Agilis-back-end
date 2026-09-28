@@ -29,6 +29,9 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         // rotas completamente públicas
+                        .requestMatchers(HttpMethod.GET, "/api/v1/services/trending").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/services/top-rated").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/services/most-hired").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/stores/*/service-area").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/support/messages").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/support/faq").permitAll()
