@@ -32,6 +32,11 @@ public class BookingDelayRepositoryAdapter implements BookingDelayRepository {
                 .stream().map(this::toDomain).toList();
     }
 
+    @Override
+    public boolean existsByBookingId(UUID bookingId) {
+        return jpaRepository.existsByBookingId(bookingId);
+    }
+
     private BookingDelayEntity toEntity(BookingDelay delay) {
         BookingDelayEntity entity = new BookingDelayEntity();
         entity.setId(delay.getId());

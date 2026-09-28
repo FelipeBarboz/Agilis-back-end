@@ -9,4 +9,5 @@ public interface BookingDelayRepository {
     BookingDelay save(BookingDelay delay);
     Optional<BookingDelay> findById(UUID id);
     List<BookingDelay> findAllPendingByClientId(UUID clientId);
+    boolean existsByBookingId(UUID bookingId);
 }

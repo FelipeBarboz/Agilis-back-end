@@ -9,6 +9,8 @@ import java.util.UUID;
 
 public interface BookingDelayJpaRepository extends JpaRepository<BookingDelayEntity, UUID> {
 
+    boolean existsByBookingId(UUID bookingId);
+
     @Query("""
         SELECT d FROM BookingDelayEntity d
         JOIN BookingEntity b ON b.id = d.bookingId

@@ -396,10 +396,13 @@ public class BeanConfig {
     public DeclareDelayUseCase declareDelayUseCase(
             BookingRepository bookingRepository,
             BookingDelayRepository bookingDelayRepository,
+            PriorityRebookingRepository priorityRebookingRepository,
             StoreMembershipRepository storeMembershipRepository,
+            ServiceRepository serviceRepository,
             WebhookDispatcher webhookDispatcher
     ) {
-        return new DeclareDelayUseCase(bookingRepository, bookingDelayRepository, storeMembershipRepository, webhookDispatcher);
+        return new DeclareDelayUseCase(bookingRepository, bookingDelayRepository, priorityRebookingRepository,
+                storeMembershipRepository, serviceRepository, webhookDispatcher);
     }
 
     @Bean
