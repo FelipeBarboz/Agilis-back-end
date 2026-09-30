@@ -28,6 +28,9 @@ public class StoreMembershipEntity {
     @Column(nullable = false, columnDefinition = "store_role")
     private StoreRole role;
 
+    @Column(name = "position_id")
+    private UUID positionId;
+
     @Column(name = "invited_by")
     private UUID invitedBy;
 

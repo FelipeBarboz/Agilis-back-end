@@ -12,4 +12,5 @@ public interface StoreMembershipRepository {
     List<StoreMembership> findAllByProviderId(UUID providerId);
     boolean existsByProviderIdAndStoreId(UUID providerId, UUID storeId);
     void deleteById(UUID id);
+    List<StoreMembership> findAllByPositionId(UUID positionId);
 }

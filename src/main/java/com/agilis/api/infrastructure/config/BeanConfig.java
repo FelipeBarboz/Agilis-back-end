@@ -146,6 +146,11 @@ public class BeanConfig {
     }
 
     @Bean
+    public StorePositionRepository storePositionRepository(StorePositionJpaRepository jpa) {
+        return new StorePositionRepositoryAdapter(jpa);
+    }
+
+    @Bean
     public WebhookSubscriptionRepository webhookSubscriptionRepository(WebhookSubscriptionJpaRepository jpa) { return new WebhookSubscriptionRepositoryAdapter(jpa);}
 
     @Bean
@@ -310,6 +315,41 @@ public class BeanConfig {
             ServiceAreaCityRepository serviceAreaCityRepository
     ) {
         return new GetServiceAreaUseCase(storeServiceAreaRepository, serviceAreaCityRepository);
+    }
+
+    @Bean
+    public CreateStorePositionUseCase createStorePositionUseCase(
+            StorePositionRepository storePositionRepository, StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new CreateStorePositionUseCase(storePositionRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public UpdateStorePositionUseCase updateStorePositionUseCase(
+            StorePositionRepository storePositionRepository, StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new UpdateStorePositionUseCase(storePositionRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public DeleteStorePositionUseCase deleteStorePositionUseCase(
+            StorePositionRepository storePositionRepository, StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new DeleteStorePositionUseCase(storePositionRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public ListStorePositionsUseCase listStorePositionsUseCase(
+            StorePositionRepository storePositionRepository, StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new ListStorePositionsUseCase(storePositionRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public AssignPositionUseCase assignPositionUseCase(
+            StoreMembershipRepository storeMembershipRepository, StorePositionRepository storePositionRepository
+    ) {
+        return new AssignPositionUseCase(storeMembershipRepository, storePositionRepository);
     }
 
     //  USE CASES — BOOKING
