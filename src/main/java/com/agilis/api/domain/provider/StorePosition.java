@@ -1,10 +1,13 @@
 package com.agilis.api.domain.provider;
 
 import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
+@Setter
 public class StorePosition {
 
     private final UUID id;
