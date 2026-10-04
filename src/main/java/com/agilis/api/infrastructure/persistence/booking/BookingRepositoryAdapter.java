@@ -86,17 +86,26 @@ public class BookingRepositoryAdapter implements BookingRepository {
         entity.setPaymentMethod(booking.getPaymentMethod() != null ? booking.getPaymentMethod().name() : null);
         entity.setRefundStatus(booking.getRefundStatus() != null ? booking.getRefundStatus().name() : null);
         entity.setIssueDescription(booking.getIssueDescription());
+        entity.setCouponId(booking.getCouponId());
+        entity.setDiscountAmount(booking.getDiscountAmount());
         entity.setCreatedAt(booking.getCreatedAt());
         return entity;
     }
 
     private Booking toDomain(BookingEntity entity) {
         return Booking.reconstitute(
-                entity.getId(), entity.getClientId(), entity.getServiceId(), entity.getEmployeeId(),
-                entity.getScheduledAt(), entity.getStatus(), entity.getNotes(),
+                entity.getId(),
+                entity.getClientId(),
+                entity.getServiceId(),
+                entity.getEmployeeId(),
+                entity.getScheduledAt(),
+                entity.getStatus(),
+                entity.getNotes(),
                 entity.getPaymentMethod() != null ? PaymentMethod.valueOf(entity.getPaymentMethod()) : null,
                 entity.getRefundStatus() != null ? RefundStatus.valueOf(entity.getRefundStatus()) : null,
                 entity.getIssueDescription(),
+                entity.getCouponId(),
+                entity.getDiscountAmount(),
                 entity.getCreatedAt()
         );
     }

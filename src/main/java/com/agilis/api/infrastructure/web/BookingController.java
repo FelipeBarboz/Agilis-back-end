@@ -46,8 +46,9 @@ public class BookingController {
                 input.employeeId(),
                 input.scheduledAt(),
                 input.notes(),
-                input.paymentMethod()
-                );
+                input.paymentMethod(),
+                input.couponCode()
+        );
         return ResponseEntity.ok(createBookingUseCase.execute(inputWithClient));
     }
 

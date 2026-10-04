@@ -4,6 +4,8 @@ import com.agilis.api.domain.booking.BookingStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -48,6 +50,12 @@ public class BookingEntity {
 
     @Column(name = "issue_description", columnDefinition = "TEXT")
     private String issueDescription;
+
+    @Column(name = "coupon_id")
+    private UUID couponId;
+
+    @Column(name = "discount_amount", precision = 10, scale = 2)
+    private BigDecimal discountAmount;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
