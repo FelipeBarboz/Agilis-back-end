@@ -1,6 +1,10 @@
 package com.agilis.api.infrastructure.config;
 
 import com.agilis.api.application.booking.*;
+import com.agilis.api.application.coupon.CreateCouponUseCase;
+import com.agilis.api.application.coupon.DeactivateCouponUseCase;
+import com.agilis.api.application.coupon.ListCouponsUseCase;
+import com.agilis.api.application.coupon.ValidateCouponUseCase;
 import com.agilis.api.application.favorite.AddFavoriteUseCase;
 import com.agilis.api.application.favorite.GetFavoritesUseCase;
 import com.agilis.api.application.favorite.RemoveFavoriteUseCase;
@@ -21,6 +25,9 @@ import com.agilis.api.domain.booking.BookingDelayRepository;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.client.ClientRepository;
 import com.agilis.api.domain.client.PriorityRebookingRepository;
+import com.agilis.api.domain.coupon.CouponRedemptionRepository;
+import com.agilis.api.domain.coupon.CouponRepository;
+import com.agilis.api.domain.coupon.PlatformAdminRepository;
 import com.agilis.api.domain.favorite.FavoriteRepository;
 import com.agilis.api.domain.message.MessageRepository;
 import com.agilis.api.domain.negotiation.NegotiationRepository;
@@ -43,6 +50,7 @@ import com.agilis.api.infrastructure.persistence.client.ClientJpaRepository;
 import com.agilis.api.infrastructure.persistence.client.ClientRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.client.PriorityRebookingJpaRepository;
 import com.agilis.api.infrastructure.persistence.client.PriorityRebookingRepositoryAdapter;
+import com.agilis.api.infrastructure.persistence.coupon.*;
 import com.agilis.api.infrastructure.persistence.favorite.FavoriteJpaRepository;
 import com.agilis.api.infrastructure.persistence.favorite.FavoriteRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.message.MessageJpaRepository;
@@ -93,6 +101,11 @@ public class BeanConfig {
     @Bean
     public ClientRepository clientRepository(ClientJpaRepository jpa) {
         return new ClientRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public ProviderRepository providerRepository(ProviderJpaRepository jpa) {
+        return new ProviderRepositoryAdapter(jpa);
     }
 
     @Bean
@@ -197,13 +210,40 @@ public class BeanConfig {
     }
 
     @Bean
-    public CreateStoreUseCase createStoreUseCase(
-            UserRepository userRepository,
-            ProviderProfileRepository providerProfileRepository,
-            StoreUnitRepository storeUnitRepository,
-            StoreMembershipRepository storeMembershipRepository
+    public CouponRepository couponRepository(CouponJpaRepository jpa) {
+        return new CouponRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public CouponRedemptionRepository couponRedemptionRepository(CouponRedemptionJpaRepository jpa) {
+        return new CouponRedemptionRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public PlatformAdminRepository platformAdminRepository(PlatformAdminJpaRepository jpa) {
+        return new PlatformAdminRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public CreateCouponUseCase createCouponUseCase(CouponRepository couponRepository, PlatformAdminRepository platformAdminRepository) {
+        return new CreateCouponUseCase(couponRepository, platformAdminRepository);
+    }
+
+    @Bean
+    public ListCouponsUseCase listCouponsUseCase(CouponRepository couponRepository, PlatformAdminRepository platformAdminRepository) {
+        return new ListCouponsUseCase(couponRepository, platformAdminRepository);
+    }
+
+    @Bean
+    public DeactivateCouponUseCase deactivateCouponUseCase(CouponRepository couponRepository, PlatformAdminRepository platformAdminRepository) {
+        return new DeactivateCouponUseCase(couponRepository, platformAdminRepository);
+    }
+
+    @Bean
+    public ValidateCouponUseCase validateCouponUseCase(
+            CouponRepository couponRepository, CouponRedemptionRepository couponRedemptionRepository, ServiceRepository serviceRepository
     ) {
-        return new CreateStoreUseCase(userRepository, providerProfileRepository, storeUnitRepository, storeMembershipRepository);
+        return new ValidateCouponUseCase(couponRepository, couponRedemptionRepository, serviceRepository);
     }
 
     //  USE CASES — USER
@@ -237,6 +277,21 @@ public class BeanConfig {
     }
 
     //  USE CASES — PROVIDER
+
+    @Bean
+    public RegisterProviderUseCase registerProviderUseCase(
+            UserRepository userRepository,
+            ProviderRepository providerRepository,
+            ProviderProfileRepository providerProfileRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new RegisterProviderUseCase(
+                userRepository,
+                providerRepository,
+                providerProfileRepository,
+                storeMembershipRepository
+        );
+    }
 
     @Bean
     public SetBusinessHoursUseCase setBusinessHoursUseCase(
@@ -350,9 +405,12 @@ public class BeanConfig {
             ClientRepository clientRepository,
             ServiceRepository serviceRepository,
             PriorityRebookingRepository priorityRebookingRepository,
+            CouponRepository couponRepository,
+            CouponRedemptionRepository couponRedemptionRepository,
             WebhookDispatcher webhookDispatcher
     ) {
-        return new CreateBookingUseCase(bookingRepository, clientRepository, serviceRepository, priorityRebookingRepository, webhookDispatcher);
+        return new CreateBookingUseCase(bookingRepository, clientRepository, serviceRepository,
+                priorityRebookingRepository, couponRepository, couponRedemptionRepository, webhookDispatcher);
     }
 
     @Bean
@@ -588,10 +646,11 @@ public class BeanConfig {
     @Bean
     public InviteMemberUseCase inviteMemberUseCase(
             StoreMembershipRepository storeMembershipRepository,
+            ProviderRepository providerRepository,
             UserRepository userRepository,
             WebhookDispatcher webhookDispatcher
     ) {
-        return new InviteMemberUseCase(storeMembershipRepository, userRepository, webhookDispatcher);
+        return new InviteMemberUseCase(storeMembershipRepository, providerRepository, userRepository, webhookDispatcher);
     }
 
     @Bean
@@ -716,10 +775,9 @@ public class BeanConfig {
     @Bean
     public CreateStoreUnitUseCase createStoreUnitUseCase(
             StoreUnitRepository storeUnitRepository,
-            StoreMembershipRepository storeMembershipRepository,
-            ProviderProfileRepository providerProfileRepository
+            StoreMembershipRepository storeMembershipRepository
     ) {
-        return new CreateStoreUnitUseCase(storeUnitRepository, storeMembershipRepository, providerProfileRepository);
+        return new CreateStoreUnitUseCase(storeUnitRepository, storeMembershipRepository);
     }
 
     @Bean

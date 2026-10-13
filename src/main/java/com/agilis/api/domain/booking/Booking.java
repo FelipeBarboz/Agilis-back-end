@@ -1,6 +1,8 @@
 package com.agilis.api.domain.booking;
 
 import lombok.Getter;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,11 +21,13 @@ public class Booking {
     private final PaymentMethod paymentMethod;
     private RefundStatus refundStatus;
     private String issueDescription;
+    private final UUID couponId;
+    private final BigDecimal discountAmount;
     private final LocalDateTime createdAt;
 
     private Booking(UUID id, UUID clientId, UUID serviceId, UUID employeeId, LocalDateTime scheduledAt,
                     BookingStatus status, String notes, PaymentMethod paymentMethod,
-                    RefundStatus refundStatus, String issueDescription, LocalDateTime createdAt) {
+                    RefundStatus refundStatus, String issueDescription, UUID couponId, BigDecimal discountAmount, LocalDateTime createdAt) {
         this.id                = id;
         this.clientId          = clientId;
         this.serviceId         = serviceId;
@@ -35,20 +39,23 @@ public class Booking {
         this.paymentMethod     = paymentMethod;
         this.refundStatus      = refundStatus;
         this.issueDescription  = issueDescription;
+        this.couponId = couponId;
+        this.discountAmount = discountAmount;
         this.createdAt         = createdAt;
     }
 
     public static Booking create(UUID clientId, UUID serviceId, UUID employeeId, LocalDateTime scheduledAt,
-                                 String notes, PaymentMethod paymentMethod) {
+                                 String notes, PaymentMethod paymentMethod, UUID couponId, BigDecimal discountAmount) {
         return new Booking(UUID.randomUUID(), clientId, serviceId, employeeId, scheduledAt,
-                BookingStatus.PENDING, notes, paymentMethod, null, null, LocalDateTime.now());
+                BookingStatus.PENDING, notes, paymentMethod, null, null, couponId, discountAmount, LocalDateTime.now());
     }
 
     public static Booking reconstitute(UUID id, UUID clientId, UUID serviceId, UUID employeeId, LocalDateTime scheduledAt,
                                        BookingStatus status, String notes, PaymentMethod paymentMethod,
-                                       RefundStatus refundStatus, String issueDescription, LocalDateTime createdAt) {
+                                       RefundStatus refundStatus, String issueDescription,
+                                       UUID couponId, BigDecimal discountAmount, LocalDateTime createdAt) {
         return new Booking(id, clientId, serviceId, employeeId, scheduledAt, status, notes, paymentMethod,
-                refundStatus, issueDescription, createdAt);
+                refundStatus, issueDescription, couponId, discountAmount, createdAt);
     }
 
     public void assignEmployee(UUID employeeId) { this.employeeId = employeeId; }
