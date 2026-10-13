@@ -1,9 +1,6 @@
 package com.agilis.api.application.provider;
 
-import com.agilis.api.domain.provider.StoreMembershipRepository;
-import com.agilis.api.domain.provider.StoreUnit;
-import com.agilis.api.domain.provider.StoreUnitRepository;
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.agilis.api.domain.provider.*;
 
 import java.util.UUID;
 
@@ -11,13 +8,16 @@ public class CreateStoreUnitUseCase {
 
     private final StoreUnitRepository storeUnitRepository;
     private final StoreMembershipRepository storeMembershipRepository;
+    private final ProviderProfileRepository providerProfileRepository;
 
     public CreateStoreUnitUseCase(
             StoreUnitRepository storeUnitRepository,
-            StoreMembershipRepository storeMembershipRepository
+            StoreMembershipRepository storeMembershipRepository,
+            ProviderProfileRepository providerProfileRepository
     ) {
         this.storeUnitRepository       = storeUnitRepository;
         this.storeMembershipRepository = storeMembershipRepository;
+        this.providerProfileRepository = providerProfileRepository;
     }
 
     public Output execute(Input input) {
@@ -26,50 +26,42 @@ public class CreateStoreUnitUseCase {
 
         var membership = storeMembershipRepository
                 .findByProviderIdAndStoreId(requesterId, storeId)
-                .orElseThrow(() -> new IllegalArgumentException("Você não é membro desta loja"));
+                .orElseThrow(() -> new IllegalArgumentException("You are not a member of this store."));
 
         if (!membership.getRole().canManageStore()) {
-            throw new IllegalStateException("Sem permissão para criar unidades");
+            throw new IllegalStateException("No permission to create units.");
+        }
+
+        CnpjValidator.validate(input.cnpj());
+
+        var storeWithCnpj = providerProfileRepository.findByCnpj(input.cnpj());
+        if (storeWithCnpj.isPresent() && !storeWithCnpj.get().getId().equals(storeId)) {
+            throw new IllegalStateException("CNPJ already registered by another store.");
+        }
+
+        if (storeUnitRepository.findByCnpj(input.cnpj()).isPresent()) {
+            throw new IllegalStateException("CNPJ already registered by another unit.");
         }
 
         StoreUnit unit = StoreUnit.create(
-                storeId,
-                input.name(),
-                input.street(),
-                input.number(),
-                input.complement(),
-                input.city(),
-                input.state(),
-                input.cep()
+                storeId, input.cnpj(), input.name(), input.street(), input.number(),
+                input.complement(), input.city(), input.state(), input.cep()
         );
         storeUnitRepository.save(unit);
 
-        return toOutput(unit);
-    }
-
-    private Output toOutput(StoreUnit unit) {
         return new Output(
-                unit.getId().toString(),
-                unit.getProviderProfileId().toString(),
-                unit.getName(),
-                unit.getStreet(),
-                unit.getNumber(),
-                unit.getComplement(),
-                unit.getCity(),
-                unit.getState(),
-                unit.getCep()
+                unit.getId().toString(), unit.getProviderProfileId().toString(), unit.getCnpj(), unit.getName(),
+                unit.getStreet(), unit.getNumber(), unit.getComplement(), unit.getCity(), unit.getState(), unit.getCep()
         );
     }
 
-    @Schema(name = "CreateStoreUnitInput")
     public record Input(
-            String requesterId, String storeId, String name, String street, String number,
+            String requesterId, String storeId, String cnpj, String name, String street, String number,
             String complement, String city, String state, String cep
     ) {}
 
-    @Schema(name = "CreateStoreUnitOutput")
     public record Output(
-            String unitId, String storeId, String name, String street, String number,
+            String unitId, String storeId, String cnpj, String name, String street, String number,
             String complement, String city, String state, String cep
     ) {}
 }

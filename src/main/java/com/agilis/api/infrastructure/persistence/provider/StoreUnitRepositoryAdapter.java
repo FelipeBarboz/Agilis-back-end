@@ -32,6 +32,11 @@ public class StoreUnitRepositoryAdapter implements StoreUnitRepository {
     }
 
     @Override
+    public Optional<StoreUnit> findByCnpj(String cnpj) {
+        return jpaRepository.findByCnpj(cnpj).map(this::toDomain);
+    }
+
+    @Override
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }
@@ -47,21 +52,15 @@ public class StoreUnitRepositoryAdapter implements StoreUnitRepository {
         entity.setCity(unit.getCity());
         entity.setState(unit.getState());
         entity.setCep(unit.getCep());
+        entity.setCnpj(unit.getCnpj());
         entity.setCreatedAt(unit.getCreatedAt());
         return entity;
     }
 
     private StoreUnit toDomain(StoreUnitEntity entity) {
         return StoreUnit.reconstitute(
-                entity.getId(),
-                entity.getProviderProfileId(),
-                entity.getName(),
-                entity.getStreet(),
-                entity.getNumber(),
-                entity.getComplement(),
-                entity.getCity(),
-                entity.getState(),
-                entity.getCep(),
+                entity.getId(), entity.getProviderProfileId(), entity.getCnpj(), entity.getName(), entity.getStreet(),
+                entity.getNumber(), entity.getComplement(), entity.getCity(), entity.getState(), entity.getCep(),
                 entity.getCreatedAt()
         );
     }

@@ -9,6 +9,7 @@ public class StoreUnit {
 
     private final UUID id;
     private final UUID providerProfileId;
+    private final String cnpj;
     private String name;
     private String street;
     private String number;
@@ -18,30 +19,31 @@ public class StoreUnit {
     private String cep;
     private final LocalDateTime createdAt;
 
-    private StoreUnit(UUID id, UUID providerProfileId, String name, String street, String number,
+    private StoreUnit(UUID id, UUID providerProfileId, String cnpj, String name, String street, String number,
                       String complement, String city, String state, String cep, LocalDateTime createdAt) {
         this.id                = id;
         this.providerProfileId = providerProfileId;
-        this.name               = validateField(name, "Unit name");
-        this.street              = validateField(street, "Road");
-        this.number              = validateField(number, "Number");
-        this.complement          = complement;
-        this.city                = validateField(city, "City");
-        this.state                = validateState(state);
-        this.cep                  = validateCep(cep);
-        this.createdAt           = createdAt;
+        this.cnpj              = cnpj;
+        this.name              = validateField(name, "Unit name");
+        this.street            = validateField(street, "Street");
+        this.number            = validateField(number, "Number");
+        this.complement        = complement;
+        this.city              = validateField(city, "City");
+        this.state             = validateState(state);
+        this.cep               = validateCep(cep);
+        this.createdAt         = createdAt;
     }
 
-    public static StoreUnit create(UUID providerProfileId, String name, String street, String number,
+    public static StoreUnit create(UUID providerProfileId, String cnpj, String name, String street, String number,
                                    String complement, String city, String state, String cep) {
-        return new StoreUnit(
-                UUID.randomUUID(), providerProfileId, name, street, number, complement, city, state, cep, LocalDateTime.now()
-        );
+        return new StoreUnit(UUID.randomUUID(), providerProfileId, CnpjValidator.validate(cnpj), name, street,
+                number, complement, city, state, cep, LocalDateTime.now());
     }
 
-    public static StoreUnit reconstitute(UUID id, UUID providerProfileId, String name, String street, String number,
-                                         String complement, String city, String state, String cep, LocalDateTime createdAt) {
-        return new StoreUnit(id, providerProfileId, name, street, number, complement, city, state, cep, createdAt);
+    public static StoreUnit reconstitute(UUID id, UUID providerProfileId, String cnpj, String name, String street,
+                                         String number, String complement, String city, String state, String cep,
+                                         LocalDateTime createdAt) {
+        return new StoreUnit(id, providerProfileId, cnpj, name, street, number, complement, city, state, cep, createdAt);
     }
 
     public void changeName(String name)             { this.name       = validateField(name, "Unity name"); }

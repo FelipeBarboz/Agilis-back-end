@@ -12,6 +12,7 @@ import java.util.UUID;
 public interface ProviderProfileJpaRepository extends JpaRepository<ProviderProfileEntity, UUID> {
 
     Optional<ProviderProfileEntity> findBySlug(String slug);
+    Optional<ProviderProfileEntity> findByCnpj(String cnpj);
     boolean existsBySlug(String slug);
 
     @Query(

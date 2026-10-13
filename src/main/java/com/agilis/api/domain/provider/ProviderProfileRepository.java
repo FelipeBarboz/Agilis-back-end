@@ -8,6 +8,7 @@ public interface ProviderProfileRepository {
     ProviderProfile save(ProviderProfile providerProfile);
     Optional<ProviderProfile> findById(UUID id);
     Optional<ProviderProfile> findBySlug(String slug);
+    Optional<ProviderProfile> findByCnpj(String cnpj);
     boolean existsBySlug(String slug);
     void deleteById(UUID id);
 }

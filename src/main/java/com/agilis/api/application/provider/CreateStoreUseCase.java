@@ -6,22 +6,22 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
-public class RegisterProviderUseCase {
+public class CreateStoreUseCase {
 
     private final UserRepository userRepository;
-    private final ProviderRepository providerRepository;
     private final ProviderProfileRepository providerProfileRepository;
+    private final StoreUnitRepository storeUnitRepository;
     private final StoreMembershipRepository storeMembershipRepository;
 
-    public RegisterProviderUseCase(
+    public CreateStoreUseCase(
             UserRepository userRepository,
-            ProviderRepository providerRepository,
             ProviderProfileRepository providerProfileRepository,
+            StoreUnitRepository storeUnitRepository,
             StoreMembershipRepository storeMembershipRepository
     ) {
         this.userRepository            = userRepository;
-        this.providerRepository        = providerRepository;
         this.providerProfileRepository = providerProfileRepository;
+        this.storeUnitRepository       = storeUnitRepository;
         this.storeMembershipRepository = storeMembershipRepository;
     }
 
@@ -31,45 +31,32 @@ public class RegisterProviderUseCase {
         if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException("User not found.");
         }
-        if (providerRepository.existsByUserId(userId)) {
-            throw new IllegalArgumentException("User already has a provider account.");
+
+        CnpjValidator.validate(input.cnpj());
+
+        if (providerProfileRepository.findByCnpj(input.cnpj()).isPresent()
+                || storeUnitRepository.findByCnpj(input.cnpj()).isPresent()) {
+            throw new IllegalStateException("CNPJ already registered.");
         }
-        if (providerRepository.existsByCnpj(input.cnpj())) {
-            throw new IllegalArgumentException("CNPJ already registered.");
-        }
+
         if (providerProfileRepository.existsBySlug(input.slug())) {
-            throw new IllegalArgumentException("Slug is already in use.");
+            throw new IllegalStateException("Slug is already in use.");
         }
 
         ProviderProfile profile = ProviderProfile.create(
-                input.storeName(),
-                input.slug(),
-                input.description(),
-                input.profileImgUrl()
+                input.cnpj(), input.storeName(), input.slug(), input.description(), input.profileImgUrl()
         );
         providerProfileRepository.save(profile);
 
-        Provider provider = Provider.create(userId, input.cnpj(), profile.getId());
-        providerRepository.save(provider);
-
-        StoreMembership membership = StoreMembership.create(
-                profile.getId(),
-                userId,
-                StoreRole.OWNER,
-                null
-        );
+        StoreMembership membership = StoreMembership.create(profile.getId(), userId, StoreRole.OWNER, null);
         storeMembershipRepository.save(membership);
 
-        return new Output(
-                profile.getId().toString(),
-                profile.getStoreName(),
-                profile.getSlug()
-        );
+        return new Output(profile.getId().toString(), profile.getStoreName(), profile.getSlug(), profile.getCnpj());
     }
 
-    @Schema(name = "RegisterProviderInput")
+    @Schema(name = "CreateStoreInput")
     public record Input(String userId, String cnpj, String storeName, String slug, String description, String profileImgUrl) {}
 
-    @Schema(name = "RegisterProviderOutput")
-    public record Output(String profileId, String storeName, String slug) {}
+    @Schema(name = "CreateStoreOutput")
+    public record Output(String storeId, String storeName, String slug, String cnpj) {}
 }

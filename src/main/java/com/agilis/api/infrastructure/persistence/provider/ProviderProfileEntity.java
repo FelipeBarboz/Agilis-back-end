@@ -25,6 +25,9 @@ public class ProviderProfileEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(nullable = false, unique = true, length = 18)
+    private String cnpj;
+
     @Column(name = "profile_img_url", columnDefinition = "TEXT")
     private String profileImgUrl;
 

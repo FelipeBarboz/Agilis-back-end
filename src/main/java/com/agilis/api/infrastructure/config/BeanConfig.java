@@ -96,11 +96,6 @@ public class BeanConfig {
     }
 
     @Bean
-    public ProviderRepository providerRepository(ProviderJpaRepository jpa) {
-        return new ProviderRepositoryAdapter(jpa);
-    }
-
-    @Bean
     public ProviderProfileRepository providerProfileRepository(ProviderProfileJpaRepository jpa) {
         return new ProviderProfileRepositoryAdapter(jpa);
     }
@@ -201,6 +196,16 @@ public class BeanConfig {
         return new GetHomeHighlightsUseCase(serviceJpaRepository, findNextAvailableSlotUseCase);
     }
 
+    @Bean
+    public CreateStoreUseCase createStoreUseCase(
+            UserRepository userRepository,
+            ProviderProfileRepository providerProfileRepository,
+            StoreUnitRepository storeUnitRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new CreateStoreUseCase(userRepository, providerProfileRepository, storeUnitRepository, storeMembershipRepository);
+    }
+
     //  USE CASES — USER
 
     @Bean
@@ -232,21 +237,6 @@ public class BeanConfig {
     }
 
     //  USE CASES — PROVIDER
-
-    @Bean
-    public RegisterProviderUseCase registerProviderUseCase(
-            UserRepository userRepository,
-            ProviderRepository providerRepository,
-            ProviderProfileRepository providerProfileRepository,
-            StoreMembershipRepository storeMembershipRepository
-    ) {
-        return new RegisterProviderUseCase(
-                userRepository,
-                providerRepository,
-                providerProfileRepository,
-                storeMembershipRepository
-        );
-    }
 
     @Bean
     public SetBusinessHoursUseCase setBusinessHoursUseCase(
@@ -598,11 +588,10 @@ public class BeanConfig {
     @Bean
     public InviteMemberUseCase inviteMemberUseCase(
             StoreMembershipRepository storeMembershipRepository,
-            ProviderRepository providerRepository,
             UserRepository userRepository,
             WebhookDispatcher webhookDispatcher
     ) {
-        return new InviteMemberUseCase(storeMembershipRepository, providerRepository, userRepository, webhookDispatcher);
+        return new InviteMemberUseCase(storeMembershipRepository, userRepository, webhookDispatcher);
     }
 
     @Bean
@@ -727,9 +716,10 @@ public class BeanConfig {
     @Bean
     public CreateStoreUnitUseCase createStoreUnitUseCase(
             StoreUnitRepository storeUnitRepository,
-            StoreMembershipRepository storeMembershipRepository
+            StoreMembershipRepository storeMembershipRepository,
+            ProviderProfileRepository providerProfileRepository
     ) {
-        return new CreateStoreUnitUseCase(storeUnitRepository, storeMembershipRepository);
+        return new CreateStoreUnitUseCase(storeUnitRepository, storeMembershipRepository, providerProfileRepository);
     }
 
     @Bean

@@ -40,6 +40,9 @@ public class StoreUnitEntity {
     @Column(nullable = false, length = 9)
     private String cep;
 
+    @Column(unique = true, length = 18)
+    private String cnpj;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 }

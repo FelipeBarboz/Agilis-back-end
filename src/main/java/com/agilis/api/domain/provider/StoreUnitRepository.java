@@ -9,5 +9,6 @@ public interface StoreUnitRepository {
     StoreUnit save(StoreUnit unit);
     Optional<StoreUnit> findById(UUID id);
     List<StoreUnit> findAllByProviderProfileId(UUID providerProfileId);
+    Optional<StoreUnit> findByCnpj(String cnpj);
     void deleteById(UUID id);
 }
