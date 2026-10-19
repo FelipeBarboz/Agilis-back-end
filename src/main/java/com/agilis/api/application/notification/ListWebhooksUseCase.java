@@ -1,6 +1,5 @@
 package com.agilis.api.application.notification;
 
-import com.agilis.api.domain.notification.WebhookSubscription;
 import com.agilis.api.domain.notification.WebhookSubscriptionRepository;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -74,6 +74,11 @@ public class BookingRepositoryAdapter implements BookingRepository {
                 .stream().map(this::toDomain).toList();
     }
 
+    @Override
+    public List<LocalDate> findDistinctDatesByStoreAndDateRange(UUID storeId, LocalDate startDate, LocalDate endDate) {
+        return jpaRepository.findDistinctDatesByStoreAndDateRange(storeId, startDate, endDate);
+    }
+
     private BookingEntity toEntity(Booking booking) {
         BookingEntity entity = new BookingEntity();
         entity.setId(booking.getId());

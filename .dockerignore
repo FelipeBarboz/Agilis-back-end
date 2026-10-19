@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+
+# Environment and sensitive data
+.env*
+*.env
+
+# Local build artifacts
+target/
+build/
+*.class
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Documentation & scratch
+*.md
+!README.md

@@ -10,4 +10,5 @@ public interface ScheduleSlotRepository {
     Optional<ScheduleSlot> findById(UUID id);
     List<ScheduleSlot> findAllByEmployeeScheduleId(UUID employeeScheduleId);
     void deleteById(UUID id);
+    void deleteAllByEmployeeScheduleId(UUID employeeScheduleId);
 }

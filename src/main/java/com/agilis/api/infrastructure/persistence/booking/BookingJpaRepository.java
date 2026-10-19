@@ -41,4 +41,18 @@ public interface BookingJpaRepository extends JpaRepository<BookingEntity, UUID>
           AND b.date = :date
     """)
     List<BookingEntity> findAllByEmployeeAndDate(@Param("employeeId") UUID employeeId, @Param("date") LocalDate date);
+
+    @Query("""
+        SELECT DISTINCT b.date FROM BookingEntity b
+        JOIN ServiceEntity s ON s.id = b.serviceId
+        WHERE s.storeId = :storeId
+          AND b.date >= :startDate
+          AND b.date <= :endDate
+        ORDER BY b.date ASC
+    """)
+    List<LocalDate> findDistinctDatesByStoreAndDateRange(
+            @Param("storeId") UUID storeId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }

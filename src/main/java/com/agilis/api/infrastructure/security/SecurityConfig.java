@@ -29,6 +29,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         // rotas completamente públicas
+                        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/coupons").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/coupons/validate").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/forgot-password").permitAll()
@@ -47,9 +48,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/services/*/availability").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/stores/*/business-hours").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/stores/*/units").permitAll()
+                        .requestMatchers("/api/v1/stores/*/schedules/**").authenticated()
+                        .requestMatchers("/api/v1/stores/*/positions/**").authenticated()
+                        .requestMatchers("/api/v1/stores/*/webhooks/**").authenticated()
+                        .requestMatchers("/api/v1/stores/*/invites/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/register/client").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/stores/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/services/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/store-invites/*").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/v3/api-docs").permitAll()
                         // todo o resto exige autenticação
                         .anyRequest().authenticated()

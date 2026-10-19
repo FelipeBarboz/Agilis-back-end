@@ -17,4 +17,5 @@ public interface BookingRepository {
     boolean existsConflict(UUID serviceId, LocalDateTime scheduledAt);
     List<Booking> findAllByStoreAndDate(UUID storeId, LocalDate date);
     List<Booking> findAllByEmployeeAndDate(UUID employeeId, LocalDate date);
+    List<LocalDate> findDistinctDatesByStoreAndDateRange(UUID storeId, LocalDate startDate, LocalDate endDate);
 }

@@ -35,6 +35,11 @@ public class ScheduleSlotRepositoryAdapter implements ScheduleSlotRepository {
         jpaRepository.deleteById(id);
     }
 
+    @Override
+    public void deleteAllByEmployeeScheduleId(UUID employeeScheduleId) {
+        jpaRepository.deleteAllByEmployeeScheduleId(employeeScheduleId);
+    }
+
     private ScheduleSlotEntity toEntity(ScheduleSlot slot) {
         ScheduleSlotEntity entity = new ScheduleSlotEntity();
         entity.setId(slot.getId());
