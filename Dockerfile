@@ -41,7 +41,7 @@ USER appuser
 
 EXPOSE 8080
 
-# Configurações de JVM otimizadas para containers e memória dinâmica
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
+# Configurações de JVM otimizadas para containers e forçando IPv4 no Render/Cloud
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom -Djava.net.preferIPv4Stack=true"
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
