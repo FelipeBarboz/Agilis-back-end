@@ -23,6 +23,10 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         System.out.println("=== JwtFilter chamado para: " + request.getMethod() + " " + request.getRequestURI());
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            chain.doFilter(request, response);
+            return;
+        }
         String header = request.getHeader("Authorization");
         System.out.println("Authorization header: " + header);
 
