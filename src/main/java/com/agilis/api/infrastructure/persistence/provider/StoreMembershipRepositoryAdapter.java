@@ -51,12 +51,18 @@ public class StoreMembershipRepositoryAdapter implements StoreMembershipReposito
         jpaRepository.deleteById(id);
     }
 
+    @Override
+    public List<StoreMembership> findAllByPositionId(UUID positionId) {
+        return List.of();
+    }
+
     private StoreMembershipEntity toEntity(StoreMembership membership) {
         StoreMembershipEntity entity = new StoreMembershipEntity();
         entity.setId(membership.getId());
         entity.setStoreId(membership.getStoreId());
         entity.setProviderId(membership.getProviderId());
         entity.setRole(membership.getRole());
+        entity.setPositionId(membership.getPositionId());
         entity.setInvitedBy(membership.getInvitedBy());
         entity.setCreatedAt(membership.getCreatedAt());
         return entity;
@@ -68,6 +74,7 @@ public class StoreMembershipRepositoryAdapter implements StoreMembershipReposito
                 entity.getStoreId(),
                 entity.getProviderId(),
                 entity.getRole(),
+                entity.getPositionId(),
                 entity.getInvitedBy(),
                 entity.getCreatedAt()
         );

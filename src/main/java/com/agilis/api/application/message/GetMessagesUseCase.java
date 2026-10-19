@@ -77,12 +77,5 @@ public class GetMessagesUseCase {
     public record Input(String bookingId, String requesterId) {}
 
     @Schema(name = "GetMessagesOutput")
-    public record Output(
-            String messageId,
-            String bookingId,
-            String senderId,
-            String receiverId,
-            String content,
-            LocalDateTime sentAt
-    ) {}
+    public record Output(String messageId, String bookingId, String senderId, String receiverId, String content, LocalDateTime sentAt) {}
 }

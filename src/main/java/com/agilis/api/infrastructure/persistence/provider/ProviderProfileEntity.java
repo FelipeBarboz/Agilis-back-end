@@ -25,8 +25,14 @@ public class ProviderProfileEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(nullable = false, unique = true, length = 18)
+    private String cnpj;
+
     @Column(name = "profile_img_url", columnDefinition = "TEXT")
     private String profileImgUrl;
+
+    @Column(name = "allow_employee_selection", nullable = false)
+    private boolean allowEmployeeSelection;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

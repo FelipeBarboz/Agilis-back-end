@@ -4,6 +4,7 @@ import com.agilis.api.domain.provider.StoreRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -26,6 +27,9 @@ public class StoreMembershipEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "store_role")
     private StoreRole role;
+
+    @Column(name = "position_id")
+    private UUID positionId;
 
     @Column(name = "invited_by")
     private UUID invitedBy;

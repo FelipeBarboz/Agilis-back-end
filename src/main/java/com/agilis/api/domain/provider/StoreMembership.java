@@ -11,31 +11,33 @@ public class StoreMembership {
     private final UUID storeId;
     private final UUID providerId;
     private StoreRole role;
+    private UUID positionId;
     private final UUID invitedBy;
     private final LocalDateTime createdAt;
 
-    private StoreMembership(UUID id, UUID storeId, UUID providerId, StoreRole role, UUID invitedBy, LocalDateTime createdAt) {
+    private StoreMembership(UUID id, UUID storeId, UUID providerId, StoreRole role, UUID positionId, UUID invitedBy, LocalDateTime createdAt) {
         this.id         = id;
         this.storeId    = storeId;
         this.providerId = providerId;
         this.role       = validateRole(role);
+        this.positionId = positionId;
         this.invitedBy  = invitedBy;
         this.createdAt  = createdAt;
     }
 
     public static StoreMembership create(UUID storeId, UUID providerId, StoreRole role, UUID invitedBy) {
-        return new StoreMembership(
-                UUID.randomUUID(),
-                storeId,
-                providerId,
-                role,
-                invitedBy,
-                LocalDateTime.now()
-        );
+        return new StoreMembership(UUID.randomUUID(), storeId, providerId, role, null, invitedBy, LocalDateTime.now());
     }
 
-    public static StoreMembership reconstitute(UUID id, UUID storeId, UUID providerId, StoreRole role, UUID invitedBy, LocalDateTime createdAt) {
-        return new StoreMembership(id, storeId, providerId, role, invitedBy, createdAt);
+    public static StoreMembership reconstitute(UUID id, UUID storeId, UUID providerId, StoreRole role, UUID positionId, UUID invitedBy, LocalDateTime createdAt) {
+        return new StoreMembership(id, storeId, providerId, role, positionId, invitedBy, createdAt);
+    }
+
+    public void assignPosition(UUID positionId) {
+        if (this.role == StoreRole.OWNER) {
+            throw new IllegalStateException("Owner does not receive a role — they already have full access");
+        }
+        this.positionId = positionId;
     }
 
     public void promoteToAdmin() {

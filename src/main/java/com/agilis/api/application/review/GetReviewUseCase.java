@@ -42,13 +42,5 @@ public class GetReviewUseCase {
     }
 
     @Schema(name = "GetReviewOutput")
-    public record Output(
-            String reviewId,
-            String bookingId,
-            String reviewerId,
-            String reviewedId,
-            int rating,
-            String comment,
-            LocalDateTime createdAt
-    ) {}
+    public record Output(String reviewId, String bookingId, String reviewerId, String reviewedId, int rating, String comment, LocalDateTime createdAt) {}
 }

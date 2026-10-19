@@ -6,6 +6,8 @@ target/
 
 ### Custom ###
 .env
+.env.*
+src/test/
 
 ### STS ###
 .apt_generated

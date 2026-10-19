@@ -3,6 +3,8 @@ package com.agilis.api.infrastructure.persistence.booking;
 import com.agilis.api.domain.booking.Booking;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.booking.BookingStatus;
+import com.agilis.api.domain.booking.PaymentMethod;
+import com.agilis.api.domain.booking.RefundStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,17 +33,13 @@ public class BookingRepositoryAdapter implements BookingRepository {
     @Override
     public List<Booking> findAllByClientId(UUID clientId) {
         return jpaRepository.findAllByClientId(clientId)
-                .stream()
-                .map(this::toDomain)
-                .toList();
+                .stream().map(this::toDomain).toList();
     }
 
     @Override
     public List<Booking> findAllByServiceId(UUID serviceId) {
         return jpaRepository.findAllByServiceId(serviceId)
-                .stream()
-                .map(this::toDomain)
-                .toList();
+                .stream().map(this::toDomain).toList();
     }
 
     @Override
@@ -55,11 +53,30 @@ public class BookingRepositoryAdapter implements BookingRepository {
 
     @Override
     public boolean existsConflict(UUID serviceId, LocalDateTime scheduledAt) {
-        return jpaRepository.existsConflict(
-                serviceId,
-                scheduledAt,
-                List.of(BookingStatus.CANCELLED)
-        );
+        return jpaRepository.existsConflict(serviceId, scheduledAt, List.of(BookingStatus.CANCELLED));
+    }
+
+    @Override
+    public List<Booking> findAllByStoreAndDate(UUID storeId, LocalDate date) {
+        return jpaRepository.findAllByStoreAndDate(storeId, date)
+                .stream().map(this::toDomain).toList();
+    }
+
+    // BookingRepositoryAdapter.java — adiciona
+    @Override
+    public List<Booking> findAllByEmployeeId(UUID employeeId) {
+        return jpaRepository.findAllByEmployeeId(employeeId).stream().map(this::toDomain).toList();
+    }
+
+    @Override
+    public List<Booking> findAllByEmployeeAndDate(UUID employeeId, LocalDate date) {
+        return jpaRepository.findAllByEmployeeAndDate(employeeId, date)
+                .stream().map(this::toDomain).toList();
+    }
+
+    @Override
+    public List<LocalDate> findDistinctDatesByStoreAndDateRange(UUID storeId, LocalDate startDate, LocalDate endDate) {
+        return jpaRepository.findDistinctDatesByStoreAndDateRange(storeId, startDate, endDate);
     }
 
     private BookingEntity toEntity(Booking booking) {
@@ -67,8 +84,15 @@ public class BookingRepositoryAdapter implements BookingRepository {
         entity.setId(booking.getId());
         entity.setClientId(booking.getClientId());
         entity.setServiceId(booking.getServiceId());
+        entity.setEmployeeId(booking.getEmployeeId());
         entity.setScheduledAt(booking.getScheduledAt());
         entity.setStatus(booking.getStatus());
+        entity.setNotes(booking.getNotes());
+        entity.setPaymentMethod(booking.getPaymentMethod() != null ? booking.getPaymentMethod().name() : null);
+        entity.setRefundStatus(booking.getRefundStatus() != null ? booking.getRefundStatus().name() : null);
+        entity.setIssueDescription(booking.getIssueDescription());
+        entity.setCouponId(booking.getCouponId());
+        entity.setDiscountAmount(booking.getDiscountAmount());
         entity.setCreatedAt(booking.getCreatedAt());
         return entity;
     }
@@ -78,8 +102,15 @@ public class BookingRepositoryAdapter implements BookingRepository {
                 entity.getId(),
                 entity.getClientId(),
                 entity.getServiceId(),
+                entity.getEmployeeId(),
                 entity.getScheduledAt(),
                 entity.getStatus(),
+                entity.getNotes(),
+                entity.getPaymentMethod() != null ? PaymentMethod.valueOf(entity.getPaymentMethod()) : null,
+                entity.getRefundStatus() != null ? RefundStatus.valueOf(entity.getRefundStatus()) : null,
+                entity.getIssueDescription(),
+                entity.getCouponId(),
+                entity.getDiscountAmount(),
                 entity.getCreatedAt()
         );
     }

@@ -1,6 +1,7 @@
 package com.agilis.api.infrastructure.persistence.service;
 
 import com.agilis.api.domain.service.PriceType;
+import com.agilis.api.domain.service.ServiceCategory;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +29,9 @@ public class ServiceEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "unit_id")
+    private UUID unitId;
+
     @Column(nullable = false)
     private String title;
 
@@ -40,5 +44,9 @@ public class ServiceEntity {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
+
+    @Convert(converter = ServiceCategoryConverter.class)
+    @Column(nullable = false)
+    private ServiceCategory category;
 }
 

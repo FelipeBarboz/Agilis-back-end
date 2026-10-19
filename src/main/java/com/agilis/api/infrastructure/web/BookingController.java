@@ -18,6 +18,8 @@ public class BookingController {
     private final CompleteBookingUseCase completeBookingUseCase;
     private final GetStoreBookingsUseCase getStoreBookingsUseCase;
     private final GetBookingUseCase getBookingUseCase;
+    private final GetStoreDailyBookingsOverviewUseCase getStoreDailyBookingsOverviewUseCase;
+    private final GetStoreMonthlyCalendarUseCase getStoreMonthlyCalendarUseCase;
 
     public BookingController(
             CreateBookingUseCase createBookingUseCase,
@@ -25,7 +27,9 @@ public class BookingController {
             ConfirmBookingUseCase confirmBookingUseCase,
             CompleteBookingUseCase completeBookingUseCase,
             GetStoreBookingsUseCase getStoreBookingsUseCase,
-            GetBookingUseCase getBookingUseCase
+            GetBookingUseCase getBookingUseCase,
+            GetStoreDailyBookingsOverviewUseCase getStoreDailyBookingsOverviewUseCase,
+            GetStoreMonthlyCalendarUseCase getStoreMonthlyCalendarUseCase
     ) {
         this.createBookingUseCase  = createBookingUseCase;
         this.cancelBookingUseCase  = cancelBookingUseCase;
@@ -33,6 +37,8 @@ public class BookingController {
         this.completeBookingUseCase = completeBookingUseCase;
         this.getStoreBookingsUseCase = getStoreBookingsUseCase;
         this.getBookingUseCase     = getBookingUseCase;
+        this.getStoreDailyBookingsOverviewUseCase = getStoreDailyBookingsOverviewUseCase;
+        this.getStoreMonthlyCalendarUseCase = getStoreMonthlyCalendarUseCase;
     }
 
     @PostMapping
@@ -43,7 +49,11 @@ public class BookingController {
         CreateBookingUseCase.Input inputWithClient = new CreateBookingUseCase.Input(
                 clientId,
                 input.serviceId(),
-                input.scheduledAt()
+                input.employeeId(),
+                input.scheduledAt(),
+                input.notes(),
+                input.paymentMethod(),
+                input.couponCode()
         );
         return ResponseEntity.ok(createBookingUseCase.execute(inputWithClient));
     }
@@ -74,6 +84,29 @@ public class BookingController {
         String requesterId = getCurrentUserId();
         return ResponseEntity.ok(getStoreBookingsUseCase.execute(
                 new GetStoreBookingsUseCase.Input(requesterId, storeId, date)
+        ));
+    }
+
+    @GetMapping("/store/{storeId}/overview")
+    public ResponseEntity<GetStoreDailyBookingsOverviewUseCase.Output> getStoreDailyOverview(
+            @PathVariable String storeId,
+            @RequestParam(required = false) LocalDate date
+    ) {
+        String requesterId = getCurrentUserId();
+        return ResponseEntity.ok(getStoreDailyBookingsOverviewUseCase.execute(
+                new GetStoreDailyBookingsOverviewUseCase.Input(requesterId, storeId, date)
+        ));
+    }
+
+    @GetMapping("/store/{storeId}/calendar")
+    public ResponseEntity<GetStoreMonthlyCalendarUseCase.Output> getStoreMonthlyCalendar(
+            @PathVariable String storeId,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        String requesterId = getCurrentUserId();
+        return ResponseEntity.ok(getStoreMonthlyCalendarUseCase.execute(
+                new GetStoreMonthlyCalendarUseCase.Input(requesterId, storeId, year, month)
         ));
     }
 

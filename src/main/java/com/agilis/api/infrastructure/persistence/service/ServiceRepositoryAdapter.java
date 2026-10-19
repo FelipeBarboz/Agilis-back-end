@@ -43,24 +43,20 @@ public class ServiceRepositoryAdapter implements ServiceRepository {
         entity.setId(service.getId());
         entity.setStoreId(service.getStoreId());
         entity.setTitle(service.getTitle());
+        entity.setUnitId(service.getUnitId());
         entity.setDescription(service.getDescription());
         entity.setPrice(service.getPrice());
         entity.setPriceType(service.getPriceType());
         entity.setDurationMinutes(service.getDurationMinutes());
         entity.setCreatedAt(service.getCreatedAt());
+        entity.setCategory(service.getCategory());
         return entity;
     }
 
     private Service toDomain(ServiceEntity entity) {
         return Service.reconstitute(
-                entity.getId(),
-                entity.getStoreId(),
-                entity.getTitle(),
-                entity.getDescription(),
-                entity.getPrice(),
-                entity.getPriceType(),
-                entity.getDurationMinutes(),
-                entity.getCreatedAt()
+                entity.getId(), entity.getStoreId(), entity.getUnitId(), entity.getTitle(), entity.getDescription(),
+                entity.getPrice(), entity.getPriceType(), entity.getDurationMinutes(), entity.getCategory(), entity.getCreatedAt()
         );
     }
 }

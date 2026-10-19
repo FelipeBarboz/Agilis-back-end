@@ -1,45 +1,95 @@
 package com.agilis.api.infrastructure.config;
 
 import com.agilis.api.application.booking.*;
+import com.agilis.api.application.coupon.CreateCouponUseCase;
+import com.agilis.api.application.coupon.DeactivateCouponUseCase;
+import com.agilis.api.application.coupon.ListCouponsUseCase;
+import com.agilis.api.application.coupon.ValidateCouponUseCase;
+import com.agilis.api.application.favorite.AddFavoriteUseCase;
+import com.agilis.api.application.favorite.GetFavoritesUseCase;
+import com.agilis.api.application.favorite.RemoveFavoriteUseCase;
 import com.agilis.api.application.message.*;
 import com.agilis.api.application.negotiation.*;
+import com.agilis.api.application.notification.ListWebhooksUseCase;
+import com.agilis.api.application.notification.RegisterWebhookUseCase;
+import com.agilis.api.application.notification.RemoveWebhookUseCase;
 import com.agilis.api.application.provider.*;
 import com.agilis.api.application.review.*;
-import com.agilis.api.application.service.CreateServiceUseCase;
-import com.agilis.api.application.service.DeleteServiceUseCase;
-import com.agilis.api.application.service.UpdateServiceUseCase;
+import com.agilis.api.application.service.*;
+import com.agilis.api.application.support.CreateSupportMessageUseCase;
+import com.agilis.api.application.user.AddAddressUseCase;
 import com.agilis.api.application.user.RegisterClientUseCase;
+import com.agilis.api.application.user.UpdateAddressUseCase;
 import com.agilis.api.application.user.UpdateUserUseCase;
+import com.agilis.api.domain.booking.BookingDelayRepository;
 import com.agilis.api.domain.booking.BookingRepository;
 import com.agilis.api.domain.client.ClientRepository;
+import com.agilis.api.domain.client.PriorityRebookingRepository;
+import com.agilis.api.domain.coupon.CouponRedemptionRepository;
+import com.agilis.api.domain.coupon.CouponRepository;
+import com.agilis.api.domain.coupon.PlatformAdminRepository;
+import com.agilis.api.domain.favorite.FavoriteRepository;
 import com.agilis.api.domain.message.MessageRepository;
 import com.agilis.api.domain.negotiation.NegotiationRepository;
+import com.agilis.api.domain.notification.WebhookDispatcher;
+import com.agilis.api.domain.notification.WebhookSubscriptionRepository;
 import com.agilis.api.domain.provider.*;
 import com.agilis.api.domain.review.ReviewRepository;
-import com.agilis.api.domain.service.ServiceRepository;
+import com.agilis.api.domain.service.*;
+import com.agilis.api.domain.support.EmailSender;
+import com.agilis.api.domain.support.SupportMessageRepository;
+import com.agilis.api.domain.user.AddressRepository;
 import com.agilis.api.domain.user.UserRepository;
+import com.agilis.api.infrastructure.email.SmtpEmailSender;
+import com.agilis.api.infrastructure.notification.WebhookDispatcherAdapter;
+import com.agilis.api.infrastructure.persistence.booking.BookingDelayJpaRepository;
+import com.agilis.api.infrastructure.persistence.booking.BookingDelayRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.booking.BookingJpaRepository;
 import com.agilis.api.infrastructure.persistence.booking.BookingRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.client.ClientJpaRepository;
 import com.agilis.api.infrastructure.persistence.client.ClientRepositoryAdapter;
+import com.agilis.api.infrastructure.persistence.client.PriorityRebookingJpaRepository;
+import com.agilis.api.infrastructure.persistence.client.PriorityRebookingRepositoryAdapter;
+import com.agilis.api.infrastructure.persistence.coupon.*;
+import com.agilis.api.infrastructure.persistence.favorite.FavoriteJpaRepository;
+import com.agilis.api.infrastructure.persistence.favorite.FavoriteRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.message.MessageJpaRepository;
 import com.agilis.api.infrastructure.persistence.message.MessageRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.negotiation.NegotiationJpaRepository;
 import com.agilis.api.infrastructure.persistence.negotiation.NegotiationRepositoryAdapter;
+import com.agilis.api.infrastructure.persistence.notification.WebhookSubscriptionJpaRepository;
+import com.agilis.api.infrastructure.persistence.notification.WebhookSubscriptionRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.provider.*;
 import com.agilis.api.infrastructure.persistence.review.ReviewJpaRepository;
 import com.agilis.api.infrastructure.persistence.review.ReviewRepositoryAdapter;
-import com.agilis.api.infrastructure.persistence.service.ServiceJpaRepository;
-import com.agilis.api.infrastructure.persistence.service.ServiceRepositoryAdapter;
+import com.agilis.api.infrastructure.persistence.service.*;
+import com.agilis.api.infrastructure.persistence.support.SupportMessageJpaRepository;
+import com.agilis.api.infrastructure.persistence.support.SupportMessageRepositoryAdapter;
+import com.agilis.api.infrastructure.persistence.user.AddressJpaRepository;
+import com.agilis.api.infrastructure.persistence.user.AddressRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.user.UserJpaRepository;
 import com.agilis.api.infrastructure.persistence.user.UserRepositoryAdapter;
 import com.agilis.api.infrastructure.security.JwtFilter;
 import com.agilis.api.infrastructure.security.JwtService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class BeanConfig {
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
     //  ADAPTERS DE PERSISTÊNCIA
 
@@ -54,11 +104,6 @@ public class BeanConfig {
     }
 
     @Bean
-    public ProviderRepository providerRepository(ProviderJpaRepository jpa) {
-        return new ProviderRepositoryAdapter(jpa);
-    }
-
-    @Bean
     public ProviderProfileRepository providerProfileRepository(ProviderProfileJpaRepository jpa) {
         return new ProviderProfileRepositoryAdapter(jpa);
     }
@@ -66,6 +111,11 @@ public class BeanConfig {
     @Bean
     public StoreMembershipRepository storeMembershipRepository(StoreMembershipJpaRepository jpa) {
         return new StoreMembershipRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public FavoriteRepository favoriteRepository(FavoriteJpaRepository jpa) {
+        return new FavoriteRepositoryAdapter(jpa);
     }
 
     @Bean
@@ -93,6 +143,119 @@ public class BeanConfig {
         return new ReviewRepositoryAdapter(jpa);
     }
 
+    @Bean
+    public StoreUnitRepository storeUnitRepository(StoreUnitJpaRepository jpa) {
+        return new StoreUnitRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public StorePositionRepository storePositionRepository(StorePositionJpaRepository jpa) {
+        return new StorePositionRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public StoreInviteRepository storeInviteRepository(StoreInviteJpaRepository jpa) {
+        return new StoreInviteRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public WebhookSubscriptionRepository webhookSubscriptionRepository(WebhookSubscriptionJpaRepository jpa) { return new WebhookSubscriptionRepositoryAdapter(jpa);}
+
+    @Bean
+    public PriorityRebookingRepository priorityRebookingRepository(PriorityRebookingJpaRepository jpa) {
+        return new PriorityRebookingRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public BookingDelayRepository bookingDelayRepository(BookingDelayJpaRepository jpa) {
+        return new BookingDelayRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public BusinessHoursRepository businessHoursRepository(BusinessHoursJpaRepository jpa) {
+        return new BusinessHoursRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public EmployeeScheduleRepository employeeScheduleRepository(EmployeeScheduleJpaRepository jpa) {
+        return new EmployeeScheduleRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public ScheduleSlotRepository scheduleSlotRepository(ScheduleSlotJpaRepository jpa) {
+        return new ScheduleSlotRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public SupportMessageRepository supportMessageRepository(SupportMessageJpaRepository jpa) {
+        return new SupportMessageRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public StoreServiceAreaRepository storeServiceAreaRepository(StoreServiceAreaJpaRepository jpa) {
+        return new StoreServiceAreaRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public ServiceAreaCityRepository serviceAreaCityRepository(ServiceAreaCityJpaRepository jpa) {
+        return new ServiceAreaCityRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public GetHomeHighlightsUseCase getHomeHighlightsUseCase(
+            ServiceJpaRepository serviceJpaRepository,
+            FindNextAvailableSlotUseCase findNextAvailableSlotUseCase
+    ) {
+        return new GetHomeHighlightsUseCase(serviceJpaRepository, findNextAvailableSlotUseCase);
+    }
+
+    @Bean
+    public CouponRepository couponRepository(CouponJpaRepository jpa) {
+        return new CouponRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public CouponRedemptionRepository couponRedemptionRepository(CouponRedemptionJpaRepository jpa) {
+        return new CouponRedemptionRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public PlatformAdminRepository platformAdminRepository(PlatformAdminJpaRepository jpa) {
+        return new PlatformAdminRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public CreateCouponUseCase createCouponUseCase(CouponRepository couponRepository, PlatformAdminRepository platformAdminRepository) {
+        return new CreateCouponUseCase(couponRepository, platformAdminRepository);
+    }
+
+    @Bean
+    public ListCouponsUseCase listCouponsUseCase(CouponRepository couponRepository, PlatformAdminRepository platformAdminRepository) {
+        return new ListCouponsUseCase(couponRepository, platformAdminRepository);
+    }
+
+    @Bean
+    public DeactivateCouponUseCase deactivateCouponUseCase(CouponRepository couponRepository, PlatformAdminRepository platformAdminRepository) {
+        return new DeactivateCouponUseCase(couponRepository, platformAdminRepository);
+    }
+
+    @Bean
+    public ValidateCouponUseCase validateCouponUseCase(
+            CouponRepository couponRepository, CouponRedemptionRepository couponRedemptionRepository, ServiceRepository serviceRepository
+    ) {
+        return new ValidateCouponUseCase(couponRepository, couponRedemptionRepository, serviceRepository);
+    }
+
+    @Bean
+    public CreateStoreUseCase createStoreUseCase(
+            UserRepository userRepository,
+            ProviderProfileRepository providerProfileRepository,
+            StoreUnitRepository storeUnitRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new CreateStoreUseCase(userRepository, providerProfileRepository, storeUnitRepository, storeMembershipRepository);
+    }
+
     //  USE CASES — USER
 
     @Bean
@@ -108,21 +271,201 @@ public class BeanConfig {
         return new UpdateUserUseCase(userRepository);
     }
 
+    @Bean
+    public AddressRepository addressRepository(AddressJpaRepository jpa) {
+        return new AddressRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public AddAddressUseCase addAddressUseCase(AddressRepository addressRepository) {
+        return new AddAddressUseCase(addressRepository);
+    }
+
+    @Bean
+    public UpdateAddressUseCase updateAddressUseCase(AddressRepository addressRepository) {
+        return new UpdateAddressUseCase(addressRepository);
+    }
+
     //  USE CASES — PROVIDER
 
     @Bean
-    public RegisterProviderUseCase registerProviderUseCase(
-            UserRepository userRepository,
-            ProviderRepository providerRepository,
-            ProviderProfileRepository providerProfileRepository,
+    public SetBusinessHoursUseCase setBusinessHoursUseCase(
+            BusinessHoursRepository businessHoursRepository,
             StoreMembershipRepository storeMembershipRepository
     ) {
-        return new RegisterProviderUseCase(
-                userRepository,
-                providerRepository,
-                providerProfileRepository,
-                storeMembershipRepository
-        );
+        return new SetBusinessHoursUseCase(businessHoursRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public SearchStoresUseCase searchStoresUseCase(ProviderProfileJpaRepository providerProfileJpaRepository) {
+        return new SearchStoresUseCase(providerProfileJpaRepository);
+    }
+
+    @Bean
+    public FindNextAvailableSlotUseCase findNextAvailableSlotUseCase(GetAvailableSlotsUseCase getAvailableSlotsUseCase) {
+        return new FindNextAvailableSlotUseCase(getAvailableSlotsUseCase);
+    }
+
+    @Bean
+    public SearchServicesUseCase searchServicesUseCase(
+            ServiceJpaRepository serviceJpaRepository,
+            FindNextAvailableSlotUseCase findNextAvailableSlotUseCase
+    ) {
+        return new SearchServicesUseCase(serviceJpaRepository, findNextAvailableSlotUseCase);
+    }
+
+    @Bean
+    public CreateEmployeeScheduleUseCase createEmployeeScheduleUseCase(
+            EmployeeScheduleRepository employeeScheduleRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new CreateEmployeeScheduleUseCase(employeeScheduleRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public AddScheduleSlotUseCase addScheduleSlotUseCase(
+            ScheduleSlotRepository scheduleSlotRepository,
+            EmployeeScheduleRepository employeeScheduleRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new AddScheduleSlotUseCase(scheduleSlotRepository, employeeScheduleRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public RemoveScheduleSlotUseCase removeScheduleSlotUseCase(
+            ScheduleSlotRepository scheduleSlotRepository,
+            EmployeeScheduleRepository employeeScheduleRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new RemoveScheduleSlotUseCase(scheduleSlotRepository, employeeScheduleRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public GetStoreWeeklyScheduleUseCase getStoreWeeklyScheduleUseCase(
+            StoreMembershipRepository storeMembershipRepository,
+            EmployeeScheduleRepository employeeScheduleRepository,
+            ScheduleSlotRepository scheduleSlotRepository,
+            UserRepository userRepository,
+            StorePositionRepository storePositionRepository
+    ) {
+        return new GetStoreWeeklyScheduleUseCase(storeMembershipRepository, employeeScheduleRepository, scheduleSlotRepository, userRepository, storePositionRepository);
+    }
+
+    @Bean
+    public GetStoreDailyScheduleUseCase getStoreDailyScheduleUseCase(
+            StoreMembershipRepository storeMembershipRepository,
+            EmployeeScheduleRepository employeeScheduleRepository,
+            ScheduleSlotRepository scheduleSlotRepository,
+            UserRepository userRepository,
+            StorePositionRepository storePositionRepository
+    ) {
+        return new GetStoreDailyScheduleUseCase(storeMembershipRepository, employeeScheduleRepository, scheduleSlotRepository, userRepository, storePositionRepository);
+    }
+
+    @Bean
+    public SaveEmployeeWeeklyScheduleUseCase saveEmployeeWeeklyScheduleUseCase(
+            EmployeeScheduleRepository employeeScheduleRepository,
+            ScheduleSlotRepository scheduleSlotRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new SaveEmployeeWeeklyScheduleUseCase(employeeScheduleRepository, scheduleSlotRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public RemoveEmployeeFromScheduleUseCase removeEmployeeFromScheduleUseCase(
+            EmployeeScheduleRepository employeeScheduleRepository,
+            ScheduleSlotRepository scheduleSlotRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new RemoveEmployeeFromScheduleUseCase(employeeScheduleRepository, scheduleSlotRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public SetServiceAreaUseCase setServiceAreaUseCase(
+            StoreServiceAreaRepository storeServiceAreaRepository,
+            ServiceAreaCityRepository serviceAreaCityRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new SetServiceAreaUseCase(storeServiceAreaRepository, serviceAreaCityRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public GetServiceAreaUseCase getServiceAreaUseCase(
+            StoreServiceAreaRepository storeServiceAreaRepository,
+            ServiceAreaCityRepository serviceAreaCityRepository
+    ) {
+        return new GetServiceAreaUseCase(storeServiceAreaRepository, serviceAreaCityRepository);
+    }
+
+    @Bean
+    public CreateStorePositionUseCase createStorePositionUseCase(
+            StorePositionRepository storePositionRepository, StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new CreateStorePositionUseCase(storePositionRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public UpdateStorePositionUseCase updateStorePositionUseCase(
+            StorePositionRepository storePositionRepository, StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new UpdateStorePositionUseCase(storePositionRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public DeleteStorePositionUseCase deleteStorePositionUseCase(
+            StorePositionRepository storePositionRepository, StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new DeleteStorePositionUseCase(storePositionRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public ListStorePositionsUseCase listStorePositionsUseCase(
+            StorePositionRepository storePositionRepository, StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new ListStorePositionsUseCase(storePositionRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public AssignPositionUseCase assignPositionUseCase(
+            StoreMembershipRepository storeMembershipRepository, StorePositionRepository storePositionRepository
+    ) {
+        return new AssignPositionUseCase(storeMembershipRepository, storePositionRepository);
+    }
+
+    @Bean
+    public GenerateStoreInviteLinkUseCase generateStoreInviteLinkUseCase(
+            StoreInviteRepository storeInviteRepository,
+            StoreMembershipRepository storeMembershipRepository,
+            ProviderProfileRepository providerProfileRepository
+    ) {
+        return new GenerateStoreInviteLinkUseCase(storeInviteRepository, storeMembershipRepository, providerProfileRepository);
+    }
+
+    @Bean
+    public GetStoreInviteInfoUseCase getStoreInviteInfoUseCase(
+            StoreInviteRepository storeInviteRepository,
+            ProviderProfileRepository providerProfileRepository
+    ) {
+        return new GetStoreInviteInfoUseCase(storeInviteRepository, providerProfileRepository);
+    }
+
+    @Bean
+    public AcceptStoreInviteUseCase acceptStoreInviteUseCase(
+            StoreInviteRepository storeInviteRepository,
+            StoreMembershipRepository storeMembershipRepository,
+            ClientRepository clientRepository,
+            UserRepository userRepository,
+            WebhookDispatcher webhookDispatcher
+    ) {
+        return new AcceptStoreInviteUseCase(storeInviteRepository, storeMembershipRepository, clientRepository, userRepository, webhookDispatcher);
+    }
+
+    @Bean
+    public RevokeStoreInviteUseCase revokeStoreInviteUseCase(
+            StoreInviteRepository storeInviteRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new RevokeStoreInviteUseCase(storeInviteRepository, storeMembershipRepository);
     }
 
     //  USE CASES — BOOKING
@@ -131,32 +474,39 @@ public class BeanConfig {
     public CreateBookingUseCase createBookingUseCase(
             BookingRepository bookingRepository,
             ClientRepository clientRepository,
-            ServiceRepository serviceRepository
+            ServiceRepository serviceRepository,
+            PriorityRebookingRepository priorityRebookingRepository,
+            CouponRepository couponRepository,
+            CouponRedemptionRepository couponRedemptionRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new CreateBookingUseCase(bookingRepository, clientRepository, serviceRepository);
+        return new CreateBookingUseCase(bookingRepository, clientRepository, serviceRepository,
+                priorityRebookingRepository, couponRepository, couponRedemptionRepository, webhookDispatcher);
     }
 
     @Bean
-    public CancelBookingUseCase cancelBookingUseCase(BookingRepository bookingRepository) {
-        return new CancelBookingUseCase(bookingRepository);
+    public CancelBookingUseCase cancelBookingUseCase(BookingRepository bookingRepository, WebhookDispatcher webhookDispatcher, ServiceRepository service) {
+        return new CancelBookingUseCase(bookingRepository, webhookDispatcher, service);
     }
 
     @Bean
     public ConfirmBookingUseCase confirmBookingUseCase(
             BookingRepository bookingRepository,
             ServiceRepository serviceRepository,
-            StoreMembershipRepository storeMembershipRepository
+            StoreMembershipRepository storeMembershipRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new ConfirmBookingUseCase(bookingRepository, serviceRepository, storeMembershipRepository);
+        return new ConfirmBookingUseCase(bookingRepository, serviceRepository, storeMembershipRepository, webhookDispatcher);
     }
 
     @Bean
     public CompleteBookingUseCase completeBookingUseCase(
             BookingRepository bookingRepository,
             ServiceRepository serviceRepository,
-            StoreMembershipRepository storeMembershipRepository
+            StoreMembershipRepository storeMembershipRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new CompleteBookingUseCase(bookingRepository, serviceRepository, storeMembershipRepository);
+        return new CompleteBookingUseCase(bookingRepository, serviceRepository, storeMembershipRepository, webhookDispatcher);
     }
 
     @Bean
@@ -173,21 +523,154 @@ public class BeanConfig {
         return new GetStoreBookingsUseCase(bookingRepository, serviceRepository, storeMembershipRepository);
     }
 
+    @Bean
+    public GetStoreMonthlyCalendarUseCase getStoreMonthlyCalendarUseCase(
+            BookingRepository bookingRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new GetStoreMonthlyCalendarUseCase(bookingRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public GetStoreDailyBookingsOverviewUseCase getStoreDailyBookingsOverviewUseCase(
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            StoreMembershipRepository storeMembershipRepository,
+            UserRepository userRepository,
+            AddressRepository addressRepository,
+            StoreUnitRepository storeUnitRepository,
+            StoreServiceAreaRepository storeServiceAreaRepository
+    ) {
+        return new GetStoreDailyBookingsOverviewUseCase(
+                bookingRepository,
+                serviceRepository,
+                storeMembershipRepository,
+                userRepository,
+                addressRepository,
+                storeUnitRepository,
+                storeServiceAreaRepository
+        );
+    }
+
+    @Bean
+    public ServicePriceTierRepository servicePriceTierRepository(ServicePriceTierJpaRepository jpa) {
+        return new ServicePriceTierRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public SetPriceTiersUseCase setPriceTiersUseCase(
+            ServicePriceTierRepository servicePriceTierRepository,
+            ServiceRepository serviceRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new SetPriceTiersUseCase(servicePriceTierRepository, serviceRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public ServiceCoverageAreaRepository serviceCoverageAreaRepository(ServiceCoverageAreaJpaRepository jpa) {
+        return new ServiceCoverageAreaRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public SetCoverageAreasUseCase setCoverageAreasUseCase(
+            ServiceCoverageAreaRepository serviceCoverageAreaRepository,
+            ServiceRepository serviceRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new SetCoverageAreasUseCase(serviceCoverageAreaRepository, serviceRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public DeclareDelayUseCase declareDelayUseCase(
+            BookingRepository bookingRepository,
+            BookingDelayRepository bookingDelayRepository,
+            PriorityRebookingRepository priorityRebookingRepository,
+            StoreMembershipRepository storeMembershipRepository,
+            ServiceRepository serviceRepository,
+            WebhookDispatcher webhookDispatcher
+    ) {
+        return new DeclareDelayUseCase(bookingRepository, bookingDelayRepository, priorityRebookingRepository,
+                storeMembershipRepository, serviceRepository, webhookDispatcher);
+    }
+
+    @Bean
+    public GetPendingDelaysUseCase getPendingDelaysUseCase(BookingDelayRepository bookingDelayRepository) {
+        return new GetPendingDelaysUseCase(bookingDelayRepository);
+    }
+
+    @Bean
+    public RespondToDelayUseCase respondToDelayUseCase(
+            BookingDelayRepository bookingDelayRepository,
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            PriorityRebookingRepository priorityRebookingRepository,
+            WebhookDispatcher webhookDispatcher
+    ) {
+        return new RespondToDelayUseCase(bookingDelayRepository, bookingRepository, serviceRepository, priorityRebookingRepository, webhookDispatcher);
+    }
+
+    @Bean
+    public GetBookingHistoryUseCase getBookingHistoryUseCase(
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            ServiceThumbnailRepository serviceThumbnailRepository,
+            ProviderProfileRepository providerProfileRepository,
+            UserRepository userRepository,
+            FavoriteRepository favoriteRepository
+    ) {
+        return new GetBookingHistoryUseCase(bookingRepository, serviceRepository, serviceThumbnailRepository,
+                providerProfileRepository, userRepository, favoriteRepository);
+    }
+
+    @Bean
+    public GetBookingDetailUseCase getBookingDetailUseCase(
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            ServiceThumbnailRepository serviceThumbnailRepository,
+            ProviderProfileRepository providerProfileRepository,
+            StoreUnitRepository storeUnitRepository,
+            StoreServiceAreaRepository storeServiceAreaRepository,
+            StoreMembershipRepository storeMembershipRepository,
+            UserRepository userRepository
+    ) {
+        return new GetBookingDetailUseCase(bookingRepository, serviceRepository, serviceThumbnailRepository,
+                providerProfileRepository, storeUnitRepository, storeServiceAreaRepository, storeMembershipRepository, userRepository);
+    }
+
+    @Bean
+    public ReportBookingIssueUseCase reportBookingIssueUseCase(
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            WebhookDispatcher webhookDispatcher
+    ) {
+        return new ReportBookingIssueUseCase(bookingRepository, serviceRepository, webhookDispatcher);
+    }
+
+    @Bean
+    public IncrementServiceViewUseCase incrementServiceViewUseCase(ServiceJpaRepository serviceJpaRepository) {
+        return new IncrementServiceViewUseCase(serviceJpaRepository);
+    }
+
     //  USE CASES — NEGOTIATION
 
     @Bean
     public CreateNegotiationUseCase createNegotiationUseCase(
             NegotiationRepository negotiationRepository,
-            BookingRepository bookingRepository
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new CreateNegotiationUseCase(negotiationRepository, bookingRepository);
+        return new CreateNegotiationUseCase(negotiationRepository, bookingRepository, serviceRepository, webhookDispatcher);
     }
 
     @Bean
     public RespondNegotiationUseCase respondNegotiationUseCase(
-            NegotiationRepository negotiationRepository
+            NegotiationRepository negotiationRepository,
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new RespondNegotiationUseCase(negotiationRepository);
+        return new RespondNegotiationUseCase(negotiationRepository, bookingRepository, serviceRepository, webhookDispatcher);
     }
 
     @Bean
@@ -204,14 +687,10 @@ public class BeanConfig {
             MessageRepository messageRepository,
             BookingRepository bookingRepository,
             ServiceRepository serviceRepository,
-            StoreMembershipRepository storeMembershipRepository
+            StoreMembershipRepository storeMembershipRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new SendMessageUseCase(
-                messageRepository,
-                bookingRepository,
-                serviceRepository,
-                storeMembershipRepository
-        );
+        return new SendMessageUseCase(messageRepository, bookingRepository, serviceRepository, storeMembershipRepository, webhookDispatcher);
     }
 
     @Bean
@@ -234,9 +713,11 @@ public class BeanConfig {
     @Bean
     public CreateReviewUseCase createReviewUseCase(
             ReviewRepository reviewRepository,
-            BookingRepository bookingRepository
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new CreateReviewUseCase(reviewRepository, bookingRepository);
+        return new CreateReviewUseCase(reviewRepository, bookingRepository, serviceRepository, webhookDispatcher);
     }
 
     @Bean
@@ -265,17 +746,42 @@ public class BeanConfig {
     @Bean
     public InviteMemberUseCase inviteMemberUseCase(
             StoreMembershipRepository storeMembershipRepository,
-            ProviderRepository providerRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            WebhookDispatcher webhookDispatcher
     ) {
-        return new InviteMemberUseCase(storeMembershipRepository, providerRepository, userRepository);
+        return new InviteMemberUseCase(storeMembershipRepository, userRepository, webhookDispatcher);
     }
 
     @Bean
     public RemoveMemberUseCase removeMemberUseCase(
+            StoreMembershipRepository storeMembershipRepository,
+            WebhookDispatcher webhookDispatcher
+    ) {
+        return new RemoveMemberUseCase(storeMembershipRepository, webhookDispatcher);
+    }
+
+    @Bean
+    public GetAvailableSlotsUseCase getAvailableSlotsUseCase(
+            ServiceRepository serviceRepository,
+            ProviderProfileRepository providerProfileRepository,
+            BusinessHoursRepository businessHoursRepository,
+            StoreMembershipRepository storeMembershipRepository,
+            EmployeeScheduleRepository employeeScheduleRepository,
+            ScheduleSlotRepository scheduleSlotRepository,
+            BookingRepository bookingRepository
+    ) {
+        return new GetAvailableSlotsUseCase(
+                serviceRepository, providerProfileRepository, businessHoursRepository,
+                storeMembershipRepository, employeeScheduleRepository, scheduleSlotRepository, bookingRepository
+        );
+    }
+
+    @Bean
+    public ToggleEmployeeSelectionUseCase toggleEmployeeSelectionUseCase(
+            ProviderProfileRepository providerProfileRepository,
             StoreMembershipRepository storeMembershipRepository
     ) {
-        return new RemoveMemberUseCase(storeMembershipRepository);
+        return new ToggleEmployeeSelectionUseCase(providerProfileRepository, storeMembershipRepository);
     }
 
     //  USE CASES — SERVICE
@@ -301,6 +807,141 @@ public class BeanConfig {
             StoreMembershipRepository storeMembershipRepository
     ) {
         return new DeleteServiceUseCase(serviceRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public ServiceImageRepository serviceImageRepository(ServiceImageJpaRepository jpa) {
+        return new ServiceImageRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public ServiceThumbnailRepository serviceThumbnailRepository(ServiceThumbnailJpaRepository jpa) {
+        return new ServiceThumbnailRepositoryAdapter(jpa);
+    }
+
+    @Bean
+    public AddServiceImageUseCase addServiceImageUseCase(
+            ServiceImageRepository serviceImageRepository,
+            ServiceRepository serviceRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new AddServiceImageUseCase(serviceImageRepository, serviceRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public RemoveServiceImageUseCase removeServiceImageUseCase(
+            ServiceImageRepository serviceImageRepository,
+            ServiceRepository serviceRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new RemoveServiceImageUseCase(serviceImageRepository, serviceRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public UpdateThumbnailUseCase updateThumbnailUseCase(
+            ServiceThumbnailRepository serviceThumbnailRepository,
+            ServiceRepository serviceRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new UpdateThumbnailUseCase(serviceThumbnailRepository, serviceRepository, storeMembershipRepository);
+    }
+
+    //  USE CASES — FAVORITE
+
+    @Bean
+    public AddFavoriteUseCase addFavoriteUseCase(
+            FavoriteRepository favoriteRepository,
+            ServiceRepository serviceRepository
+    ) {
+        return new AddFavoriteUseCase(favoriteRepository, serviceRepository);
+    }
+
+    @Bean
+    public RemoveFavoriteUseCase removeFavoriteUseCase(FavoriteRepository favoriteRepository) {
+        return new RemoveFavoriteUseCase(favoriteRepository);
+    }
+
+    @Bean
+    public GetFavoritesUseCase getFavoritesUseCase(
+            FavoriteRepository favoriteRepository,
+            ServiceRepository serviceRepository
+    ) {
+        return new GetFavoritesUseCase(favoriteRepository, serviceRepository);
+    }
+
+    // USE CASES - STORE UNIT
+
+    @Bean
+    public CreateStoreUnitUseCase createStoreUnitUseCase(
+            StoreUnitRepository storeUnitRepository,
+            StoreMembershipRepository storeMembershipRepository,
+            ProviderProfileRepository providerProfileRepository
+    ) {
+        return new CreateStoreUnitUseCase(storeUnitRepository, storeMembershipRepository, providerProfileRepository);
+    }
+
+    @Bean
+    public UpdateStoreUnitUseCase updateStoreUnitUseCase(
+            StoreUnitRepository storeUnitRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new UpdateStoreUnitUseCase(storeUnitRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public DeleteStoreUnitUseCase deleteStoreUnitUseCase(
+            StoreUnitRepository storeUnitRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new DeleteStoreUnitUseCase(storeUnitRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public WebhookDispatcher webhookDispatcher(
+            WebhookSubscriptionRepository webhookSubscriptionRepository,
+            RestTemplate restTemplate,
+            ObjectMapper objectMapper
+    ) {
+        return new WebhookDispatcherAdapter(webhookSubscriptionRepository, restTemplate, objectMapper);
+    }
+
+    @Bean
+    public RegisterWebhookUseCase registerWebhookUseCase(
+            WebhookSubscriptionRepository webhookSubscriptionRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new RegisterWebhookUseCase(webhookSubscriptionRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public ListWebhooksUseCase listWebhooksUseCase(
+            WebhookSubscriptionRepository webhookSubscriptionRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new ListWebhooksUseCase(webhookSubscriptionRepository, storeMembershipRepository);
+    }
+
+    @Bean
+    public RemoveWebhookUseCase removeWebhookUseCase(
+            WebhookSubscriptionRepository webhookSubscriptionRepository,
+            StoreMembershipRepository storeMembershipRepository
+    ) {
+        return new RemoveWebhookUseCase(webhookSubscriptionRepository, storeMembershipRepository);
+    }
+
+    // USE CASES - SUPPORT
+    @Bean
+    public EmailSender emailSender(JavaMailSender mailSender) {
+        return new SmtpEmailSender(mailSender);
+    }
+
+    @Bean
+    public CreateSupportMessageUseCase createSupportMessageUseCase(
+            SupportMessageRepository supportMessageRepository,
+            EmailSender emailSender,
+            @Value("${support.email}") String supportEmail
+    ) {
+        return new CreateSupportMessageUseCase(supportMessageRepository, emailSender, supportEmail);
     }
 
     // Jwt

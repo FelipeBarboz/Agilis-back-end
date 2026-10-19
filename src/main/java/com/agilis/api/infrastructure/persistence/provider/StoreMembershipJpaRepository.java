@@ -11,4 +11,5 @@ public interface StoreMembershipJpaRepository extends JpaRepository<StoreMembers
     List<StoreMembershipEntity> findAllByStoreId(UUID storeId);
     List<StoreMembershipEntity> findAllByProviderId(UUID providerId);
     boolean existsByProviderIdAndStoreId(UUID providerId, UUID storeId);
+    List<StoreMembershipEntity> findAllByPositionId(UUID positionId);
 }

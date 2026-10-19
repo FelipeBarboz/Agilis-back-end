@@ -60,6 +60,7 @@ public class ProviderProfileController {
                 storeId,
                 input.storeName(),
                 input.description(),
+                input.slug(),
                 input.profileImgUrl()
         );
         return ResponseEntity.ok(updateProviderProfileUseCase.execute(inputWithRequester));

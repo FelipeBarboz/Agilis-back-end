@@ -8,34 +8,37 @@ import java.util.UUID;
 public class ProviderProfile {
 
     private final UUID id;
+    private final String cnpj;
     private String storeName;
     private String slug;
     private String description;
     private String profileImgUrl;
+    private boolean allowEmployeeSelection;
     private final LocalDateTime createdAt;
 
-    private ProviderProfile(UUID id, String storeName, String slug, String description, String profileImgUrl, LocalDateTime createdAt) {
-        this.id            = id;
-        this.storeName     = validateStoreName(storeName);
-        this.slug          = validateSlug(slug);
-        this.description   = description;
-        this.profileImgUrl = profileImgUrl;
-        this.createdAt     = createdAt;
+    private ProviderProfile(UUID id, String cnpj, String storeName, String slug, String description,
+                            String profileImgUrl, boolean allowEmployeeSelection, LocalDateTime createdAt) {
+        this.id                     = id;
+        this.cnpj                   = CnpjValidator.validate(cnpj);
+        this.storeName              = validateStoreName(storeName);
+        this.slug                   = validateSlug(slug);
+        this.description            = description;
+        this.profileImgUrl          = profileImgUrl;
+        this.allowEmployeeSelection = allowEmployeeSelection;
+        this.createdAt              = createdAt;
     }
 
-    public static ProviderProfile create(String storeName, String slug, String description, String profileImgUrl) {
-        return new ProviderProfile(
-                UUID.randomUUID(),
-                storeName,
-                slug,
-                description,
-                profileImgUrl,
-                LocalDateTime.now()
-        );
+    public static ProviderProfile create(String cnpj, String storeName, String slug, String description, String profileImgUrl) {
+        return new ProviderProfile(UUID.randomUUID(), cnpj, storeName, slug, description, profileImgUrl, true, LocalDateTime.now());
     }
 
-    public static ProviderProfile reconstitute(UUID id, String storeName, String slug, String description, String profileImgUrl, LocalDateTime createdAt) {
-        return new ProviderProfile(id, storeName, slug, description, profileImgUrl, createdAt);
+    public static ProviderProfile reconstitute(UUID id, String cnpj, String storeName, String slug, String description,
+                                               String profileImgUrl, boolean allowEmployeeSelection, LocalDateTime createdAt) {
+        return new ProviderProfile(id, cnpj, storeName, slug, description, profileImgUrl, allowEmployeeSelection, createdAt);
+    }
+
+    public void toggleEmployeeSelection(boolean allow) {
+        this.allowEmployeeSelection = allow;
     }
 
     public void changeStoreName(String storeName) {

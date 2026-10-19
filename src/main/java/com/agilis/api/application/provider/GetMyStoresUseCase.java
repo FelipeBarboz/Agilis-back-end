@@ -41,11 +41,5 @@ public class GetMyStoresUseCase {
     }
 
     @Schema(name = "GetMyStoresOutput")
-    public record Output(
-            String storeId,
-            String storeName,
-            String slug,
-            String profileImgUrl,
-            String role
-    ) {}
+    public record Output(String storeId, String storeName, String slug, String profileImgUrl, String role) {}
 }

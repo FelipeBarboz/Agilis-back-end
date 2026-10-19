@@ -1,18 +1,23 @@
 package com.agilis.api.application.provider;
 
+import com.agilis.api.domain.notification.WebhookDispatcher;
+import com.agilis.api.domain.notification.WebhookEventType;
 import com.agilis.api.domain.provider.StoreMembership;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
 import com.agilis.api.domain.provider.StoreRole;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class RemoveMemberUseCase {
 
     private final StoreMembershipRepository storeMembershipRepository;
+    private final WebhookDispatcher webhookDispatcher;
 
-    public RemoveMemberUseCase(StoreMembershipRepository storeMembershipRepository) {
+    public RemoveMemberUseCase(StoreMembershipRepository storeMembershipRepository, WebhookDispatcher webhookDispatcher) {
         this.storeMembershipRepository = storeMembershipRepository;
+        this.webhookDispatcher = webhookDispatcher;
     }
 
     public void execute(Input input) {
@@ -41,6 +46,14 @@ public class RemoveMemberUseCase {
         }
 
         storeMembershipRepository.deleteById(targetMembership.getId());
+
+        webhookDispatcher.dispatch(
+                targetMembership.getStoreId(),
+                WebhookEventType.STORE_MEMBER_REMOVED,
+                Map.of(
+                        "providerId", memberId.toString()
+                )
+        );
     }
 
     @Schema(name = "RemoveMemberInput")

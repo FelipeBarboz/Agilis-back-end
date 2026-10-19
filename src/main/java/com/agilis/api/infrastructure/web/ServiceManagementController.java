@@ -2,6 +2,7 @@ package com.agilis.api.infrastructure.web;
 
 import com.agilis.api.application.service.CreateServiceUseCase;
 import com.agilis.api.application.service.DeleteServiceUseCase;
+import com.agilis.api.application.service.IncrementServiceViewUseCase;
 import com.agilis.api.application.service.UpdateServiceUseCase;
 import com.agilis.api.domain.service.Service;
 import com.agilis.api.domain.service.ServiceRepository;
@@ -20,24 +21,20 @@ public class ServiceManagementController {
     private final UpdateServiceUseCase updateServiceUseCase;
     private final DeleteServiceUseCase deleteServiceUseCase;
     private final ServiceRepository serviceRepository;
+    private final IncrementServiceViewUseCase incrementServiceViewUseCase;
 
     public ServiceManagementController(
             CreateServiceUseCase createServiceUseCase,
             UpdateServiceUseCase updateServiceUseCase,
             DeleteServiceUseCase deleteServiceUseCase,
-            ServiceRepository serviceRepository
+            ServiceRepository serviceRepository,
+            IncrementServiceViewUseCase incrementServiceViewUseCase
     ) {
         this.createServiceUseCase = createServiceUseCase;
         this.updateServiceUseCase = updateServiceUseCase;
         this.deleteServiceUseCase = deleteServiceUseCase;
         this.serviceRepository    = serviceRepository;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Service>> listByStore(@PathVariable String storeId) {
-        return ResponseEntity.ok(
-                serviceRepository.findAllByStoreId(UUID.fromString(storeId))
-        );
+        this.incrementServiceViewUseCase = incrementServiceViewUseCase;
     }
 
     @GetMapping("/{serviceId}")
@@ -45,9 +42,17 @@ public class ServiceManagementController {
             @PathVariable String storeId,
             @PathVariable String serviceId
     ) {
+        incrementServiceViewUseCase.execute(serviceId);
         return serviceRepository.findById(UUID.fromString(serviceId))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Service>> listByStore(@PathVariable String storeId) {
+        return ResponseEntity.ok(
+                serviceRepository.findAllByStoreId(UUID.fromString(storeId))
+        );
     }
 
     @PostMapping
@@ -59,11 +64,13 @@ public class ServiceManagementController {
         CreateServiceUseCase.Input inputWithRequester = new CreateServiceUseCase.Input(
                 requesterId,
                 storeId,
+                input.unitId(),
                 input.title(),
                 input.description(),
                 input.price(),
                 input.priceType(),
-                input.durationMinutes()
+                input.durationMinutes(),
+                input.category()
         );
         return ResponseEntity.ok(createServiceUseCase.execute(inputWithRequester));
     }
@@ -78,6 +85,7 @@ public class ServiceManagementController {
         UpdateServiceUseCase.Input inputWithRequester = new UpdateServiceUseCase.Input(
                 requesterId,
                 serviceId,
+                input.unitId(),
                 input.title(),
                 input.description(),
                 input.price(),

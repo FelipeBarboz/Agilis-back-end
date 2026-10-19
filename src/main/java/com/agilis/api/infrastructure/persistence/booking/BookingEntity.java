@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -25,11 +26,11 @@ public class BookingEntity {
     @Column(name = "service_id", nullable = false)
     private UUID serviceId;
 
+    @Column(name = "employee_id")
+    private UUID employeeId;
+
     @Column(name = "scheduled_at", nullable = false)
     private LocalDateTime scheduledAt;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
 
     @Column(name = "date", insertable = false, updatable = false)
     private LocalDate date;
@@ -37,4 +38,25 @@ public class BookingEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookingStatus status;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
+
+    @Column(name = "payment_method", length = 50)
+    private String paymentMethod;
+
+    @Column(name = "refund_status", length = 30)
+    private String refundStatus;
+
+    @Column(name = "issue_description", columnDefinition = "TEXT")
+    private String issueDescription;
+
+    @Column(name = "coupon_id")
+    private UUID couponId;
+
+    @Column(name = "discount_amount", precision = 10, scale = 2)
+    private BigDecimal discountAmount;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 }
