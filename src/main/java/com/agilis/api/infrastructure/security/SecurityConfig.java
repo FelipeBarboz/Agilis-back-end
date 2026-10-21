@@ -43,6 +43,7 @@ public class SecurityConfig {
                         // requisições pre-flight do CORS
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // rotas completamente públicas
+                        .requestMatchers("/", "/error").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/coupons").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/coupons/validate").authenticated()
