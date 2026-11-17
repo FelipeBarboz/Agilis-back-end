@@ -20,6 +20,12 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return "/ping".equals(path) || "/ping".equals(request.getServletPath());
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         System.out.println("=== JwtFilter chamado para: " + request.getMethod() + " " + request.getRequestURI());
