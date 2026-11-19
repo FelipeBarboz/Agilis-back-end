@@ -1,6 +1,14 @@
 package com.agilis.api.infrastructure.config;
 
 import com.agilis.api.application.booking.*;
+import com.agilis.api.application.payment.CreatePaymentPreferenceUseCase;
+import com.agilis.api.application.payment.GetPaymentStatusUseCase;
+import com.agilis.api.application.payment.ProcessPaymentWebhookUseCase;
+import com.agilis.api.domain.payment.PaymentGateway;
+import com.agilis.api.domain.payment.PaymentRepository;
+import com.agilis.api.infrastructure.payment.MercadoPagoPaymentGatewayAdapter;
+import com.agilis.api.infrastructure.persistence.payment.PaymentJpaRepository;
+import com.agilis.api.infrastructure.persistence.payment.PaymentRepositoryAdapter;
 import com.agilis.api.application.coupon.CreateCouponUseCase;
 import com.agilis.api.application.coupon.DeactivateCouponUseCase;
 import com.agilis.api.application.coupon.ListCouponsUseCase;
@@ -942,6 +950,65 @@ public class BeanConfig {
             @Value("${support.email}") String supportEmail
     ) {
         return new CreateSupportMessageUseCase(supportMessageRepository, emailSender, supportEmail);
+    }
+
+    // PAYMENT
+    @Bean
+    public PaymentRepository paymentRepository(PaymentJpaRepository paymentJpaRepository) {
+        return new PaymentRepositoryAdapter(paymentJpaRepository);
+    }
+
+    @Bean
+    public PaymentGateway paymentGateway(
+            @Value("${mercadopago.access-token}") String accessToken
+    ) {
+        return new MercadoPagoPaymentGatewayAdapter(accessToken);
+    }
+
+    @Bean
+    public CreatePaymentPreferenceUseCase createPaymentPreferenceUseCase(
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            UserRepository userRepository,
+            PaymentRepository paymentRepository,
+            PaymentGateway paymentGateway,
+            @Value("${mercadopago.frontend.url:http://localhost:3000}") String frontendUrl,
+            @Value("${mercadopago.webhook.base-url:https://agilis-back-end.onrender.com}/api/v1/payments/mercadopago/webhook") String webhookUrl
+    ) {
+        return new CreatePaymentPreferenceUseCase(
+                bookingRepository,
+                serviceRepository,
+                userRepository,
+                paymentRepository,
+                paymentGateway,
+                frontendUrl,
+                webhookUrl
+        );
+    }
+
+    @Bean
+    public ProcessPaymentWebhookUseCase processPaymentWebhookUseCase(
+            PaymentGateway paymentGateway,
+            PaymentRepository paymentRepository,
+            BookingRepository bookingRepository,
+            ServiceRepository serviceRepository,
+            WebhookDispatcher webhookDispatcher
+    ) {
+        return new ProcessPaymentWebhookUseCase(
+                paymentGateway,
+                paymentRepository,
+                bookingRepository,
+                serviceRepository,
+                webhookDispatcher
+        );
+    }
+
+    @Bean
+    public GetPaymentStatusUseCase getPaymentStatusUseCase(
+            PaymentRepository paymentRepository,
+            BookingRepository bookingRepository
+    ) {
+        return new GetPaymentStatusUseCase(paymentRepository, bookingRepository);
     }
 
     // Jwt

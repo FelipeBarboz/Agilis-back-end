@@ -44,8 +44,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // rotas completamente públicas
                         .requestMatchers("/", "/error").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/ping").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/ping", "/api/v1/ping").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                        .requestMatchers("/api/v1/payments/mercadopago/webhook", "/api/v1/payments/mercadopago/webhook/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/coupons").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/coupons/validate").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/forgot-password").permitAll()
