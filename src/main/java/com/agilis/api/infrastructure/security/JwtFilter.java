@@ -22,7 +22,11 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return "/ping".equals(path) || "/ping".equals(request.getServletPath());
+        String servletPath = request.getServletPath();
+        return "/ping".equals(path) || "/ping".equals(servletPath)
+                || "/api/v1/ping".equals(path) || "/api/v1/ping".equals(servletPath)
+                || path.startsWith("/api/v1/payments/mercadopago/webhook")
+                || (servletPath != null && servletPath.startsWith("/api/v1/payments/mercadopago/webhook"));
     }
 
     @Override
