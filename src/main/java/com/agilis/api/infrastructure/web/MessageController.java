@@ -1,12 +1,15 @@
 package com.agilis.api.infrastructure.web;
 
 import com.agilis.api.application.message.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Mensagens", description = "Envio e consulta de mensagens de um agendamento")
 @RestController
 @RequestMapping("/api/v1/messages")
 public class MessageController {
@@ -23,6 +26,7 @@ public class MessageController {
     }
 
     @PostMapping
+    @Operation(summary = "Envia uma mensagem no chat do agendamento")
     public ResponseEntity<SendMessageUseCase.Output> send(
             @RequestBody SendMessageUseCase.Input input
     ) {
@@ -30,6 +34,7 @@ public class MessageController {
     }
 
     @GetMapping("/booking/{bookingId}")
+    @Operation(summary = "Lista todas as mensagens do chat de um agendamento")
     public ResponseEntity<List<GetMessagesUseCase.Output>> getByBooking(
             @PathVariable String bookingId
     ) {

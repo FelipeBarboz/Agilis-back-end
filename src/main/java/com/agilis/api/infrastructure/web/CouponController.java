@@ -1,12 +1,15 @@
 package com.agilis.api.infrastructure.web;
 
 import com.agilis.api.application.coupon.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Cupons", description = "Criação, validação e gerenciamento de cupons de desconto")
 @RestController
 @RequestMapping("/api/v1/coupons")
 public class CouponController {
@@ -29,6 +32,7 @@ public class CouponController {
     }
 
     @PostMapping
+    @Operation(summary = "Cria um novo cupom de desconto para a loja")
     public ResponseEntity<CreateCouponUseCase.Output> create(@RequestBody CreateCouponUseCase.Input input) {
         String requesterId = getCurrentUserId();
         var inputWithRequester = new CreateCouponUseCase.Input(
@@ -39,17 +43,20 @@ public class CouponController {
     }
 
     @GetMapping
+    @Operation(summary = "Lista todos os cupons criados pelo prestador logado")
     public ResponseEntity<List<CreateCouponUseCase.Output>> list() {
         return ResponseEntity.ok(listCouponsUseCase.execute(getCurrentUserId()));
     }
 
     @PatchMapping("/{couponId}/deactivate")
+    @Operation(summary = "Desativa um cupom de desconto existente")
     public ResponseEntity<Void> deactivate(@PathVariable String couponId) {
         deactivateCouponUseCase.execute(getCurrentUserId(), couponId);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/validate")
+    @Operation(summary = "Valida um cupom de desconto para um serviço")
     public ResponseEntity<ValidateCouponUseCase.Output> validate(@RequestBody ValidateCouponUseCase.Input input) {
         String clientId = getCurrentUserId();
         var inputWithClient = new ValidateCouponUseCase.Input(clientId, input.serviceId(), input.code());

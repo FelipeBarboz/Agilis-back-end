@@ -1,4 +1,6 @@
 package com.agilis.api.infrastructure.web;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -7,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+@Tag(name = "Redefinição de Senha", description = "Fluxo de recuperação e redefinição de senha")
 @RestController
 @RequestMapping("/api/v1/auth")
 public class PasswordResetController {
@@ -24,6 +27,7 @@ public class PasswordResetController {
     }
 
     @PostMapping("/forgot-password")
+    @Operation(summary = "Solicita o envio do código de recuperação de senha por e-mail")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("apikey", anonKey);
@@ -41,6 +45,7 @@ public class PasswordResetController {
     }
 
     @PostMapping("/reset-password")
+    @Operation(summary = "Redefine a senha do usuário utilizando o código de recuperação")
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
         HttpHeaders verifyHeaders = new HttpHeaders();
         verifyHeaders.set("apikey", anonKey);

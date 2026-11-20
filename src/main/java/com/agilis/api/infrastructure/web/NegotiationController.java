@@ -1,12 +1,15 @@
 package com.agilis.api.infrastructure.web;
 
 import com.agilis.api.application.negotiation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Negociações", description = "Proposta e resposta de negociações de preço")
 @RestController
 @RequestMapping("/api/v1/negotiations")
 public class NegotiationController {
@@ -26,6 +29,7 @@ public class NegotiationController {
     }
 
     @PostMapping
+    @Operation(summary = "Inicia uma proposta de negociação de valor para um agendamento")
     public ResponseEntity<CreateNegotiationUseCase.Output> create(
             @RequestBody CreateNegotiationUseCase.Input input
     ) {
@@ -33,6 +37,7 @@ public class NegotiationController {
     }
 
     @PatchMapping("/{id}/respond")
+    @Operation(summary = "Responde a uma proposta de negociação (aceitar, recusar ou contraproposta)")
     public ResponseEntity<RespondNegotiationUseCase.Output> respond(
             @PathVariable String id,
             @RequestBody RespondNegotiationUseCase.Input input
@@ -48,6 +53,7 @@ public class NegotiationController {
     }
 
     @GetMapping("/booking/{bookingId}")
+    @Operation(summary = "Lista as propostas de negociação de um agendamento")
     public ResponseEntity<List<GetNegotiationUseCase.Output>> getByBooking(
             @PathVariable String bookingId
     ) {

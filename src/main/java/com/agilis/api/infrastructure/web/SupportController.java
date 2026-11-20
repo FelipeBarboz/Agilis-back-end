@@ -1,6 +1,8 @@
 package com.agilis.api.infrastructure.web;
 
 import com.agilis.api.application.support.CreateSupportMessageUseCase;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Suporte", description = "Envio de mensagens de suporte e FAQ")
 @RestController
 @RequestMapping("/api/v1/support")
 public class SupportController {
@@ -20,6 +23,7 @@ public class SupportController {
     }
 
     @PostMapping("/messages")
+    @Operation(summary = "Envia uma mensagem de suporte ou dúvida")
     public ResponseEntity<CreateSupportMessageUseCase.Output> create(
             @RequestBody CreateSupportMessageUseCase.Input input
     ) {
@@ -36,6 +40,7 @@ public class SupportController {
     }
 
     @GetMapping("/faq")
+    @Operation(summary = "Retorna a lista de perguntas frequentes (FAQ)")
     public ResponseEntity<List<Map<String, String>>> getFaq() {
         return ResponseEntity.ok(List.of(
                 Map.of("question", "Como faço para contratar um serviço?",

@@ -1,11 +1,14 @@
 package com.agilis.api.infrastructure.web;
 
 import com.agilis.api.application.service.SearchServicesUseCase;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
+@Tag(name = "Busca de Serviços", description = "Busca e filtragem de serviços disponíveis")
 @RestController
 @RequestMapping("/api/v1/services")
 public class ServiceSearchController {
@@ -17,6 +20,7 @@ public class ServiceSearchController {
     }
 
     @GetMapping("/search")
+    @Operation(summary = "Pesquisa e filtra serviços por cidade, estado, preço, categoria ou nota")
     public ResponseEntity<SearchServicesUseCase.Output> search(
             @RequestParam(required = false) String city,
             @RequestParam(required = false) String state,

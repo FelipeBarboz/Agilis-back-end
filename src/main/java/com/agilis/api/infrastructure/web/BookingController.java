@@ -1,4 +1,6 @@
 package com.agilis.api.infrastructure.web;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.agilis.api.application.booking.*;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
+@Tag(name = "Agendamentos", description = "Criação, consulta e gerenciamento de agendamentos")
 @RestController
 @RequestMapping("/api/v1/bookings")
 public class BookingController {
@@ -42,6 +45,7 @@ public class BookingController {
     }
 
     @PostMapping
+    @Operation(summary = "Cria um novo agendamento de serviço")
     public ResponseEntity<CreateBookingUseCase.Output> create(
             @RequestBody CreateBookingUseCase.Input input
     ) {
@@ -59,17 +63,20 @@ public class BookingController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Busca detalhes de um agendamento pelo ID")
     public ResponseEntity<GetBookingUseCase.Output> getById(@PathVariable String id) {
         return ResponseEntity.ok(getBookingUseCase.execute(id));
     }
 
     @GetMapping("/my")
+    @Operation(summary = "Lista os agendamentos do cliente logado")
     public ResponseEntity<List<GetBookingUseCase.Output>> getMyBookings() {
         String clientId = getCurrentUserId();
         return ResponseEntity.ok(getBookingUseCase.executeByClient(clientId));
     }
 
     @GetMapping("/service/{serviceId}")
+    @Operation(summary = "Lista os agendamentos associados a um serviço")
     public ResponseEntity<List<GetBookingUseCase.Output>> getByService(
             @PathVariable String serviceId
     ) {
@@ -77,6 +84,7 @@ public class BookingController {
     }
 
     @GetMapping("/store/{storeId}")
+    @Operation(summary = "Lista todos os agendamentos de uma loja")
     public ResponseEntity<List<GetStoreBookingsUseCase.Output>> getStoreBookings(
             @PathVariable String storeId,
             @RequestParam(required = false) LocalDate date
@@ -88,6 +96,7 @@ public class BookingController {
     }
 
     @GetMapping("/store/{storeId}/overview")
+    @Operation(summary = "Visão geral diária dos agendamentos da loja")
     public ResponseEntity<GetStoreDailyBookingsOverviewUseCase.Output> getStoreDailyOverview(
             @PathVariable String storeId,
             @RequestParam(required = false) LocalDate date
@@ -99,6 +108,7 @@ public class BookingController {
     }
 
     @GetMapping("/store/{storeId}/calendar")
+    @Operation(summary = "Calendário mensal de agendamentos da loja")
     public ResponseEntity<GetStoreMonthlyCalendarUseCase.Output> getStoreMonthlyCalendar(
             @PathVariable String storeId,
             @RequestParam int year,
@@ -111,6 +121,7 @@ public class BookingController {
     }
 
     @PatchMapping("/{id}/cancel")
+    @Operation(summary = "Cancela um agendamento")
     public ResponseEntity<Void> cancel(@PathVariable String id) {
         String requesterId = getCurrentUserId();
         cancelBookingUseCase.execute(new CancelBookingUseCase.Input(id, requesterId));
@@ -118,6 +129,7 @@ public class BookingController {
     }
 
     @PatchMapping("/{id}/confirm")
+    @Operation(summary = "Confirma um agendamento")
     public ResponseEntity<Void> confirm(@PathVariable String id) {
         String requesterId = getCurrentUserId();
         confirmBookingUseCase.execute(new ConfirmBookingUseCase.Input(id, requesterId));
@@ -125,6 +137,7 @@ public class BookingController {
     }
 
     @PatchMapping("/{id}/complete")
+    @Operation(summary = "Marca um agendamento como concluído")
     public ResponseEntity<Void> complete(@PathVariable String id) {
         String requesterId = getCurrentUserId();
         completeBookingUseCase.execute(new CompleteBookingUseCase.Input(id, requesterId));

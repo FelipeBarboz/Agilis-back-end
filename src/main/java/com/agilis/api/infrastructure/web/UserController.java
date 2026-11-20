@@ -4,12 +4,15 @@ import com.agilis.api.application.user.RegisterClientUseCase;
 import com.agilis.api.application.user.UpdateUserUseCase;
 import com.agilis.api.domain.user.User;
 import com.agilis.api.domain.user.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Tag(name = "Usuários", description = "Cadastro e gerenciamento de perfil do usuário")
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
@@ -29,6 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/auth/register/client")
+    @Operation(summary = "Cadastra o perfil de cliente após criação no Supabase")
     public ResponseEntity<RegisterClientUseCase.Output> registerClient(
             @RequestBody RegisterClientUseCase.Input input
     ) {
@@ -37,6 +41,7 @@ public class UserController {
     }
 
     @GetMapping("/users/me")
+    @Operation(summary = "Retorna os dados do perfil do usuário autenticado")
     public ResponseEntity<User> getMe() {
         String userId = getCurrentUserId();
         return userRepository.findById(UUID.fromString(userId))
@@ -45,6 +50,7 @@ public class UserController {
     }
 
     @PutMapping("/users/me")
+    @Operation(summary = "Atualiza os dados do perfil do usuário autenticado")
     public ResponseEntity<UpdateUserUseCase.Output> updateMe(
             @RequestBody UpdateUserUseCase.Input input
     ) {

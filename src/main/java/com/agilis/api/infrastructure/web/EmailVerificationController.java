@@ -1,5 +1,7 @@
 package com.agilis.api.infrastructure.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -7,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+@Tag(name = "Verificação de E-mail", description = "Verificação de e-mail do usuário via código")
 @RestController
 @RequestMapping("/api/v1/auth")
 public class EmailVerificationController {
@@ -24,6 +27,7 @@ public class EmailVerificationController {
     }
 
     @PostMapping("/verify-email")
+    @Operation(summary = "Verifica o código de confirmação de e-mail enviado ao usuário")
     public ResponseEntity<?> verifyEmail(@RequestBody VerifyEmailRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("apikey", anonKey);

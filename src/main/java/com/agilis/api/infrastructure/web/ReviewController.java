@@ -1,12 +1,15 @@
 package com.agilis.api.infrastructure.web;
 
 import com.agilis.api.application.review.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Avaliações", description = "Criação e consulta de avaliações de serviços")
 @RestController
 @RequestMapping("/api/v1/reviews")
 public class ReviewController {
@@ -23,6 +26,7 @@ public class ReviewController {
     }
 
     @PostMapping
+    @Operation(summary = "Cria uma avaliação para um serviço concluído")
     public ResponseEntity<CreateReviewUseCase.Output> create(
             @RequestBody CreateReviewUseCase.Input input
     ) {
@@ -38,6 +42,7 @@ public class ReviewController {
     }
 
     @GetMapping("/booking/{bookingId}")
+    @Operation(summary = "Consulta a avaliação associada a um agendamento")
     public ResponseEntity<GetReviewUseCase.Output> getByBooking(
             @PathVariable String bookingId
     ) {
@@ -45,6 +50,7 @@ public class ReviewController {
     }
 
     @GetMapping("/reviewed/{reviewedId}")
+    @Operation(summary = "Lista as avaliações recebidas por um prestador ou loja")
     public ResponseEntity<List<GetReviewUseCase.Output>> getByReviewed(
             @PathVariable String reviewedId
     ) {

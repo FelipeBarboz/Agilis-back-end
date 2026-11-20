@@ -1,4 +1,6 @@
 package com.agilis.api.infrastructure.web;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.agilis.api.application.provider.GetMyStoresUseCase;
 import com.agilis.api.application.provider.UpdateProviderProfileUseCase;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Perfil da Loja", description = "Consulta e atualização do perfil do prestador / loja")
 @RestController
 @RequestMapping("/api/v1/stores")
 public class ProviderProfileController {
@@ -30,6 +33,7 @@ public class ProviderProfileController {
     }
 
     @GetMapping("/{storeId}")
+    @Operation(summary = "Consulta o perfil da loja pelo ID")
     public ResponseEntity<ProviderProfile> getById(@PathVariable String storeId) {
         return providerProfileRepository.findById(UUID.fromString(storeId))
                 .map(ResponseEntity::ok)
@@ -37,6 +41,7 @@ public class ProviderProfileController {
     }
 
     @GetMapping("/slug/{slug}")
+    @Operation(summary = "Consulta o perfil público da loja pelo slug")
     public ResponseEntity<ProviderProfile> getBySlug(@PathVariable String slug) {
         return providerProfileRepository.findBySlug(slug)
                 .map(ResponseEntity::ok)
@@ -44,12 +49,14 @@ public class ProviderProfileController {
     }
 
     @GetMapping("/my")
+    @Operation(summary = "Lista as lojas associadas ao prestador logado")
     public ResponseEntity<List<GetMyStoresUseCase.Output>> getMyStores() {
         String providerId = getCurrentUserId();
         return ResponseEntity.ok(getMyStoresUseCase.execute(providerId));
     }
 
     @PutMapping("/{storeId}")
+    @Operation(summary = "Atualiza as informações do perfil da loja")
     public ResponseEntity<UpdateProviderProfileUseCase.Output> update(
             @PathVariable String storeId,
             @RequestBody UpdateProviderProfileUseCase.Input input

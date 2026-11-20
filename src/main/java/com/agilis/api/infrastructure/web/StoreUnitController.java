@@ -1,4 +1,6 @@
 package com.agilis.api.infrastructure.web;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.agilis.api.application.provider.CreateStoreUnitUseCase;
 import com.agilis.api.application.provider.DeleteStoreUnitUseCase;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Unidades da Loja", description = "Gerenciamento das unidades/filiais da loja")
 @RestController
 @RequestMapping("/api/v1/stores/{storeId}/units")
 public class StoreUnitController {
@@ -34,6 +37,7 @@ public class StoreUnitController {
     }
 
     @GetMapping
+    @Operation(summary = "Lista todas as unidades físicas/filiais da loja")
     public ResponseEntity<List<StoreUnit>> list(@PathVariable String storeId) {
         return ResponseEntity.ok(
                 storeUnitRepository.findAllByProviderProfileId(UUID.fromString(storeId))
@@ -41,6 +45,7 @@ public class StoreUnitController {
     }
 
     @PostMapping
+    @Operation(summary = "Cadastra uma nova unidade ou filial para a loja")
     public ResponseEntity<CreateStoreUnitUseCase.Output> create(
             @PathVariable String storeId,
             @RequestBody CreateStoreUnitUseCase.Input input
@@ -54,6 +59,7 @@ public class StoreUnitController {
     }
 
     @PutMapping("/{unitId}")
+    @Operation(summary = "Atualiza os dados de endereço de uma unidade da loja")
     public ResponseEntity<UpdateStoreUnitUseCase.Output> update(
             @PathVariable String unitId,
             @RequestBody UpdateStoreUnitUseCase.Input input
@@ -67,6 +73,7 @@ public class StoreUnitController {
     }
 
     @DeleteMapping("/{unitId}")
+    @Operation(summary = "Remove uma unidade ou filial da loja")
     public ResponseEntity<Void> delete(@PathVariable String unitId) {
         String requesterId = getCurrentUserId();
         deleteStoreUnitUseCase.execute(new DeleteStoreUnitUseCase.Input(requesterId, unitId));

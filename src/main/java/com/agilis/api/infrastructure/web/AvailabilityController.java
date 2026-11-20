@@ -1,4 +1,6 @@
 package com.agilis.api.infrastructure.web;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.agilis.api.application.booking.GetAvailableSlotsUseCase;
 import com.agilis.api.application.provider.ToggleEmployeeSelectionUseCase;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
+@Tag(name = "Disponibilidade", description = "Consulta de disponibilidade de horários para serviços")
 @RestController
 public class AvailabilityController {
 
@@ -20,6 +23,7 @@ public class AvailabilityController {
     }
 
     @GetMapping("/api/v1/services/{serviceId}/availability")
+    @Operation(summary = "Consulta os horários disponíveis para um serviço em uma data")
     public ResponseEntity<GetAvailableSlotsUseCase.Output> getAvailability(
             @PathVariable String serviceId,
             @RequestParam LocalDate date,
@@ -30,6 +34,7 @@ public class AvailabilityController {
 
     // dono/admin liga ou desliga a escolha de funcionário
     @PatchMapping("/api/v1/stores/{storeId}/settings/employee-selection")
+    @Operation(summary = "Ativa ou desativa a seleção de funcionários pelos clientes na loja")
     public ResponseEntity<Void> toggleEmployeeSelection(
             @PathVariable String storeId,
             @RequestParam boolean allow

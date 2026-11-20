@@ -1,4 +1,6 @@
 package com.agilis.api.infrastructure.web;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.agilis.api.application.provider.*;
 import com.agilis.api.domain.provider.StoreInvite;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Convites de Loja", description = "Geração e aceitação de convites para membros da loja")
 @RestController
 public class StoreInviteController {
 
@@ -36,6 +39,7 @@ public class StoreInviteController {
     }
 
     @PostMapping("/api/v1/stores/{storeId}/invites")
+    @Operation(summary = "Gera um link/código de convite para novos membros da loja")
     public ResponseEntity<GenerateStoreInviteLinkUseCase.Output> generateInvite(
             @PathVariable String storeId,
             @RequestBody(required = false) CreateInviteRequest request
@@ -57,11 +61,13 @@ public class StoreInviteController {
     }
 
     @GetMapping("/api/v1/stores/{storeId}/invites")
+    @Operation(summary = "Lista todos os convites gerados pela loja")
     public ResponseEntity<List<StoreInvite>> listStoreInvites(@PathVariable String storeId) {
         return ResponseEntity.ok(storeInviteRepository.findAllByStoreId(UUID.fromString(storeId)));
     }
 
     @DeleteMapping("/api/v1/stores/{storeId}/invites/{inviteId}")
+    @Operation(summary = "Revoga ou invalida um convite de loja existente")
     public ResponseEntity<Void> revokeInvite(
             @PathVariable String storeId,
             @PathVariable String inviteId
@@ -72,11 +78,13 @@ public class StoreInviteController {
     }
 
     @GetMapping("/api/v1/store-invites/{code}")
+    @Operation(summary = "Consulta informações públicas de um convite a partir do código")
     public ResponseEntity<GetStoreInviteInfoUseCase.Output> getInviteInfo(@PathVariable String code) {
         return ResponseEntity.ok(getStoreInviteInfoUseCase.execute(code));
     }
 
     @PostMapping("/api/v1/store-invites/{code}/accept")
+    @Operation(summary = "Aceita um convite de loja e vincula o usuário autenticado à equipe")
     public ResponseEntity<AcceptStoreInviteUseCase.Output> acceptInvite(@PathVariable String code) {
         String userId = getCurrentUserId();
         return ResponseEntity.ok(acceptStoreInviteUseCase.execute(new AcceptStoreInviteUseCase.Input(userId, code)));

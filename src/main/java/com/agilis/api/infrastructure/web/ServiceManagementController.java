@@ -1,4 +1,6 @@
 package com.agilis.api.infrastructure.web;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.agilis.api.application.service.CreateServiceUseCase;
 import com.agilis.api.application.service.DeleteServiceUseCase;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Gestão de Serviços", description = "Criação, edição e remoção de serviços da loja")
 @RestController
 @RequestMapping("/api/v1/stores/{storeId}/services")
 public class ServiceManagementController {
@@ -38,6 +41,7 @@ public class ServiceManagementController {
     }
 
     @GetMapping("/{serviceId}")
+    @Operation(summary = "Consulta detalhes de um serviço específico para gestão")
     public ResponseEntity<Service> getById(
             @PathVariable String storeId,
             @PathVariable String serviceId
@@ -49,6 +53,7 @@ public class ServiceManagementController {
     }
 
     @GetMapping
+    @Operation(summary = "Lista todos os serviços gerenciados de uma loja")
     public ResponseEntity<List<Service>> listByStore(@PathVariable String storeId) {
         return ResponseEntity.ok(
                 serviceRepository.findAllByStoreId(UUID.fromString(storeId))
@@ -56,6 +61,7 @@ public class ServiceManagementController {
     }
 
     @PostMapping
+    @Operation(summary = "Cadastra um novo serviço na loja")
     public ResponseEntity<CreateServiceUseCase.Output> create(
             @PathVariable String storeId,
             @RequestBody CreateServiceUseCase.Input input
@@ -76,6 +82,7 @@ public class ServiceManagementController {
     }
 
     @PutMapping("/{serviceId}")
+    @Operation(summary = "Atualiza os dados de um serviço existente")
     public ResponseEntity<UpdateServiceUseCase.Output> update(
             @PathVariable String storeId,
             @PathVariable String serviceId,
@@ -96,6 +103,7 @@ public class ServiceManagementController {
     }
 
     @DeleteMapping("/{serviceId}")
+    @Operation(summary = "Remove um serviço da loja")
     public ResponseEntity<Void> delete(
             @PathVariable String storeId,
             @PathVariable String serviceId
