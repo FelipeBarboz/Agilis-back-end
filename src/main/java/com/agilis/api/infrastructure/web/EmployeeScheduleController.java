@@ -1,4 +1,6 @@
 package com.agilis.api.infrastructure.web;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.agilis.api.application.provider.*;
 import com.agilis.api.domain.provider.ScheduleSlot;
@@ -12,6 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Agenda de Funcionários", description = "Gerenciamento de escalas e horários dos funcionários")
 @RestController
 @RequestMapping("/api/v1/stores/{storeId}/schedules")
 public class EmployeeScheduleController {
@@ -46,6 +49,7 @@ public class EmployeeScheduleController {
     }
 
     @PostMapping
+    @Operation(summary = "Cria uma escala de trabalho para um funcionário")
     public ResponseEntity<CreateEmployeeScheduleUseCase.Output> create(
             @PathVariable String storeId,
             @RequestBody CreateEmployeeScheduleUseCase.Input input
@@ -58,6 +62,7 @@ public class EmployeeScheduleController {
     }
 
     @PostMapping("/{scheduleId}/slots")
+    @Operation(summary = "Adiciona um intervalo de horário na escala do funcionário")
     public ResponseEntity<AddScheduleSlotUseCase.Output> addSlot(
             @PathVariable String scheduleId,
             @RequestBody AddScheduleSlotUseCase.Input input
@@ -70,11 +75,13 @@ public class EmployeeScheduleController {
     }
 
     @GetMapping("/{scheduleId}/slots")
+    @Operation(summary = "Lista os horários da escala do funcionário")
     public ResponseEntity<List<ScheduleSlot>> listSlots(@PathVariable String scheduleId) {
         return ResponseEntity.ok(scheduleSlotRepository.findAllByEmployeeScheduleId(UUID.fromString(scheduleId)));
     }
 
     @DeleteMapping("/slots/{slotId}")
+    @Operation(summary = "Remove um intervalo de horário da escala")
     public ResponseEntity<Void> removeSlot(@PathVariable String slotId) {
         String requesterId = getCurrentUserId();
         removeScheduleSlotUseCase.execute(requesterId, slotId);
@@ -82,6 +89,7 @@ public class EmployeeScheduleController {
     }
 
     @GetMapping("/weekly")
+    @Operation(summary = "Consulta a escala semanal dos funcionários da loja")
     public ResponseEntity<GetStoreWeeklyScheduleUseCase.Output> getWeekly(
             @PathVariable String storeId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate
@@ -93,6 +101,7 @@ public class EmployeeScheduleController {
     }
 
     @GetMapping("/daily")
+    @Operation(summary = "Consulta a escala diária dos funcionários da loja")
     public ResponseEntity<GetStoreDailyScheduleUseCase.Output> getDaily(
             @PathVariable String storeId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
@@ -104,6 +113,7 @@ public class EmployeeScheduleController {
     }
 
     @PutMapping("/employees/{employeeId}/weekly")
+    @Operation(summary = "Salva a escala semanal completa de um funcionário")
     public ResponseEntity<SaveEmployeeWeeklyScheduleUseCase.Output> saveEmployeeWeekly(
             @PathVariable String storeId,
             @PathVariable String employeeId,
@@ -116,6 +126,7 @@ public class EmployeeScheduleController {
     }
 
     @DeleteMapping("/employees/{employeeId}")
+    @Operation(summary = "Remove um funcionário da escala da loja")
     public ResponseEntity<Void> removeEmployeeFromSchedule(
             @PathVariable String storeId,
             @PathVariable String employeeId

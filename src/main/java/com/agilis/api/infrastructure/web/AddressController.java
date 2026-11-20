@@ -4,6 +4,8 @@ import com.agilis.api.application.user.AddAddressUseCase;
 import com.agilis.api.application.user.UpdateAddressUseCase;
 import com.agilis.api.domain.user.Address;
 import com.agilis.api.domain.user.AddressRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Endereços", description = "Gerenciamento de endereços do usuário")
 @RestController
 @RequestMapping("/api/v1/users/me/addresses")
 public class AddressController {
@@ -30,12 +33,14 @@ public class AddressController {
     }
 
     @GetMapping
+    @Operation(summary = "Lista todos os endereços do usuário logado")
     public ResponseEntity<List<Address>> getMyAddresses() {
         String userId = getCurrentUserId();
         return ResponseEntity.ok(addressRepository.findAllByUserId(UUID.fromString(userId)));
     }
 
     @PostMapping
+    @Operation(summary = "Cadastra um novo endereço para o usuário logado")
     public ResponseEntity<AddAddressUseCase.Output> add(
             @RequestBody AddAddressUseCase.Input input
     ) {
@@ -53,6 +58,7 @@ public class AddressController {
     }
 
     @PutMapping("/{addressId}")
+    @Operation(summary = "Atualiza um endereço existente do usuário logado")
     public ResponseEntity<UpdateAddressUseCase.Output> update(
             @PathVariable String addressId,
             @RequestBody UpdateAddressUseCase.Input input
@@ -72,6 +78,7 @@ public class AddressController {
     }
 
     @DeleteMapping("/{addressId}")
+    @Operation(summary = "Remove um endereço do usuário logado")
     public ResponseEntity<Void> delete(@PathVariable String addressId) {
         String userId = getCurrentUserId();
         Address address = addressRepository.findById(UUID.fromString(addressId))

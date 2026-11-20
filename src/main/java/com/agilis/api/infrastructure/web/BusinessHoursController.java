@@ -3,6 +3,8 @@ package com.agilis.api.infrastructure.web;
 import com.agilis.api.application.provider.SetBusinessHoursUseCase;
 import com.agilis.api.domain.provider.BusinessHours;
 import com.agilis.api.domain.provider.BusinessHoursRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Horários de Funcionamento", description = "Configuração dos horários de funcionamento da loja")
 @RestController
 @RequestMapping("/api/v1/stores/{storeId}/business-hours")
 public class BusinessHoursController {
@@ -23,11 +26,13 @@ public class BusinessHoursController {
     }
 
     @GetMapping
+    @Operation(summary = "Lista os horários de funcionamento da loja")
     public ResponseEntity<List<BusinessHours>> list(@PathVariable String storeId) {
         return ResponseEntity.ok(businessHoursRepository.findAllByStoreId(UUID.fromString(storeId)));
     }
 
     @PutMapping
+    @Operation(summary = "Configura o horário de funcionamento de um dia da semana")
     public ResponseEntity<SetBusinessHoursUseCase.Output> set(
             @PathVariable String storeId,
             @RequestBody SetBusinessHoursUseCase.Input input

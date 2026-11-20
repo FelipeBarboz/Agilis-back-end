@@ -1,4 +1,6 @@
 package com.agilis.api.infrastructure.web;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.agilis.api.application.provider.*;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Cargos da Loja", description = "Gerenciamento de cargos e permissões da equipe")
 @RestController
 @RequestMapping("/api/v1/stores/{storeId}/positions")
 public class StorePositionController {
@@ -32,11 +35,13 @@ public class StorePositionController {
     }
 
     @GetMapping
+    @Operation(summary = "Lista todos os cargos cadastrados na loja")
     public ResponseEntity<List<CreateStorePositionUseCase.Output>> list(@PathVariable String storeId) {
         return ResponseEntity.ok(listStorePositionsUseCase.execute(storeId));
     }
 
     @PostMapping
+    @Operation(summary = "Cria um novo cargo com permissões específicas na loja")
     public ResponseEntity<CreateStorePositionUseCase.Output> create(
             @PathVariable String storeId,
             @RequestBody CreateStorePositionUseCase.Input input
@@ -50,6 +55,7 @@ public class StorePositionController {
     }
 
     @PutMapping("/{positionId}")
+    @Operation(summary = "Atualiza os dados e permissões de um cargo existente")
     public ResponseEntity<CreateStorePositionUseCase.Output> update(
             @PathVariable String positionId,
             @RequestBody UpdateStorePositionUseCase.Input input
@@ -63,6 +69,7 @@ public class StorePositionController {
     }
 
     @DeleteMapping("/{positionId}")
+    @Operation(summary = "Remove um cargo da loja")
     public ResponseEntity<Void> delete(@PathVariable String positionId) {
         String requesterId = getCurrentUserId();
         deleteStorePositionUseCase.execute(requesterId, positionId);
@@ -70,6 +77,7 @@ public class StorePositionController {
     }
 
     @PatchMapping("/members/{memberId}")
+    @Operation(summary = "Atribui um cargo a um membro da equipe da loja")
     public ResponseEntity<Void> assign(
             @PathVariable String storeId,
             @PathVariable String memberId,

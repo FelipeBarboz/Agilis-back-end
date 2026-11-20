@@ -4,6 +4,8 @@ import com.agilis.api.application.provider.InviteMemberUseCase;
 import com.agilis.api.application.provider.RemoveMemberUseCase;
 import com.agilis.api.domain.provider.StoreMembership;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Membros da Loja", description = "Gerenciamento de membros e equipe da loja")
 @RestController
 @RequestMapping("/api/v1/stores")
 public class StoreController {
@@ -30,6 +33,7 @@ public class StoreController {
     }
 
     @PostMapping("/{storeId}/members")
+    @Operation(summary = "Convida um profissional para a equipe da loja via e-mail")
     public ResponseEntity<InviteMemberUseCase.Output> invite(
             @PathVariable String storeId,
             @RequestBody InviteMemberUseCase.Input input
@@ -45,6 +49,7 @@ public class StoreController {
     }
 
     @DeleteMapping("/{storeId}/members/{memberId}")
+    @Operation(summary = "Remove um membro da equipe da loja")
     public ResponseEntity<Void> remove(
             @PathVariable String storeId,
             @PathVariable String memberId
@@ -59,6 +64,7 @@ public class StoreController {
     }
 
     @GetMapping("/{storeId}/members")
+    @Operation(summary = "Lista todos os membros e colaboradores da loja")
     public ResponseEntity<List<StoreMembership>> getMembers(@PathVariable String storeId) {
         return ResponseEntity.ok(
                 storeMembershipRepository.findAllByStoreId(UUID.fromString(storeId))

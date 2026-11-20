@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/payments")
-@Tag(name = "Payments", description = "Endpoints de gerenciamento e checkout de pagamentos")
+@Tag(name = "Pagamentos", description = "Endpoints de gerenciamento e checkout de pagamentos")
 public class PaymentController {
 
     private final CreatePaymentPreferenceUseCase createPaymentPreferenceUseCase;
@@ -97,6 +97,7 @@ public class PaymentController {
     }
 
     @GetMapping("/mercadopago/webhook")
+    @Operation(summary = "Verifica se o endpoint de webhook do Mercado Pago está ativo")
     public ResponseEntity<String> verifyWebhook() {
         return ResponseEntity.ok("Mercado Pago Webhook endpoint active");
     }

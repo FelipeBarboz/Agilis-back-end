@@ -3,12 +3,15 @@ package com.agilis.api.infrastructure.web;
 import com.agilis.api.application.booking.DeclareDelayUseCase;
 import com.agilis.api.application.booking.GetPendingDelaysUseCase;
 import com.agilis.api.application.booking.RespondToDelayUseCase;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Atrasos", description = "Registro e consulta de atrasos em agendamentos")
 @RestController
 public class DelayController {
 
@@ -27,6 +30,7 @@ public class DelayController {
     }
 
     @PostMapping("/api/v1/stores/{storeId}/delays")
+    @Operation(summary = "Registra ou declara um atraso em um agendamento")
     public ResponseEntity<DeclareDelayUseCase.Output> declare(
             @PathVariable String storeId,
             @RequestBody DeclareDelayUseCase.Input input
@@ -39,12 +43,14 @@ public class DelayController {
     }
 
     @GetMapping("/api/v1/bookings/delays/pending")
+    @Operation(summary = "Consulta atrasos pendentes de resposta do cliente")
     public ResponseEntity<List<GetPendingDelaysUseCase.Output>> getPending() {
         String clientId = getCurrentUserId();
         return ResponseEntity.ok(getPendingDelaysUseCase.execute(clientId));
     }
 
     @PatchMapping("/api/v1/bookings/delays/{delayId}/respond")
+    @Operation(summary = "Responde a um atraso (aceitar ou reagendar)")
     public ResponseEntity<Void> respond(
             @PathVariable String delayId,
             @RequestBody RespondToDelayUseCase.Input input

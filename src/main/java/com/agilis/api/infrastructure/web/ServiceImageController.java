@@ -1,4 +1,6 @@
 package com.agilis.api.infrastructure.web;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.agilis.api.application.service.AddServiceImageUseCase;
 import com.agilis.api.application.service.RemoveServiceImageUseCase;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Imagens do Serviço", description = "Upload e gerenciamento de fotos do serviço")
 @RestController
 @RequestMapping("/api/v1/stores/{storeId}/services/{serviceId}")
 public class ServiceImageController {
@@ -34,6 +37,7 @@ public class ServiceImageController {
     }
 
     @GetMapping("/images")
+    @Operation(summary = "Lista a galeria de imagens de um serviço")
     public ResponseEntity<List<ServiceImage>> getImages(@PathVariable String serviceId) {
         return ResponseEntity.ok(
                 serviceImageRepository.findAllByServiceId(UUID.fromString(serviceId))
@@ -41,6 +45,7 @@ public class ServiceImageController {
     }
 
     @PostMapping("/images")
+    @Operation(summary = "Adiciona uma imagem à galeria do serviço")
     public ResponseEntity<AddServiceImageUseCase.Output> addImage(
             @PathVariable String serviceId,
             @RequestBody AddServiceImageUseCase.Input input
@@ -52,6 +57,7 @@ public class ServiceImageController {
     }
 
     @DeleteMapping("/images/{imageId}")
+    @Operation(summary = "Remove uma imagem da galeria do serviço")
     public ResponseEntity<Void> removeImage(
             @PathVariable String imageId
     ) {
@@ -63,6 +69,7 @@ public class ServiceImageController {
     }
 
     @PutMapping("/thumbnail")
+    @Operation(summary = "Define a foto principal (thumbnail) do serviço")
     public ResponseEntity<UpdateThumbnailUseCase.Output> updateThumbnail(
             @PathVariable String serviceId,
             @RequestBody UpdateThumbnailUseCase.Input input
