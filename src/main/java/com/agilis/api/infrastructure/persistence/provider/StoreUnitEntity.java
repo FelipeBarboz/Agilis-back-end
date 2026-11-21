@@ -1,5 +1,6 @@
 package com.agilis.api.infrastructure.persistence.provider;
 
+import com.agilis.api.domain.provider.AttendanceType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,22 +23,26 @@ public class StoreUnitEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "attendance_type", nullable = false, length = 20)
+    private AttendanceType attendanceType;
+
+    @Column
     private String street;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String number;
 
     @Column(length = 100)
     private String complement;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String city;
 
-    @Column(nullable = false, length = 2)
+    @Column(length = 2)
     private String state;
 
-    @Column(nullable = false, length = 9)
+    @Column(length = 9)
     private String cep;
 
     @Column(unique = true, length = 18)

@@ -110,7 +110,7 @@ public class GetBookingDetailUseCase {
                     .orElse(null);
         }
         return storeServiceAreaRepository.findByStoreId(service.getStoreId())
-                .map(StoreServiceArea::getReferenceAddress)
+                .map(a -> (String) null)
                 .orElse(null);
     }
 

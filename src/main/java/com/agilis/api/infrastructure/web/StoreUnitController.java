@@ -52,8 +52,8 @@ public class StoreUnitController {
     ) {
         String requesterId = getCurrentUserId();
         CreateStoreUnitUseCase.Input inputWithRequester = new CreateStoreUnitUseCase.Input(
-                requesterId, storeId, input.cnpj(), input.name(), input.street(), input.number(),
-                input.complement(), input.city(), input.state(), input.cep()
+                requesterId, storeId, input.cnpj(), input.name(), input.attendanceType(),
+                input.street(), input.number(), input.complement(), input.city(), input.state(), input.cep()
         );
         return ResponseEntity.ok(createStoreUnitUseCase.execute(inputWithRequester));
     }
@@ -66,8 +66,8 @@ public class StoreUnitController {
     ) {
         String requesterId = getCurrentUserId();
         UpdateStoreUnitUseCase.Input inputWithRequester = new UpdateStoreUnitUseCase.Input(
-                requesterId, unitId, input.name(), input.street(), input.number(),
-                input.complement(), input.city(), input.state(), input.cep()
+                requesterId, unitId, input.name(), input.attendanceType(),
+                input.street(), input.number(), input.complement(), input.city(), input.state(), input.cep()
         );
         return ResponseEntity.ok(updateStoreUnitUseCase.execute(inputWithRequester));
     }

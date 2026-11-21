@@ -38,10 +38,10 @@ public class SetServiceAreaUseCase {
         // upsert — se já existe, atualiza; senão cria
         StoreServiceArea area = storeServiceAreaRepository.findByStoreId(storeId)
                 .map(existing -> {
-                    existing.update(type, input.radiusKm(), input.referenceAddress());
+                    existing.update(type, input.radiusKm());
                     return existing;
                 })
-                .orElse(StoreServiceArea.create(storeId, type, input.radiusKm(), input.referenceAddress()));
+                .orElse(StoreServiceArea.create(storeId, type, input.radiusKm()));
 
         storeServiceAreaRepository.save(area);
 
@@ -59,14 +59,13 @@ public class SetServiceAreaUseCase {
                 area.getId().toString(),
                 area.getAttendanceType().name(),
                 area.getRadiusKm(),
-                area.getReferenceAddress(),
                 cityOutputs
         );
     }
 
     public record CityInput(String city, String state) {}
-    public record Input(String requesterId, String storeId, String attendanceType, Integer radiusKm, String referenceAddress, List<CityInput> cities) {}
+    public record Input(String requesterId, String storeId, String attendanceType, Integer radiusKm, List<CityInput> cities) {}
 
     public record CityOutput(String city, String state) {}
-    public record Output(String id, String attendanceType, Integer radiusKm, String referenceAddress, List<CityOutput> cities) {}
+    public record Output(String id, String attendanceType, Integer radiusKm, List<CityOutput> cities) {}
 }

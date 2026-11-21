@@ -27,7 +27,7 @@ public class GetServiceAreaUseCase {
                 .toList();
 
         return new SetServiceAreaUseCase.Output(
-                area.getId().toString(), area.getAttendanceType().name(), area.getRadiusKm(), area.getReferenceAddress(), cities
+                area.getId().toString(), area.getAttendanceType().name(), area.getRadiusKm(), cities
         );
     }
 }

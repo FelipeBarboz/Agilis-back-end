@@ -1,5 +1,6 @@
 package com.agilis.api.application.provider;
 
+import com.agilis.api.domain.provider.AttendanceType;
 import com.agilis.api.domain.provider.StoreMembershipRepository;
 import com.agilis.api.domain.provider.StoreUnit;
 import com.agilis.api.domain.provider.StoreUnitRepository;
@@ -36,6 +37,9 @@ public class UpdateStoreUnitUseCase {
         }
 
         unit.changeName(input.name());
+        if (input.attendanceType() != null) {
+            unit.changeAttendanceType(AttendanceType.valueOf(input.attendanceType()));
+        }
         unit.changeStreet(input.street());
         unit.changeNumber(input.number());
         unit.changeComplement(input.complement());
@@ -52,6 +56,7 @@ public class UpdateStoreUnitUseCase {
                 unit.getId().toString(),
                 unit.getProviderProfileId().toString(),
                 unit.getName(),
+                unit.getAttendanceType().name(),
                 unit.getStreet(),
                 unit.getNumber(),
                 unit.getComplement(),
@@ -63,13 +68,13 @@ public class UpdateStoreUnitUseCase {
 
     @Schema(name = "UpdateStoreUnitInput")
     public record Input(
-            String requesterId, String unitId, String name, String street, String number,
-            String complement, String city, String state, String cep
+            String requesterId, String unitId, String name, String attendanceType,
+            String street, String number, String complement, String city, String state, String cep
     ) {}
 
     @Schema(name = "UpdateStoreUnitOutput")
     public record Output(
-            String unitId, String storeId, String name, String street, String number,
-            String complement, String city, String state, String cep
+            String unitId, String storeId, String name, String attendanceType,
+            String street, String number, String complement, String city, String state, String cep
     ) {}
 }

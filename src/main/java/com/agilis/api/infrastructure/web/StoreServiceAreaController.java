@@ -35,7 +35,7 @@ public class StoreServiceAreaController {
     ) {
         String requesterId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var inputWithRequester = new SetServiceAreaUseCase.Input(
-                requesterId, storeId, input.attendanceType(), input.radiusKm(), input.referenceAddress(), input.cities()
+                requesterId, storeId, input.attendanceType(), input.radiusKm(), input.cities()
         );
         return ResponseEntity.ok(setServiceAreaUseCase.execute(inputWithRequester));
     }

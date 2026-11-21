@@ -43,25 +43,31 @@ public class CreateStoreUnitUseCase {
             throw new IllegalStateException("CNPJ already registered by another unit.");
         }
 
+        AttendanceType attendanceType = AttendanceType.valueOf(input.attendanceType());
+
+        // Para FIXED_LOCATION e BOTH: endereço obrigatório (validado no domínio)
+        // Para ON_CLIENT: endereço nullable
         StoreUnit unit = StoreUnit.create(
-                storeId, input.cnpj(), input.name(), input.street(), input.number(),
-                input.complement(), input.city(), input.state(), input.cep()
+                storeId, input.cnpj(), input.name(), attendanceType,
+                input.street(), input.number(), input.complement(),
+                input.city(), input.state(), input.cep()
         );
         storeUnitRepository.save(unit);
 
         return new Output(
                 unit.getId().toString(), unit.getProviderProfileId().toString(), unit.getCnpj(), unit.getName(),
+                unit.getAttendanceType().name(),
                 unit.getStreet(), unit.getNumber(), unit.getComplement(), unit.getCity(), unit.getState(), unit.getCep()
         );
     }
 
     public record Input(
-            String requesterId, String storeId, String cnpj, String name, String street, String number,
-            String complement, String city, String state, String cep
+            String requesterId, String storeId, String cnpj, String name, String attendanceType,
+            String street, String number, String complement, String city, String state, String cep
     ) {}
 
     public record Output(
-            String unitId, String storeId, String cnpj, String name, String street, String number,
-            String complement, String city, String state, String cep
+            String unitId, String storeId, String cnpj, String name, String attendanceType,
+            String street, String number, String complement, String city, String state, String cep
     ) {}
 }

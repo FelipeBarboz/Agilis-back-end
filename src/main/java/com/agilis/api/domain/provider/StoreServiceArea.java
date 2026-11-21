@@ -13,30 +13,27 @@ public class StoreServiceArea {
     private final UUID storeId;
     private AttendanceType attendanceType;
     private Integer radiusKm;
-    private String referenceAddress;
     private final LocalDateTime createdAt;
 
-    private StoreServiceArea(UUID id, UUID storeId, AttendanceType attendanceType, Integer radiusKm, String referenceAddress, LocalDateTime createdAt) {
-        this.id               = id;
-        this.storeId          = storeId;
-        this.attendanceType   = validateType(attendanceType);
-        this.radiusKm         = validateRadius(attendanceType, radiusKm);
-        this.referenceAddress = referenceAddress;
-        this.createdAt        = createdAt;
+    private StoreServiceArea(UUID id, UUID storeId, AttendanceType attendanceType, Integer radiusKm, LocalDateTime createdAt) {
+        this.id             = id;
+        this.storeId        = storeId;
+        this.attendanceType = validateType(attendanceType);
+        this.radiusKm       = validateRadius(attendanceType, radiusKm);
+        this.createdAt      = createdAt;
     }
 
-    public static StoreServiceArea create(UUID storeId, AttendanceType attendanceType, Integer radiusKm, String referenceAddress) {
-        return new StoreServiceArea(UUID.randomUUID(), storeId, attendanceType, radiusKm, referenceAddress, LocalDateTime.now());
+    public static StoreServiceArea create(UUID storeId, AttendanceType attendanceType, Integer radiusKm) {
+        return new StoreServiceArea(UUID.randomUUID(), storeId, attendanceType, radiusKm, LocalDateTime.now());
     }
 
-    public static StoreServiceArea reconstitute(UUID id, UUID storeId, AttendanceType attendanceType, Integer radiusKm, String referenceAddress, LocalDateTime createdAt) {
-        return new StoreServiceArea(id, storeId, attendanceType, radiusKm, referenceAddress, createdAt);
+    public static StoreServiceArea reconstitute(UUID id, UUID storeId, AttendanceType attendanceType, Integer radiusKm, LocalDateTime createdAt) {
+        return new StoreServiceArea(id, storeId, attendanceType, radiusKm, createdAt);
     }
 
-    public void update(AttendanceType attendanceType, Integer radiusKm, String referenceAddress) {
-        this.attendanceType   = validateType(attendanceType);
-        this.radiusKm         = validateRadius(attendanceType, radiusKm);
-        this.referenceAddress = referenceAddress;
+    public void update(AttendanceType attendanceType, Integer radiusKm) {
+        this.attendanceType = validateType(attendanceType);
+        this.radiusKm       = validateRadius(attendanceType, radiusKm);
     }
 
     private AttendanceType validateType(AttendanceType type) {
