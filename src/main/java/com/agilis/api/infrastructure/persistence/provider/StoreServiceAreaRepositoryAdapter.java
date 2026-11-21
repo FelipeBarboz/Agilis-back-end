@@ -30,7 +30,6 @@ public class StoreServiceAreaRepositoryAdapter implements StoreServiceAreaReposi
         entity.setStoreId(area.getStoreId());
         entity.setAttendanceType(area.getAttendanceType());
         entity.setRadiusKm(area.getRadiusKm());
-        entity.setReferenceAddress(area.getReferenceAddress());
         entity.setCreatedAt(area.getCreatedAt());
         return entity;
     }
@@ -38,7 +37,7 @@ public class StoreServiceAreaRepositoryAdapter implements StoreServiceAreaReposi
     private StoreServiceArea toDomain(StoreServiceAreaEntity entity) {
         return StoreServiceArea.reconstitute(
                 entity.getId(), entity.getStoreId(), entity.getAttendanceType(),
-                entity.getRadiusKm(), entity.getReferenceAddress(), entity.getCreatedAt()
+                entity.getRadiusKm(), entity.getCreatedAt()
         );
     }
 }

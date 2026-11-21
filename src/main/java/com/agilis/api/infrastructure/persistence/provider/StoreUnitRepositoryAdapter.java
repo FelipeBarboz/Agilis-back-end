@@ -46,6 +46,7 @@ public class StoreUnitRepositoryAdapter implements StoreUnitRepository {
         entity.setId(unit.getId());
         entity.setProviderProfileId(unit.getProviderProfileId());
         entity.setName(unit.getName());
+        entity.setAttendanceType(unit.getAttendanceType());
         entity.setStreet(unit.getStreet());
         entity.setNumber(unit.getNumber());
         entity.setComplement(unit.getComplement());
@@ -59,9 +60,9 @@ public class StoreUnitRepositoryAdapter implements StoreUnitRepository {
 
     private StoreUnit toDomain(StoreUnitEntity entity) {
         return StoreUnit.reconstitute(
-                entity.getId(), entity.getProviderProfileId(), entity.getCnpj(), entity.getName(), entity.getStreet(),
-                entity.getNumber(), entity.getComplement(), entity.getCity(), entity.getState(), entity.getCep(),
-                entity.getCreatedAt()
+                entity.getId(), entity.getProviderProfileId(), entity.getCnpj(), entity.getName(),
+                entity.getAttendanceType(), entity.getStreet(), entity.getNumber(), entity.getComplement(),
+                entity.getCity(), entity.getState(), entity.getCep(), entity.getCreatedAt()
         );
     }
 }

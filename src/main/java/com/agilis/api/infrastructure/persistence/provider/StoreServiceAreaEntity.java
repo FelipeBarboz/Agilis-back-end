@@ -27,9 +27,6 @@ public class StoreServiceAreaEntity {
     @Column(name = "radius_km")
     private Integer radiusKm;
 
-    @Column(name = "reference_address", columnDefinition = "TEXT")
-    private String referenceAddress;
-
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 }

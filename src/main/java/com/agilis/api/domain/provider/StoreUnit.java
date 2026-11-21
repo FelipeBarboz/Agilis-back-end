@@ -11,6 +11,7 @@ public class StoreUnit {
     private final UUID providerProfileId;
     private final String cnpj;
     private String name;
+    private AttendanceType attendanceType;
     private String street;
     private String number;
     private String complement;
@@ -19,46 +20,71 @@ public class StoreUnit {
     private String cep;
     private final LocalDateTime createdAt;
 
-    private StoreUnit(UUID id, UUID providerProfileId, String cnpj, String name, String street, String number,
-                      String complement, String city, String state, String cep, LocalDateTime createdAt) {
+    private StoreUnit(UUID id, UUID providerProfileId, String cnpj, String name, AttendanceType attendanceType,
+                      String street, String number, String complement, String city, String state, String cep,
+                      LocalDateTime createdAt) {
         this.id                = id;
         this.providerProfileId = providerProfileId;
         this.cnpj              = cnpj;
         this.name              = validateField(name, "Unit name");
-        this.street            = validateField(street, "Street");
-        this.number            = validateField(number, "Number");
-        this.complement        = complement;
-        this.city              = validateField(city, "City");
-        this.state             = validateState(state);
-        this.cep               = validateCep(cep);
+        this.attendanceType    = validateAttendanceType(attendanceType);
         this.createdAt         = createdAt;
+
+        // endereço obrigatório apenas para FIXED_LOCATION e BOTH
+        if (attendanceType == AttendanceType.FIXED_LOCATION || attendanceType == AttendanceType.BOTH) {
+            this.street     = validateField(street, "Street");
+            this.number     = validateField(number, "Number");
+            this.complement = complement;
+            this.city       = validateField(city, "City");
+            this.state      = validateState(state);
+            this.cep        = validateCep(cep);
+        } else {
+            // ON_CLIENT: endereço opcional / nullable
+            this.street     = street;
+            this.number     = number;
+            this.complement = complement;
+            this.city       = city;
+            this.state      = state;
+            this.cep        = cep;
+        }
     }
 
-    public static StoreUnit create(UUID providerProfileId, String cnpj, String name, String street, String number,
-                                   String complement, String city, String state, String cep) {
-        return new StoreUnit(UUID.randomUUID(), providerProfileId, CnpjValidator.validate(cnpj), name, street,
-                number, complement, city, state, cep, LocalDateTime.now());
+    public static StoreUnit create(UUID providerProfileId, String cnpj, String name, AttendanceType attendanceType,
+                                   String street, String number, String complement, String city, String state,
+                                   String cep) {
+        return new StoreUnit(UUID.randomUUID(), providerProfileId, CnpjValidator.validate(cnpj), name,
+                attendanceType, street, number, complement, city, state, cep, LocalDateTime.now());
     }
 
-    public static StoreUnit reconstitute(UUID id, UUID providerProfileId, String cnpj, String name, String street,
-                                         String number, String complement, String city, String state, String cep,
+    public static StoreUnit reconstitute(UUID id, UUID providerProfileId, String cnpj, String name,
+                                         AttendanceType attendanceType, String street, String number,
+                                         String complement, String city, String state, String cep,
                                          LocalDateTime createdAt) {
-        return new StoreUnit(id, providerProfileId, cnpj, name, street, number, complement, city, state, cep, createdAt);
+        return new StoreUnit(id, providerProfileId, cnpj, name, attendanceType, street, number, complement,
+                city, state, cep, createdAt);
     }
 
-    public void changeName(String name)             { this.name       = validateField(name, "Unity name"); }
-    public void changeStreet(String street)          { this.street     = validateField(street, "Road"); }
-    public void changeNumber(String number)          { this.number     = validateField(number, "Number"); }
-    public void changeComplement(String complement)  { this.complement = complement; }
-    public void changeCity(String city)              { this.city       = validateField(city, "City"); }
-    public void changeState(String state)            { this.state      = validateState(state); }
-    public void changeCep(String cep)                { this.cep        = validateCep(cep); }
+    public void changeName(String name)                         { this.name           = validateField(name, "Unit name"); }
+    public void changeAttendanceType(AttendanceType type)       { this.attendanceType  = validateAttendanceType(type); }
+    public void changeStreet(String street)                     { this.street         = street; }
+    public void changeNumber(String number)                     { this.number         = number; }
+    public void changeComplement(String complement)             { this.complement     = complement; }
+    public void changeCity(String city)                         { this.city           = city; }
+    public void changeState(String state)                       { this.state          = state; }
+    public void changeCep(String cep)                           { this.cep            = cep; }
 
     private String validateField(String value, String fieldName) {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException(fieldName + " cannot be empty");
         }
         return value;
+    }
+
+    private AttendanceType validateAttendanceType(AttendanceType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Attendance type cannot be null");
+        }
+        return type;
     }
 
     private String validateState(String state) {

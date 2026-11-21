@@ -129,7 +129,7 @@ public class GetStoreDailyBookingsOverviewUseCase {
 
         if (service != null) {
             return storeServiceAreaRepository.findByStoreId(service.getStoreId())
-                    .map(StoreServiceArea::getReferenceAddress)
+                    .map(a -> (String) null)
                     .orElse(null);
         }
 
