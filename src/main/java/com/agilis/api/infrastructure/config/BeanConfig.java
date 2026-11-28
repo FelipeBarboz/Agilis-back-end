@@ -25,7 +25,9 @@ import com.agilis.api.application.provider.*;
 import com.agilis.api.application.review.*;
 import com.agilis.api.application.service.*;
 import com.agilis.api.application.support.CreateSupportMessageUseCase;
+import com.agilis.api.application.user.AcceptTermsUseCase;
 import com.agilis.api.application.user.AddAddressUseCase;
+import com.agilis.api.application.user.GetTermsStatusUseCase;
 import com.agilis.api.application.user.RegisterClientUseCase;
 import com.agilis.api.application.user.UpdateAddressUseCase;
 import com.agilis.api.application.user.UpdateUserUseCase;
@@ -47,6 +49,7 @@ import com.agilis.api.domain.service.*;
 import com.agilis.api.domain.support.EmailSender;
 import com.agilis.api.domain.support.SupportMessageRepository;
 import com.agilis.api.domain.user.AddressRepository;
+import com.agilis.api.domain.user.TermsAcceptanceRepository;
 import com.agilis.api.domain.user.UserRepository;
 import com.agilis.api.infrastructure.email.SmtpEmailSender;
 import com.agilis.api.infrastructure.notification.WebhookDispatcherAdapter;
@@ -75,6 +78,8 @@ import com.agilis.api.infrastructure.persistence.support.SupportMessageJpaReposi
 import com.agilis.api.infrastructure.persistence.support.SupportMessageRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.user.AddressJpaRepository;
 import com.agilis.api.infrastructure.persistence.user.AddressRepositoryAdapter;
+import com.agilis.api.infrastructure.persistence.user.TermsAcceptanceJpaRepository;
+import com.agilis.api.infrastructure.persistence.user.TermsAcceptanceRepositoryAdapter;
 import com.agilis.api.infrastructure.persistence.user.UserJpaRepository;
 import com.agilis.api.infrastructure.persistence.user.UserRepositoryAdapter;
 import com.agilis.api.infrastructure.security.JwtFilter;
@@ -1009,6 +1014,22 @@ public class BeanConfig {
             BookingRepository bookingRepository
     ) {
         return new GetPaymentStatusUseCase(paymentRepository, bookingRepository);
+    }
+
+    // TERMS & PRIVACY
+    @Bean
+    public TermsAcceptanceRepository termsAcceptanceRepository(TermsAcceptanceJpaRepository jpaRepository) {
+        return new TermsAcceptanceRepositoryAdapter(jpaRepository);
+    }
+
+    @Bean
+    public AcceptTermsUseCase acceptTermsUseCase(TermsAcceptanceRepository termsAcceptanceRepository) {
+        return new AcceptTermsUseCase(termsAcceptanceRepository);
+    }
+
+    @Bean
+    public GetTermsStatusUseCase getTermsStatusUseCase(TermsAcceptanceRepository termsAcceptanceRepository) {
+        return new GetTermsStatusUseCase(termsAcceptanceRepository);
     }
 
     // Jwt

@@ -69,6 +69,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/stores/*/positions/**").authenticated()
                         .requestMatchers("/api/v1/stores/*/webhooks/**").authenticated()
                         .requestMatchers("/api/v1/stores/*/invites/**").authenticated()
+                        .requestMatchers("/api/v1/terms/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/register/client").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/stores/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/services/**").permitAll()
